@@ -27,6 +27,7 @@ void App::Init() {
     programOver = false;
     currentLine = 0;
     inputState = InputState::Down;
+    pageIndex = 1;
 
     // 소스 파일이 제대로 열렸는지 검사
     std::ifstream srcStream(srcFile);
@@ -67,7 +68,7 @@ void App::Init() {
                 records[_addIndex]->UpdateRecordData(_words);
             } else {
                 RecordData* _data = new RecordArray(_words.size() - 8);
-                _data->recordType = RecordData::RecordType::Array;
+                _data->recordType = RecordType::Array;
                 _data->InitRecordData(_words);
                 records.push_back(_data);
                 _addIndex = records.size() - 1;
@@ -147,11 +148,11 @@ void App::Update() {
             }
         }
     }   
-    else if(inputState == InputState::Up) {
-
+    else if(inputState == InputState::Right) {
+        pageIndex++;
     }
-    else if(inputState == InputState::Up) {
-
+    else if(inputState == InputState::Left) {
+        pageIndex--;
     }
 }
 
@@ -171,7 +172,9 @@ void App::Render() {
     std::cout << std::endl;
 
     if(FindRecord(currentLine)) {
-        records[FindRecordData(currentLine)]->PrintRecordTable(10);
+        if(records[FindRecordData(currentLine)]->recordType == RecordType::Array) {
+            records[FindRecordData(currentLine)]->PrintRecordTable(pageIndex);
+        }
     }
 }
 

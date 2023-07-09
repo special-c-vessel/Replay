@@ -21,6 +21,6 @@ void RecordData::PrintRecordData() {
 
 }
 
-void RecordData::PrintRecordTable(int _index) {
+int RecordData::PrintRecordTable(int _index) {
 
 }

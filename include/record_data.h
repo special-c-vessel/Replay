@@ -4,15 +4,15 @@
 #include <vector>
 #include <iostream>
 
+enum RecordType {
+    None,
+    Array
+};
+
 class RecordData {
 public: // class constructor, destructor
     RecordData();
     virtual ~RecordData();
-public:
-    enum RecordType {
-        None,
-        Array
-    };
 public: // variable getter setter
     void SetName(std::string);
     std::string GetName();
@@ -30,7 +30,7 @@ public: // 가상 함수
     virtual void InitRecordData(std::vector<std::string>);
     virtual void UpdateRecordData(std::vector<std::string>);
     virtual void PrintRecordData();
-    virtual void PrintRecordTable(int);
+    virtual int PrintRecordTable(int);
 public:
 	std::string name;
 	std::string type;

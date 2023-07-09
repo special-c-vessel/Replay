@@ -20,15 +20,15 @@ public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
     void UpdateRecordData(std::vector<std::string>) override;
     void PrintRecordData() override;
-    void PrintRecordTable(int) override;
+    int PrintRecordTable(int) override;
 private:
     int dimension = 0;
     int max_array1 = 50;
     int max_array2 = 20;
     int max_array3 = 20;
     std::vector<std::string> array1;
-    std::string** array2;
-    std::string*** array3;
+    std::vector<std::vector<std::string> > array2;
+    std::vector<std::vector<std::vector<std::string> > > array3;
 };
 
 #endif //RECORD_ARRAY_H

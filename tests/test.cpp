@@ -6,40 +6,40 @@ using namespace std;
 
 int main()
 {
-//   string tempstr11111 = "";
+  string tempstr11111 = "";
   
-//   string tempstr22222 = "hello";
+  string tempstr22222 = "hello";
 
-//   string tempstr33333 = "ewgaewgearg";
+  string tempstr33333 = "ewgaewgearg";
 
-//   tempstr11111 = "aaaaaaa";
-//   tempstr11111 = "bbbbb";
+  tempstr11111 = "aaaaaaa";
+  tempstr11111 = "bbbbb";
 
-//   tempstr11111[2] = 'H';
-//   tempstr11111[3] = 'A';
+  tempstr11111[2] = 'H';
+  tempstr11111[3] = 'A';
 
-//   if(tempstr11111[3] == 'Q')
-// {
+  if(tempstr11111[3] == 'Q')
+{
 
-// }
+}
 
-//   cout << tempstr11111 << "\n";
+  cout << tempstr11111 << "\n";
 
-  // FILE* fp;
-  // fp = fopen("HelloWorld.txt", "w+");
+  FILE* fp;
+  fp = fopen("HelloWorld.txt", "w+");
 
-  // int aaaaaaaa = 5;
+  int aaaaaaaa = 5;
 
-  // char cccchhhhaaaarrrr[200] = "Hello World!";
+  char cccchhhhaaaarrrr[200] = "Hello World!";
   
-  // int bbbbbbbbb = 10;
+  int bbbbbbbbb = 10;
 
-  // fprintf(fp, "%s \n", cccchhhhaaaarrrr);
+  fprintf(fp, "%s \n", cccchhhhaaaarrrr);
 
   string s = "hello world";
 
-  // int aaaaa = 5;
-  // cout << s << "\n";
+  int aaaaa = 5;
+  cout << s << "\n";
 
   int num = 11111;
   char tempstr[s.length() + 1];

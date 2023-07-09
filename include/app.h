@@ -44,4 +44,6 @@ public: // main framework variable
     std::vector<std::string> recordLines;
 
     InputState inputState;
+
+    int pageIndex;
 };
