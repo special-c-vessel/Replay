@@ -30,7 +30,7 @@ public: // 가상 함수
     virtual void InitRecordData(std::vector<std::string>);
     virtual void UpdateRecordData(std::vector<std::string>);
     virtual void PrintRecordData();
-    virtual int PrintRecordTable(int);
+    virtual std::string PrintRecordTable(int);
 public:
 	std::string name;
 	std::string type;

@@ -20,7 +20,7 @@ public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
     void UpdateRecordData(std::vector<std::string>) override;
     void PrintRecordData() override;
-    int PrintRecordTable(int) override;
+    std::string PrintRecordTable(int) override;
 private:
     int dimension = 0;
     int max_array1 = 50;

@@ -1,7 +1,16 @@
-store arr_int int isArr 0 33 0x7ff7beea6400 45 7
-store arr_int int isArr 1 44 0x7ff7beea6404 45 7
-store arr_int int isArr 2 55 0x7ff7beea6408 45 7
-store arr_int int isArr 3 66 0x7ff7beea640c 45 7
-store arr_int int isArr 4 77 0x7ff7beea6410 45 7
-store arr_int int isArr 5 88 0x7ff7beea6414 45 7
-store arr_int int isArr 30 99 0x7ff7beea6400 46 15
+store arr_int int isArr 0 33 0x7ff7beea6400 9 7
+store arr_int int isArr 1 44 0x7ff7beea6404 9 7
+store arr_int int isArr 2 55 0x7ff7beea6408 9 7
+store arr_int int isArr 3 66 0x7ff7beea640c 9 7
+store arr_int int isArr 4 77 0x7ff7beea6410 9 7
+store arr_int int isArr 5 88 0x7ff7beea6414 9 7
+store arr_int int isArr 30 99 0x7ff7beea6400 9 15
+store arr_iint int isArr 0 0 123 0x7ff7beea55f0 11 7
+store arr_iint int isArr 0 1 456 0x7ff7beea55f4 11 7
+store arr_iint int isArr 0 2 789 0x7ff7beea55f8 11 7
+store arr_iint int isArr 1 0 321 0x7ff7beea5668 11 7
+store arr_iint int isArr 1 1 654 0x7ff7beea566c 11 7
+store arr_iint int isArr 1 2 987 0x7ff7beea5670 11 7
+store arr_iiiint int isArr 0 0 0 -1 0x7ff7bee9f830 13 7
+store arr_iiiint int isArr 0 0 1 -2 0x7ff7bee9f834 13 7
+store arr_iiiint int isArr 0 0 2 -3 0x7ff7bee9f838 13 7

@@ -21,6 +21,6 @@ void RecordData::PrintRecordData() {
 
 }
 
-int RecordData::PrintRecordTable(int _index) {
+std::string RecordData::PrintRecordTable(int _index) {
 
 }

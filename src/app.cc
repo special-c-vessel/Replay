@@ -74,7 +74,7 @@ void App::Init() {
                 _addIndex = records.size() - 1;
                 _nameStr = _words[1];
             }
-            records[_addIndex]->PrintRecordData();
+            //records[_addIndex]->PrintRecordData();
         }
     }
     
@@ -89,6 +89,7 @@ void App::Init() {
 // 사용자로부터 입력을 받는 함수
 void App::Input() {
     std::string input;
+    std::cout << std::endl << "User input : ";
     std::cin >> input;
     if(!IsNumber(input)) { // 사용자 입력 값이 숫자가 아닐 경우
         if(input == "s") {
@@ -170,10 +171,18 @@ void App::Render() {
     }
 
     std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "|                            System meseeage                               |\n";
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << std::endl;
+    std::cout << "  current line : " << currentLine + 1 << std::endl;
+    std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
 
-    if(FindRecord(currentLine)) {
-        if(records[FindRecordData(currentLine)]->recordType == RecordType::Array) {
-            records[FindRecordData(currentLine)]->PrintRecordTable(pageIndex);
+    if(FindRecord(currentLine + 1)) {
+        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array) {
+            records[FindRecordData(currentLine + 1)]->PrintRecordTable(pageIndex);
         }
     }
 }

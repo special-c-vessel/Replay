@@ -133,7 +133,7 @@ void RecordArray::PrintRecordData() {
 // -1 - error
 // 0  - last index
 // 1  - complete
-int RecordArray::PrintRecordTable(int _index) {
+std::string RecordArray::PrintRecordTable(int _index) {
         ConsoleTable ct(BASIC);
         ct.SetPadding(1);
         ct.AddColumn("Name");
@@ -141,7 +141,7 @@ int RecordArray::PrintRecordTable(int _index) {
         ct.AddColumn("Value");
         ct.AddColumn("Ptr");
         
-        switch(dimension) {
+        switch(this->dimension) {
         case 1: {
             ct.AddColumn("Index");
             int _startIndex = (_index * 10) - 10;
@@ -158,21 +158,55 @@ int RecordArray::PrintRecordTable(int _index) {
             break;
         }
         case 2: {
+            std::cout << "dimension2" << std::endl;
             ct.AddColumn("Index 1");
             ct.AddColumn("Index 2");
             int _startIndex = (_index * 10) - 10;
             int _endIndex = (_index * 10);
+            int _count = 0;
             for(int i = _startIndex ; i < _endIndex; i++) {
                 for(int j = _startIndex; j < _endIndex; j++) {
-                    ConsoleTableRow* entry = new ConsoleTableRow(6);
-                    entry->AddEntry(this->name, 0);
-                    entry->AddEntry(this->type, 1);
-                    entry->AddEntry(array1[i], 2);
-                    entry->AddEntry(this->ptr, 3);
-                    entry->AddEntry(std::to_string(i), 4);
-                    entry->AddEntry(std::to_string(j), 5);
-                    ct.AddRow(entry);
+                    if (_count >= 10) break;
+                    _count++;
+                    ConsoleTableRow* _entry = new ConsoleTableRow(6);
+                    _entry->AddEntry(this->name, 0);
+                    _entry->AddEntry(this->type, 1);
+                    _entry->AddEntry(this->array2[i][j], 2);
+                    _entry->AddEntry(this->ptr, 3);
+                    _entry->AddEntry(std::to_string(i), 4);
+                    _entry->AddEntry(std::to_string(j), 5);
+                    ct.AddRow(_entry);
                 }
+                if (_count >= 10) break;
+            }
+            break;
+        }
+        case 3: {
+            std::cout << "dimension2" << std::endl;
+            ct.AddColumn("Index 1");
+            ct.AddColumn("Index 2");
+            ct.AddColumn("Index 3");
+            int _startIndex = (_index * 10) - 10;
+            int _endIndex = (_index * 10);
+            int _count = 0;
+            for(int i = _startIndex ; i < _endIndex; i++) {
+                for(int j = _startIndex; j < _endIndex; j++) {
+                    for(int _z = _startIndex; _z < _endIndex; _z++) {
+                        if (_count >= 10) break;
+                        _count++;
+                        ConsoleTableRow* entry = new ConsoleTableRow(7);
+                        entry->AddEntry(this->name, 0);
+                        entry->AddEntry(this->type, 1);
+                        entry->AddEntry(array3[i][j][_z], 2);
+                        entry->AddEntry(this->ptr, 3);
+                        entry->AddEntry(std::to_string(i), 4);
+                        entry->AddEntry(std::to_string(j), 5);
+                        entry->AddEntry(std::to_string(_z), 6);
+                        ct.AddRow(entry);
+                    }
+                    if (_count >= 10) break;
+                }
+                if (_count >= 10) break;
             }
             break;
         }
@@ -180,5 +214,5 @@ int RecordArray::PrintRecordTable(int _index) {
 
         ct.PrintTable();
 
-        return 1;
+        return "";
 }
