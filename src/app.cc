@@ -26,8 +26,9 @@ void App::Run() {
 void App::Init() {
     programOver = false;
     currentLine = 0;
-    inputState = InputState::Down;
+    inputState = InputState::Stop;
     pageIndex = 1;
+    InitCommand();
 
     // 소스 파일이 제대로 열렸는지 검사
     std::ifstream srcStream(srcFile);
@@ -88,23 +89,29 @@ void App::Init() {
 
 // 사용자로부터 입력을 받는 함수
 void App::Input() {
-    std::string input;
+    std::string _input;
     std::cout << std::endl << "User input : ";
-    std::cin >> input;
-    if(!IsNumber(input)) { // 사용자 입력 값이 숫자가 아닐 경우
-        if(input == "s") {
+    getline(std::cin, _input);
+    if(!IsNumber(_input)) { // 사용자 입력 값이 숫자가 아닐 경우
+        std::cout << "\ninput string : " << _input << std::endl;
+        if(_input == "s") {
             std::cout << "Down" << std::endl;
             this->inputState = InputState::Down;
         }
-        else if(input == "w") {
+        else if(_input == "w") {
             std::cout << "Up" << std::endl;
             this->inputState = InputState::Up;
         }
-        else if(input == "a") {
+        else if(_input == "a") {
             this->inputState = InputState::Left;
         }
-        else if(input == "d") {
+        else if(_input == "d") {
             this->inputState = InputState::Right;
+        }
+        else if(FindCommand(_input)) {
+            std::cout << "Command Find" << std::endl;
+            this->inputState = InputState::Command;
+            ExecuteCommand(_input);
         }
         else {
             std::cout << "undefined command" << std::endl;
@@ -131,6 +138,7 @@ void App::Update() {
             else {
                 currentLine--;
             }
+            inputState = InputState::Stop;
         }
     }
     else if(inputState == InputState::Down) {
@@ -147,6 +155,7 @@ void App::Update() {
             else {
                 currentLine++;
             }
+            inputState = InputState::Stop;
         }
     }   
     else if(inputState == InputState::Right) {
@@ -182,6 +191,7 @@ void App::Render() {
 
     if(FindRecord(currentLine + 1)) {
         if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array) {
+            this->recordType = RecordType::Array;
             records[FindRecordData(currentLine + 1)]->PrintRecordTable(pageIndex);
         }
     }
@@ -220,4 +230,39 @@ bool App::IsEqualData(std::string _str, std::string _line, std::string _col) {
     }
 
     return (_words[_words.size() - 1] == _col && _words[_words.size() - 2] == _line);
+}
+
+///////////////////////////////Command method///////////////////////////////
+void App::InitCommand() {
+    commands.push_back("index");
+}
+bool App::FindCommand(std::string _command) {
+    std::cout << "command : " << _command << std::endl;
+    for(int i = 0; i < commands.size(); i++) {
+        if(_command.find(commands[i]) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void App::ExecuteCommand(std::string _command) {
+    std::stringstream _ss(_command);
+    // 공백 분리 결과를 저장할 배열
+    std::vector<std::string> _words;
+    std::string _word;
+    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+    while (getline(_ss, _word, ' ')){
+        _words.push_back(_word);
+    }
+    if(_words[0] == "index") {
+        std::cout << "index commnad execute 1" << std::endl;
+        if(recordType == RecordType::Array) {
+            std::cout << "index commnad execute 2" << std::endl;
+            if(_words.size() == 2) {
+                pageIndex = ((stoi(_words[1]) % 100) / 10) + 1;
+                std::cout << "pageIndex : " << pageIndex << std::endl;
+            }
+        }
+    }
 }

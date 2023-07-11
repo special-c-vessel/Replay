@@ -13,7 +13,7 @@
 #define JUDGMENT_INDEX 3
 
 enum InputState {
-    Up, Down, Right, Left
+    Stop, Up, Down, Right, Left, Command
 };
 
 class App {
@@ -33,6 +33,11 @@ private: // app class function
     int FindRecordData(int);
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
+
+    // command method
+    void InitCommand();
+    bool FindCommand(std::string);
+    void ExecuteCommand(std::string);
 public: // main framework variable
     char* srcFile;
     char* recordFile;
@@ -42,8 +47,10 @@ public: // main framework variable
     std::vector<RecordData*> records;
     std::vector<std::string> codes;
     std::vector<std::string> recordLines;
+    std::vector<std::string> commands;
 
     InputState inputState;
+    RecordType recordType;
 
     int pageIndex;
 };
