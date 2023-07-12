@@ -16,6 +16,7 @@ void RecordArray::InitArray() {
     std::cout << "Call InitArray func(RecordArray), dimension = " << dimension << std::endl;
     switch(dimension) {
     case 1: {
+        maxPageIndex = ((max_array1 % 100) / 10) +  1;
         array1.resize(max_array1);
         for(int i = 0; i < max_array1; i++) {
             array1.push_back("0");
@@ -23,16 +24,15 @@ void RecordArray::InitArray() {
         break;
     }
     case 2: {
+        maxPageIndex = ((max_array1 * max_array2) / 10) + 1;
         array2.resize(max_array1);
         for(int i = 0; i < max_array1; i++) {
             array2[i].resize(max_array2);
-            for(int j = 0; j < max_array2; j++) {
-                array2[i][j] = "0";
-            }
         }
         break;
     }
     case 3: {
+        maxPageIndex = ((max_array1 * max_array2 * max_array3) / 10) + 1;
         array3.resize(max_array1);
         for(int i = 0; i < max_array1; i++) {
             array3[i].resize(max_array2);
@@ -143,76 +143,117 @@ std::string RecordArray::PrintRecordTable(int _index) {
         
         switch(this->dimension) {
         case 1: {
-            ct.AddColumn("Index");
-            int _startIndex = (_index * 10) - 10;
-            int _endIndex = (_index * 10);
-            for(int i = _startIndex ; i < _endIndex; i++) {
-                ConsoleTableRow* entry = new ConsoleTableRow(5);
-                entry->AddEntry(this->name, 0);
-                entry->AddEntry(this->type, 1);
-                entry->AddEntry(array1[i], 2);
-                entry->AddEntry(this->ptr, 3);
-                entry->AddEntry(std::to_string(i), 4);
-                ct.AddRow(entry);
+            if(_index * 10 <= max_array1) {
+                std::vector<ArrayStruct> _arrays;
+                for(int i = 0; i < max_array1; i++) {
+                    ArrayStruct _arrayStruct;
+                    _arrayStruct.arrayName = this->name;
+                    _arrayStruct.arrayType = this->type;
+                    _arrayStruct.arrayValue = array1[i];
+                    _arrayStruct.arrayPtr = this->ptr;
+                    _arrayStruct.arrayIndex.push_back(std::to_string(i));
+                    _arrays.push_back(_arrayStruct);
+                }
+
+                ct.AddColumn("Index");
+                int _startIndex = (_index * 10) - 10;
+                int _endIndex = (_index * 10);
+                if(_startIndex > _arrays.size() - 1) _startIndex = _arrays.size() - 1;
+                if(_endIndex > _arrays.size()) _endIndex = _arrays.size();
+                for(int i = _startIndex ; i < _endIndex; i++) {
+                    ConsoleTableRow* entry = new ConsoleTableRow(5);
+                    entry->AddEntry(_arrays[i].arrayName, 0);
+                    entry->AddEntry(_arrays[i].arrayType, 1);
+                    entry->AddEntry(_arrays[i].arrayValue, 2);
+                    entry->AddEntry(_arrays[i].arrayPtr, 3);
+                    entry->AddEntry(_arrays[i].arrayIndex[0], 4);
+                    ct.AddRow(entry);
+                }
+                ct.PrintTable();
+            }
+            else {
+                return "WARNING this array last index is a " + max_array1;
             }
             break;
         }
         case 2: {
-            std::cout << "dimension2" << std::endl;
+            std::vector<ArrayStruct> _arrays;
+            for(int i = 0; i < max_array1; i++) {
+                for(int j = 0; j < max_array2; j++) {
+                    ArrayStruct _arrayStruct;
+                    _arrayStruct.arrayName = this->name;
+                    _arrayStruct.arrayType = this->type;
+                    _arrayStruct.arrayValue = array2[i][j];
+                    _arrayStruct.arrayPtr = this->ptr;
+                    _arrayStruct.arrayIndex.push_back(std::to_string(i));
+                    _arrayStruct.arrayIndex.push_back(std::to_string(j));
+                    _arrays.push_back(_arrayStruct);
+                }
+            }
+
             ct.AddColumn("Index 1");
             ct.AddColumn("Index 2");
+
             int _startIndex = (_index * 10) - 10;
             int _endIndex = (_index * 10);
-            int _count = 0;
+            if(_startIndex > _arrays.size() - 1) _startIndex = _arrays.size() - 1;
+            if(_endIndex > _arrays.size()) _endIndex = _arrays.size();
+
             for(int i = _startIndex ; i < _endIndex; i++) {
-                for(int j = _startIndex; j < _endIndex; j++) {
-                    if (_count >= 10) break;
-                    _count++;
-                    ConsoleTableRow* _entry = new ConsoleTableRow(6);
-                    _entry->AddEntry(this->name, 0);
-                    _entry->AddEntry(this->type, 1);
-                    _entry->AddEntry(this->array2[i][j], 2);
-                    _entry->AddEntry(this->ptr, 3);
-                    _entry->AddEntry(std::to_string(i), 4);
-                    _entry->AddEntry(std::to_string(j), 5);
-                    ct.AddRow(_entry);
-                }
-                if (_count >= 10) break;
+                ConsoleTableRow* _entry = new ConsoleTableRow(6);
+                _entry->AddEntry(_arrays[i].arrayName, 0);
+                _entry->AddEntry(_arrays[i].arrayType, 1);
+                _entry->AddEntry(_arrays[i].arrayValue, 2);
+                _entry->AddEntry(_arrays[i].arrayPtr, 3);
+                _entry->AddEntry(_arrays[i].arrayIndex[0], 4);
+                _entry->AddEntry(_arrays[i].arrayIndex[1], 5);
+                ct.AddRow(_entry);
             }
+            ct.PrintTable();
             break;
         }
         case 3: {
-            std::cout << "dimension2" << std::endl;
+            std::vector<ArrayStruct> _arrays;
+            for(int i = 0; i < max_array1; i++) {
+                for(int j = 0; j < max_array2; j++) {
+                    for(int z = 0; z < max_array3; z++) {
+                        ArrayStruct _arrayStruct;
+                        _arrayStruct.arrayName = this->name;
+                        _arrayStruct.arrayType = this->type;
+                        _arrayStruct.arrayValue = array3[i][j][z];
+                        _arrayStruct.arrayPtr = this->ptr;
+                        _arrayStruct.arrayIndex.push_back(std::to_string(i));
+                        _arrayStruct.arrayIndex.push_back(std::to_string(j));
+                        _arrayStruct.arrayIndex.push_back(std::to_string(z));
+                        _arrays.push_back(_arrayStruct);
+                    }
+                }
+            }
+
             ct.AddColumn("Index 1");
             ct.AddColumn("Index 2");
             ct.AddColumn("Index 3");
+
             int _startIndex = (_index * 10) - 10;
             int _endIndex = (_index * 10);
-            int _count = 0;
+            if(_startIndex > _arrays.size() - 1) _startIndex = _arrays.size() - 1;
+            if(_endIndex > _arrays.size()) _endIndex = _arrays.size();
+
             for(int i = _startIndex ; i < _endIndex; i++) {
-                for(int j = _startIndex; j < _endIndex; j++) {
-                    for(int _z = _startIndex; _z < _endIndex; _z++) {
-                        if (_count >= 10) break;
-                        _count++;
-                        ConsoleTableRow* entry = new ConsoleTableRow(7);
-                        entry->AddEntry(this->name, 0);
-                        entry->AddEntry(this->type, 1);
-                        entry->AddEntry(array3[i][j][_z], 2);
-                        entry->AddEntry(this->ptr, 3);
-                        entry->AddEntry(std::to_string(i), 4);
-                        entry->AddEntry(std::to_string(j), 5);
-                        entry->AddEntry(std::to_string(_z), 6);
-                        ct.AddRow(entry);
-                    }
-                    if (_count >= 10) break;
-                }
-                if (_count >= 10) break;
+                ConsoleTableRow* _entry = new ConsoleTableRow(7);
+                _entry->AddEntry(_arrays[i].arrayName, 0);
+                _entry->AddEntry(_arrays[i].arrayType, 1);
+                _entry->AddEntry(_arrays[i].arrayValue, 2);
+                _entry->AddEntry(_arrays[i].arrayPtr, 3);
+                _entry->AddEntry(_arrays[i].arrayIndex[0], 4);
+                _entry->AddEntry(_arrays[i].arrayIndex[1], 5);
+                _entry->AddEntry(_arrays[i].arrayIndex[2], 6);
+                ct.AddRow(_entry);
             }
+            ct.PrintTable();
             break;
         }
         }
 
-        ct.PrintTable();
-
-        return "";
+        return "Print complete";
 }

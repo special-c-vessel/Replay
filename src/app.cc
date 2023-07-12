@@ -17,9 +17,9 @@ void App::Run() {
     Init();
 
     while(!programOver) {
-        Render();
         Input();
         Update();
+        Render();
     }
 }
 
@@ -85,6 +85,7 @@ void App::Init() {
             currentLine = codes.size() - 1;
         }
     }
+    Render();
 }
 
 // 사용자로부터 입력을 받는 함수
@@ -139,6 +140,7 @@ void App::Update() {
                 currentLine--;
             }
             inputState = InputState::Stop;
+            pageIndex = 1;
         }
     }
     else if(inputState == InputState::Down) {
@@ -156,18 +158,26 @@ void App::Update() {
                 currentLine++;
             }
             inputState = InputState::Stop;
+            pageIndex = 1;
         }
     }   
     else if(inputState == InputState::Right) {
-        pageIndex++;
+        if(maxPageIndex - 1 > pageIndex) pageIndex++;
     }
     else if(inputState == InputState::Left) {
-        pageIndex--;
+        if(pageIndex > 1) pageIndex--;
     }
 }
 
 void App::Render() {
     std::cout << "\033[2J\033[1;1H"; // 화면에 출력된 정보들을 지운다.
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "|                                    code                                  |\n";
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << std::endl;
 
     int _startLine = (currentLine < CODE_SHOW_RANGE) 
     ? 0 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
@@ -180,21 +190,35 @@ void App::Render() {
     }
 
     std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "|                            Information meseeage                          |\n";
+    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << std::endl;
+
+    if(FindRecord(currentLine + 1)) {
+        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array) {
+            this->maxPageIndex = records[FindRecordData(currentLine + 1)]->maxPageIndex;
+            this->recordType = RecordType::Array;
+            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(pageIndex);
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "+--------------------------------------------------------------------------+\n";
+
+    std::cout << std::endl;
     std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << "|                            System meseeage                               |\n";
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
-    std::cout << "  current line : " << currentLine + 1 << std::endl;
+    std::cout << "     " << systemMessage << std::endl;
+    std::cout << "max page index : " << maxPageIndex << std::endl;
     std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
-
-    if(FindRecord(currentLine + 1)) {
-        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array) {
-            this->recordType = RecordType::Array;
-            records[FindRecordData(currentLine + 1)]->PrintRecordTable(pageIndex);
-        }
-    }
 }
 
 bool App::IsNumber(std::string const &_str) {
@@ -264,5 +288,12 @@ void App::ExecuteCommand(std::string _command) {
                 std::cout << "pageIndex : " << pageIndex << std::endl;
             }
         }
+    }
+}
+
+void App::ErrorHandling(std::string _message) {
+    if(_message.find("WARNING") != std::string::npos) {
+        systemMessage = "";
+        inputState = InputState::WARN;
     }
 }

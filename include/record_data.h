@@ -40,6 +40,8 @@ public:
 	std::string col;
 
     RecordType recordType;
+
+    int maxPageIndex;
 };
 
 #endif //RECORD_DATA_H
