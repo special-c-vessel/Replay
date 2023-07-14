@@ -27,7 +27,6 @@ void App::Init() {
     programOver = false;
     currentLine = 0;
     inputState = InputState::Stop;
-    pageIndex = 1;
     InitCommand();
 
     // 소스 파일이 제대로 열렸는지 검사
@@ -68,8 +67,14 @@ void App::Init() {
             if(_nameStr == _words[1]) {
                 records[_addIndex]->UpdateRecordData(_words);
             } else {
-                RecordData* _data = new RecordArray(_words.size() - 8);
-                _data->recordType = RecordType::Array;
+                int _dimension = _words.size() - 8;
+
+                RecordData* _data = new RecordArray(_dimension);
+
+                if(_dimension == 1) _data->recordType = RecordType::Array1;
+                else if(_dimension == 2) _data->recordType = RecordType::Array2;
+                else if(_dimension == 3) _data->recordType = RecordType::Array3;
+
                 _data->InitRecordData(_words);
                 records.push_back(_data);
                 _addIndex = records.size() - 1;
@@ -105,19 +110,19 @@ void App::Input() {
         }
         else if(_input == "a") {
             this->inputState = InputState::Left;
+            this->commandMessage = "left";
         }
         else if(_input == "d") {
             this->inputState = InputState::Right;
+            this->commandMessage = "right";
         }
         else if(FindCommand(_input)) {
-            std::cout << "Command Find" << std::endl;
             this->inputState = InputState::Command;
-            ExecuteCommand(_input);
+            this->commandMessage = _input;
         }
         else {
             std::cout << "undefined command" << std::endl;
         }
-
     }
     else { // 사용자 입력 값이 숫자일 경우
             
@@ -140,7 +145,6 @@ void App::Update() {
                 currentLine--;
             }
             inputState = InputState::Stop;
-            pageIndex = 1;
         }
     }
     else if(inputState == InputState::Down) {
@@ -158,14 +162,16 @@ void App::Update() {
                 currentLine++;
             }
             inputState = InputState::Stop;
-            pageIndex = 1;
         }
     }   
     else if(inputState == InputState::Right) {
-        if(maxPageIndex - 1 > pageIndex) pageIndex++;
+        this->commandMessage = "right";
     }
     else if(inputState == InputState::Left) {
-        if(pageIndex > 1) pageIndex--;
+        this->commandMessage = "left";
+    }
+    else if(inputState == InputState::Command) {
+        
     }
 }
 
@@ -185,6 +191,7 @@ void App::Render() {
     ? _endLine = codes.size() - 1 : _endLine = currentLine + CODE_SHOW_RANGE; // 코드 마지막 줄 번호
 
     for(int i = _startLine; i <= _endLine; i++) {
+        std::cout << i + 1 << "      ";
         if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
@@ -199,11 +206,21 @@ void App::Render() {
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
-    if(FindRecord(currentLine + 1)) {
-        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array) {
-            this->maxPageIndex = records[FindRecordData(currentLine + 1)]->maxPageIndex;
-            this->recordType = RecordType::Array;
-            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(pageIndex);
+    if(FindRecord(currentLine + 1)) { // 해당 줄의 레코드 데이터가 있는지 검사
+        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array1) { // 일차원 배열
+            this->recordType = RecordType::Array1;
+            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
+            commandMessage = "";
+        }
+        else if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array2) { // 이차원 배열
+            this->recordType = RecordType::Array2;
+            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
+            commandMessage = "";    
+        }
+        else if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array3) { // 삼차원 배열
+            this->recordType = RecordType::Array3;
+            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
+            commandMessage = "";
         }
     }
     std::cout << std::endl;
@@ -215,8 +232,7 @@ void App::Render() {
     std::cout << "|                            System meseeage                               |\n";
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
-    std::cout << "     " << systemMessage << std::endl;
-    std::cout << "max page index : " << maxPageIndex << std::endl;
+    std::cout << "               " << systemMessage << std::endl;
     std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
 }
@@ -258,7 +274,7 @@ bool App::IsEqualData(std::string _str, std::string _line, std::string _col) {
 
 ///////////////////////////////Command method///////////////////////////////
 void App::InitCommand() {
-    commands.push_back("index");
+    commands.push_back("mvarray");
 }
 bool App::FindCommand(std::string _command) {
     std::cout << "command : " << _command << std::endl;
@@ -268,27 +284,6 @@ bool App::FindCommand(std::string _command) {
         }
     }
     return false;
-}
-
-void App::ExecuteCommand(std::string _command) {
-    std::stringstream _ss(_command);
-    // 공백 분리 결과를 저장할 배열
-    std::vector<std::string> _words;
-    std::string _word;
-    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-    while (getline(_ss, _word, ' ')){
-        _words.push_back(_word);
-    }
-    if(_words[0] == "index") {
-        std::cout << "index commnad execute 1" << std::endl;
-        if(recordType == RecordType::Array) {
-            std::cout << "index commnad execute 2" << std::endl;
-            if(_words.size() == 2) {
-                pageIndex = ((stoi(_words[1]) % 100) / 10) + 1;
-                std::cout << "pageIndex : " << pageIndex << std::endl;
-            }
-        }
-    }
 }
 
 void App::ErrorHandling(std::string _message) {

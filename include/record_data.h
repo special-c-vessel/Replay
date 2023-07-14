@@ -6,7 +6,9 @@
 
 enum RecordType {
     None,
-    Array
+    Array1,
+    Array2,
+    Array3
 };
 
 class RecordData {
@@ -30,7 +32,7 @@ public: // 가상 함수
     virtual void InitRecordData(std::vector<std::string>);
     virtual void UpdateRecordData(std::vector<std::string>);
     virtual void PrintRecordData();
-    virtual std::string PrintRecordTable(int);
+    virtual std::string PrintRecordTable(std::string);
 public:
 	std::string name;
 	std::string type;

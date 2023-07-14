@@ -29,12 +29,17 @@ public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
     void UpdateRecordData(std::vector<std::string>) override;
     void PrintRecordData() override;
-    std::string PrintRecordTable(int) override;
+    std::string PrintRecordTable(std::string) override;
+private: // 편의성 함수
+    bool IsNumber(std::string const&);
+
 private:
     int dimension = 0;
-    int max_array1 = 50;
-    int max_array2 = 20;
-    int max_array3 = 20;
+    int currentPage = 0;
+    int prevPage = 0;
+    int max_array1 = 47;
+    int max_array2 = 18;
+    int max_array3 = 17;
     std::vector<std::string> array1;
     std::vector<std::vector<std::string> > array2;
     std::vector<std::vector<std::vector<std::string> > > array3;

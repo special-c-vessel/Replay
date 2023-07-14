@@ -37,8 +37,7 @@ private: // app class function
     // Command method
     void InitCommand();
     bool FindCommand(std::string);
-    void ExecuteCommand(std::string);
-
+    
     // Error handling method
     void ErrorHandling(std::string);
 public: // main framework variable
@@ -56,8 +55,7 @@ public: // main framework variable
     RecordType recordType;
 
     // Command valriable
-    int pageIndex;
-    int maxPageIndex;
+    std::string commandMessage;
 
     // Error handling variable
     std::string systemMessage; // 시스템 메시지
