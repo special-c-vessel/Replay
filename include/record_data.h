@@ -8,7 +8,8 @@ enum RecordType {
     None,
     Array1,
     Array2,
-    Array3
+    Array3,
+    Prim
 };
 
 class RecordData {

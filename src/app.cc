@@ -82,6 +82,80 @@ void App::Init() {
             }
             //records[_addIndex]->PrintRecordData();
         }
+        else { // 일반 기록파일
+            if(_words[TYPE_INDEX] == "string") {
+                std::string _strVal = "";
+                std::string _ptrVal = "";
+                std::string _lineVal = "";
+                std::string _colVal = "";
+
+                if(_line.find("StringEnd") != std::string::npos) {
+                    int _i = JUDGMENT_INDEX + 1;
+                    while(_words[_i] != "StringEnd") {
+                        _strVal += _words[_i];
+                        _strVal += " ";
+                        _i++;
+                    }
+                    _colVal = _words[_words.size() - 1];
+                    _lineVal = _words[_words.size() - 2];
+                    _ptrVal = _words[_words.size() - 3];
+                    std::cout << "strVal : " << _strVal << std::endl;
+                }
+                else {
+                    int _strValIndex = JUDGMENT_INDEX + 1;
+                    for(int _i = _strValIndex; _i < _words.size(); _i++) {
+                        if(_i == _words.size() - 1) {
+                            _strVal = _strVal + _words[_i] + "\\n";
+                        }
+                        else {
+                            _strVal = _strVal + _words[_i] + " ";
+                        }
+                    }
+                    i++;
+                    while(recordLines[i].find("StringEnd") == std::string::npos) {
+                        _strVal = _strVal + recordLines[i] + "\\n";
+                        i++;
+                    }
+                    std::cout << "reocrdLines : " << recordLines[i] << std::endl;
+                    std::stringstream _ss2(recordLines[i]);
+                    // 공백 분리 결과를 저장할 배열
+                    std::vector<std::string> _words2;
+                    std::string _word2;
+                    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+                    while (getline(_ss2, _word2, ' ')){
+                        _words2.push_back(_word2);
+                    }
+                    int _i = 0;
+                    while(_words2[_i] != "StringEnd") {
+                        _strVal += _words2[_i];
+                        _strVal += " ";
+                        _i++;
+                    }
+                    _colVal = _words2[_words2.size() - 1];
+                    _lineVal = _words2[_words2.size() - 2];
+                    _ptrVal = _words2[_words2.size() - 3];
+                    std::cout << "strVal : " << _strVal << std::endl;
+                }
+                std::vector<std::string> _resultWord;
+                _resultWord.push_back(_words[1]);
+                _resultWord.push_back(_words[2]);
+                _resultWord.push_back(_strVal);
+                _resultWord.push_back(_ptrVal);
+                _resultWord.push_back(_lineVal);
+                _resultWord.push_back(_colVal);
+
+                for(int i = 0; i < _resultWord.size(); i++) {
+                    std::cout << "result word : " << _resultWord[i] << std::endl;
+                }
+
+                RecordData* _data = new RecordPrim();
+
+                _data->InitRecordData(_resultWord);
+                _data->recordType = RecordType::Prim;
+                records.push_back(_data);
+                _addIndex = records.size() - 1;
+            }
+        }
     }
     
     while (std::getline(srcStream, _line)) {
@@ -206,23 +280,12 @@ void App::Render() {
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
-    if(FindRecord(currentLine + 1)) { // 해당 줄의 레코드 데이터가 있는지 검사
-        if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array1) { // 일차원 배열
-            this->recordType = RecordType::Array1;
-            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
-            commandMessage = "";
-        }
-        else if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array2) { // 이차원 배열
-            this->recordType = RecordType::Array2;
-            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
-            commandMessage = "";    
-        }
-        else if(records[FindRecordData(currentLine + 1)]->recordType == RecordType::Array3) { // 삼차원 배열
-            this->recordType = RecordType::Array3;
-            systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
-            commandMessage = "";
-        }
+    if(FindRecord(currentLine + 1)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
+        this->recordType = records[FindRecordData(currentLine + 1)]->recordType;
+        systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
+        commandMessage = "";
     }
+
     std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
 

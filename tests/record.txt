@@ -13,3 +13,13 @@ store arr_iint int isArr 1 2 987 0x7ff7beea5670 10 7
 store arr_iiiint int isArr 0 0 0 -1 0x7ff7bee9f830 11 7
 store arr_iiiint int isArr 0 0 1 -2 0x7ff7bee9f834 11 7
 store arr_iiiint int isArr 0 0 2 -3 0x7ff7bee9f838 11 7
+store str1 string StringStart /dev/urandom StringEnd 0x16fa7a430 12 22
+store str2 string StringStart Hello, World! StringEnd 0x16fa79a28 13 26
+store str3 string StringStart ddd
+ddd
+ddd
+ StringEnd 0x16fa79a28 14 23
+store str4 string StringStart ddd
+ddd
+ddd
+ddd StringEnd 0x16fa79a28 15 23

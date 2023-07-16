@@ -8,9 +8,11 @@
 #include "record_data.h"
 #include "console_table.h"
 #include "record_array.h"
+#include "record_prim.h"
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
+#define TYPE_INDEX 2
 
 enum InputState {
     Stop, Up, Down, Right, Left, Command, WARN
@@ -37,7 +39,7 @@ private: // app class function
     // Command method
     void InitCommand();
     bool FindCommand(std::string);
-    
+
     // Error handling method
     void ErrorHandling(std::string);
 public: // main framework variable
