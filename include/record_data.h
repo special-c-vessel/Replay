@@ -41,10 +41,14 @@ public:
 	std::string ptr;
 	std::string line;
 	std::string col;
+    std::string length;
 
     RecordType recordType;
 
     int maxPageIndex;
+    
+    // 해당 기록파일의 특이 정보를 가지고 있는 문자열
+    std::string infoMessage;
 };
 
 #endif //RECORD_DATA_H

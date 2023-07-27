@@ -1,18 +1,51 @@
 #include <iostream>
-#include <string>
-#include <algorithm>
+// #include <string>
 
 using namespace std;
 
 int main()
 {
-  int arr_int[50] = {33, 44, 55, 66, 77, 88};
-  int arr_iint[50][50] = {{123, 456, 789}, {321, 654, 987}};
-  int arr_iiint[50][50][50] = {{{-1, -2, -3}}};
-  string str1 = "/dev/urandom";
-  string str2 = "Hello, World!\n";
-  string str3 = "ddd\nddd\nddd";
-  string str4 = "ddd\nddd\nddd\nddd";
+  string tempstr = "11111";
+  tempstr = "32222";
 
-  return 0;
+  tempstr[2] = 'A';
+
+  cout << tempstr << "\n";
+
+  if(tempstr[2] == 'B')
+    tempstr[3] = 'B';
+  else
+    tempstr[5] = 'G';
+
+int num1 = 44444;
+  if(tempstr == "11111")
+  {
+    int num333 = 555555;
+    tempstr[555] = 'd';
+  }
+
+tempstr[7] = 'Q';
+  if(tempstr == "aaaba")
+  {
+
+  }
 }
+
+
+/*
+%"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
+%"class.std::__1::__compressed_pair" = type { %"struct.std::__1::__compressed_pair_elem" }
+%"struct.std::__1::__compressed_pair_elem" = type { %"struct.std::__1::basic_string<char>::__rep" }
+%"struct.std::__1::basic_string<char>::__rep" = type { %union.anon }
+%union.anon = type { %"struct.std::__1::basic_string<char>::__long" }
+%"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
+%"struct.std::__1::__default_init_tag" = type { i8 }
+%"class.std::__1::__basic_string_common" = type { i8 }
+%"struct.std::__1::__compressed_pair_elem.0" = type { i8 }
+%"class.std::__1::allocator" = type { i8 }
+%"struct.std::__1::__non_trivial_if" = type { i8 }
+
+%"struct.std::__1::basic_string<char>::__short" = type { [23 x i8], %struct.anon }
+%struct.anon = type { i8 }
+
+*/

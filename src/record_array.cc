@@ -43,7 +43,7 @@ void RecordArray::InitArray() {
             for(int j = 0; j < max_array2; j++) {
                 array3[i][j].resize(max_array3);
                 for(int z = 0; z < max_array3; z++) {
-                    array3[i][j][z] = "0";
+                    array3[i][j][z] = " ";
                 }
             }
         }
@@ -241,7 +241,7 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
             _arrayStruct.arrayName = this->name;
             _arrayStruct.arrayType = this->type;
             _arrayStruct.arrayValue = array1[i];
-            _arrayStruct.arrayPtr = this->ptr;
+            _arrayStruct.arrayPtr = AddHexaInt(this->ptr, i * 4);
             _arrayStruct.arrayIndex.push_back(std::to_string(i));
             _arrays.push_back(_arrayStruct);
         }
@@ -352,4 +352,20 @@ bool RecordArray::IsNumber(std::string const &_str) {
         it++;
     }
     return !_str.empty() && it == _str.end();
+}
+
+std::string RecordArray::AddHexaInt(std::string _hexaStr, int _addVal) {
+    std::string pureHex = _hexaStr.substr(2);
+
+    // "0x" 포함 16진수 문자열을 int 형으로 변환
+    unsigned long long intVal = std::stoull(pureHex, nullptr, 16);
+
+    intVal += _addVal;
+
+    // int 값을 다시 16진수 문자열로 변환
+    std::stringstream ss;
+    ss << "0x" << std::hex << intVal;
+    std::string convertedHexStr = ss.str();
+
+    return convertedHexStr;
 }

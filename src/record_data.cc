@@ -1,7 +1,7 @@
 #include "record_data.h"
 
 RecordData::RecordData() 
-: name(""), type(""), value(""), ptr(""), line(""), col(""), recordType(RecordType::None) {
+: name(""), type(""), value(""), ptr(""), line(""), col(""), recordType(RecordType::None), infoMessage("") {
     std::cout << "Initialize record data class" << std::endl;
 }
 

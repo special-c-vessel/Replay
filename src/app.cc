@@ -11,6 +11,11 @@ App::App(char* _srcFile, char* _recordFile)
 
 App::~App() {
     std::cout << "Destory app class" << std::endl;
+    for(std::vector<RecordData*>::iterator iter = records.begin(); iter != records.end(); ++iter) {
+        delete *iter;
+    }
+    records.clear();
+    std::vector<RecordData*>().swap(records);
 }
 
 void App::Run() {
@@ -27,6 +32,7 @@ void App::Init() {
     programOver = false;
     currentLine = 0;
     inputState = InputState::Stop;
+    systemMessage = "None";
     InitCommand();
 
     // 소스 파일이 제대로 열렸는지 검사
@@ -62,101 +68,153 @@ void App::Init() {
         while (getline(_ss, _word, ' ')){
             _words.push_back(_word);
         }
+        std::cout << "record line : " << _line << std::endl;
+    
+        if(_words[1] != "retval") {
+            if(_words[JUDGMENT_INDEX] == "isArr" ) {
+                if(_nameStr == _words[1]) {
+                    records[_addIndex]->UpdateRecordData(_words);
+                } else {
+                    int _dimension = _words.size() - 8;
 
-        if(_words[JUDGMENT_INDEX] == "isArr" ) {
-            if(_nameStr == _words[1]) {
-                records[_addIndex]->UpdateRecordData(_words);
-            } else {
-                int _dimension = _words.size() - 8;
+                    RecordData* _data = new RecordArray(_dimension);
 
-                RecordData* _data = new RecordArray(_dimension);
+                    if(_dimension == 1) _data->recordType = RecordType::Array1;
+                    else if(_dimension == 2) _data->recordType = RecordType::Array2;
+                    else if(_dimension == 3) _data->recordType = RecordType::Array3;
 
-                if(_dimension == 1) _data->recordType = RecordType::Array1;
-                else if(_dimension == 2) _data->recordType = RecordType::Array2;
-                else if(_dimension == 3) _data->recordType = RecordType::Array3;
-
-                _data->InitRecordData(_words);
-                records.push_back(_data);
-                _addIndex = records.size() - 1;
-                _nameStr = _words[1];
+                    _data->InitRecordData(_words);
+                    records.push_back(_data);
+                    _addIndex = records.size() - 1;
+                    _nameStr = _words[1];
+                }
             }
-            //records[_addIndex]->PrintRecordData();
-        }
-        else { // 일반 기록파일
-            if(_words[TYPE_INDEX] == "string") {
-                std::string _strVal = "";
-                std::string _ptrVal = "";
-                std::string _lineVal = "";
-                std::string _colVal = "";
+            else { // 일반 기록파일
+                if(_words[TYPE_INDEX] == "string") {
 
-                if(_line.find("StringEnd") != std::string::npos) {
-                    int _i = JUDGMENT_INDEX + 1;
-                    while(_words[_i] != "StringEnd") {
-                        _strVal += _words[_i];
-                        _strVal += " ";
-                        _i++;
-                    }
-                    _colVal = _words[_words.size() - 1];
-                    _lineVal = _words[_words.size() - 2];
-                    _ptrVal = _words[_words.size() - 3];
-                    std::cout << "strVal : " << _strVal << std::endl;
-                }
-                else {
-                    int _strValIndex = JUDGMENT_INDEX + 1;
-                    for(int _i = _strValIndex; _i < _words.size(); _i++) {
-                        if(_i == _words.size() - 1) {
-                            _strVal = _strVal + _words[_i] + "\\n";
+                    std::string _nameVal = "";
+                    std::string _typeVal = "";
+                    std::string _strVal = "";
+                    std::string _ptrVal = "";
+                    std::string _lenVal = "";
+                    std::string _lineVal = "";
+                    std::string _colVal = "";
+                    std::string _infoMessage = "";
+                    
+                    std::cout<< "word index 1 : " << FindRecordDataStr(_words[1]) << std::endl;
+
+                    if(_line.find("StringEnd") != std::string::npos) {
+                        int _i = JUDGMENT_INDEX + 2;
+                        while(_words[_i] != "StringEnd") {
+                            _strVal += _words[_i];
+                            _strVal += " ";
+                            _i++;
                         }
-                        else {
-                            _strVal = _strVal + _words[_i] + " ";
+                        _colVal = _words[_words.size() - 1];
+                        _lineVal = _words[_words.size() - 2];
+                        _ptrVal = _words[_words.size() - 3];
+                        _lenVal = _words[JUDGMENT_INDEX + 1];
+                        std::cout << "strVal : " << _strVal << std::endl;
+                    }
+                    else if(FindRecordDataStr(_words[1]) != -1) {
+                        std::cout << "find record data " << std::endl;
+                        int _findIndex = FindRecordDataStr(_words[1]);
+                        int _changeIndex = std::stoi(_words[3]);
+                        _nameVal = _words[1];
+                        _typeVal = _words[2];
+                        _strVal = records[_findIndex]->value;
+                        _strVal[_changeIndex] = _words[4].c_str()[0];
+                        _colVal = _words[_words.size() - 1];
+                        _lineVal = _words[_words.size() - 2];
+                        _ptrVal = _words[_words.size() - 3];
+                        _lenVal = records[_findIndex]->length;
+                        if(stoi(records[_findIndex]->length) < _changeIndex) {
+                            _infoMessage = "문자열의 범위를 벗어난 요청입니다.";
                         }
                     }
-                    i++;
-                    while(recordLines[i].find("StringEnd") == std::string::npos) {
-                        _strVal = _strVal + recordLines[i] + "\\n";
+                    else {
+                        int _strValIndex = JUDGMENT_INDEX + 2;
+                        for(int _i = _strValIndex; _i < _words.size(); _i++) {
+                            if(_i == _words.size() - 1) {
+                                _strVal = _strVal + _words[_i] + "\\n";
+                            }
+                            else {
+                                _strVal = _strVal + _words[_i] + " ";
+                            }
+                        }
                         i++;
+                        while(recordLines[i].find("StringEnd") == std::string::npos) {
+                            _strVal = _strVal + recordLines[i] + "\\n";
+                            i++;
+                        }
+                        std::cout << "reocrdLines1 : " << recordLines[i] << std::endl;
+                        std::stringstream _ss2(recordLines[i]);
+                        // 공백 분리 결과를 저장할 배열
+                        std::vector<std::string> _words2;
+                        std::string _word2;
+                        // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+                        while (getline(_ss2, _word2, ' ')){
+                            _words2.push_back(_word2);
+                        }
+                        int _i = 0;
+                        while(_words2[_i] != "StringEnd") {
+                            _strVal += _words2[_i];
+                            _strVal += " ";
+                            _i++;
+                        }
+                        _colVal = _words2[_words2.size() - 1];
+                        _lineVal = _words2[_words2.size() - 2];
+                        _ptrVal = _words2[_words2.size() - 3];
+                        _lenVal = _words[JUDGMENT_INDEX + 1];
+                        std::cout << "strVal : " << _strVal << std::endl;
                     }
-                    std::cout << "reocrdLines : " << recordLines[i] << std::endl;
-                    std::stringstream _ss2(recordLines[i]);
-                    // 공백 분리 결과를 저장할 배열
-                    std::vector<std::string> _words2;
-                    std::string _word2;
-                    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-                    while (getline(_ss2, _word2, ' ')){
-                        _words2.push_back(_word2);
+                    std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_words[1]);
+                    _resultWord.push_back(_words[2]);
+                    _resultWord.push_back(_strVal);
+                    _resultWord.push_back(_ptrVal);
+                    _resultWord.push_back(_lineVal);
+                    _resultWord.push_back(_colVal);
+                    _resultWord.push_back(_lenVal);
+                    _resultWord.push_back(_infoMessage);
+
+                    for(int i = 0; i < _resultWord.size(); i++) {
+                        std::cout << "result word : " << _resultWord[i] << std::endl;
                     }
-                    int _i = 0;
-                    while(_words2[_i] != "StringEnd") {
-                        _strVal += _words2[_i];
-                        _strVal += " ";
-                        _i++;
-                    }
-                    _colVal = _words2[_words2.size() - 1];
-                    _lineVal = _words2[_words2.size() - 2];
-                    _ptrVal = _words2[_words2.size() - 3];
-                    std::cout << "strVal : " << _strVal << std::endl;
+
+                    RecordData* _data = new RecordPrim();
+
+                    _data->InitRecordData(_resultWord);
+                    _data->recordType = RecordType::Prim;
+                    records.push_back(_data);
+                    _addIndex = records.size() - 1;
                 }
-                std::vector<std::string> _resultWord;
-                _resultWord.push_back(_words[1]);
-                _resultWord.push_back(_words[2]);
-                _resultWord.push_back(_strVal);
-                _resultWord.push_back(_ptrVal);
-                _resultWord.push_back(_lineVal);
-                _resultWord.push_back(_colVal);
+                else { // 문자열을 제외한 일반 타입
+                    std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_words[1]);
+                    _resultWord.push_back(_words[2]);
+                    _resultWord.push_back(_words[3]);
+                    _resultWord.push_back(_words[4]);
+                    _resultWord.push_back(_words[5]);
+                    _resultWord.push_back(_words[6]);
+                    _resultWord.push_back("4");
 
-                for(int i = 0; i < _resultWord.size(); i++) {
-                    std::cout << "result word : " << _resultWord[i] << std::endl;
+                    for(int i = 0; i < _resultWord.size(); i++) {
+                        std::cout << "result word : " << _resultWord[i] << std::endl;
+                    }
+
+                    RecordData* _data = new RecordPrim();
+
+                    _data->InitRecordData(_resultWord);
+                    _data->recordType = RecordType::Prim;
+                    records.push_back(_data);
+                    std::vector<std::string>().swap(_resultWord);
                 }
-
-                RecordData* _data = new RecordPrim();
-
-                _data->InitRecordData(_resultWord);
-                _data->recordType = RecordType::Prim;
-                records.push_back(_data);
-                _addIndex = records.size() - 1;
             }
         }
     }
+
+    std::cout << "record count : " << records.size() << std::endl;
     
     while (std::getline(srcStream, _line)) {
         codes.push_back(_line);
@@ -181,6 +239,7 @@ void App::Input() {
         else if(_input == "w") {
             std::cout << "Up" << std::endl;
             this->inputState = InputState::Up;
+            this->commandMessage = "up";
         }
         else if(_input == "a") {
             this->inputState = InputState::Left;
@@ -205,6 +264,7 @@ void App::Input() {
 
 void App::Update() {
     if(inputState == InputState::Up) {
+        this->commandMessage = "up";
         if(currentLine > 0) {
             std::string _eraseStr = codes[currentLine - 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
@@ -222,6 +282,7 @@ void App::Update() {
         }
     }
     else if(inputState == InputState::Down) {
+        this->commandMessage = "down";
         if(currentLine < codes.size() - 1) {
             std::string _eraseStr = codes[currentLine + 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
@@ -274,15 +335,19 @@ void App::Render() {
     std::cout << "+--------------------------------------------------------------------------+\n";
 
     std::cout << std::endl;
-    std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << "|                            Information meseeage                          |\n";
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
     if(FindRecord(currentLine + 1)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
-        this->recordType = records[FindRecordData(currentLine + 1)]->recordType;
-        systemMessage = records[FindRecordData(currentLine + 1)]->PrintRecordTable(commandMessage);
+        //std::cout << "find record data" << std::endl;
+        //std::cout << "current index : " << currentLine + 1 << std::endl;
+        int _findIndex = FindRecordData(currentLine + 1);
+        //std::cout << "find Index : " << _findIndex << std::endl;
+        //std::cout << "command message : " << commandMessage << std::endl;
+        //this->recordType = records[FindRecordData(currentLine + 1)]->recordType;
+        systemMessage = records[_findIndex]->PrintRecordTable(commandMessage);
         commandMessage = "";
     }
 
@@ -290,13 +355,10 @@ void App::Render() {
     std::cout << "+--------------------------------------------------------------------------+\n";
 
     std::cout << std::endl;
-    std::cout << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << "|                            System meseeage                               |\n";
     std::cout << "+--------------------------------------------------------------------------+\n";
-    std::cout << std::endl;
-    std::cout << "               " << systemMessage << std::endl;
-    std::cout << std::endl;
+    std::cout << "                        " << systemMessage << std::endl;
     std::cout << "+--------------------------------------------------------------------------+\n";
 }
 
@@ -313,6 +375,16 @@ bool App::FindRecord(int _line) {
         if(std::stoi(records[i]->line) == _line) return true;
     }
     return false;
+}
+
+int App::FindRecordDataStr(std::string _name) {
+    std::cout << "record size : " << records.size() << std::endl;
+    for(int i = records.size() - 1 ; i >= 0; i--) {
+        std::cout << "records name : " << records[i]->name << std::endl;
+        std::cout << "name : " << _name << std::endl;
+        if(records[i]->name == _name) return i;
+    }
+    return -1;
 }
 
 int App::FindRecordData(int _line) {

@@ -32,7 +32,10 @@ public: // main framework function
 private: // app class function
     void AddRecordTable(int);
     bool FindRecord(int);
+
+    int FindRecordDataStr(std::string);
     int FindRecordData(int);
+
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
 

@@ -1,25 +1,11 @@
-store arr_int int isArr 0 33 0x7ff7beea6400 9 7
-store arr_int int isArr 1 44 0x7ff7beea6404 9 7
-store arr_int int isArr 2 55 0x7ff7beea6408 9 7
-store arr_int int isArr 3 66 0x7ff7beea640c 9 7
-store arr_int int isArr 4 77 0x7ff7beea6410 9 7
-store arr_int int isArr 5 88 0x7ff7beea6414 9 7
-store arr_iint int isArr 0 0 123 0x7ff7beea55f0 10 7
-store arr_iint int isArr 0 1 456 0x7ff7beea55f4 10 7
-store arr_iint int isArr 0 2 789 0x7ff7beea55f8 10 7
-store arr_iint int isArr 1 0 321 0x7ff7beea5668 10 7
-store arr_iint int isArr 1 1 654 0x7ff7beea566c 10 7
-store arr_iint int isArr 1 2 987 0x7ff7beea5670 10 7
-store arr_iiiint int isArr 0 0 0 -1 0x7ff7bee9f830 11 7
-store arr_iiiint int isArr 0 0 1 -2 0x7ff7bee9f834 11 7
-store arr_iiiint int isArr 0 0 2 -3 0x7ff7bee9f838 11 7
-store str1 string StringStart /dev/urandom StringEnd 0x16fa7a430 12 22
-store str2 string StringStart Hello, World! StringEnd 0x16fa79a28 13 26
-store str3 string StringStart ddd
-ddd
-ddd
- StringEnd 0x16fa79a28 14 23
-store str4 string StringStart ddd
-ddd
-ddd
-ddd StringEnd 0x16fa79a28 15 23
+store retval int 0 0x16b87257c 0 0
+store tempstr string StringStart 5 11111 StringEnd 0x16b872560 8 20
+store tempstr string StringStart 5 32222 StringEnd 0x16b872560 9 11
+store tempstr string 2 A 0x16b872560 11 14
+load tempstr string 2 A 0x16b872560 15 6
+store tempstr string 5 G 0x16b872560 18 16
+store num1 int 44444 0x16b872550 20 5
+load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 21 14
+store tempstr string 7 Q 0x16b872560 27 12
+load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 28 14
+load retval int 0 0x16b87257c 32 1
