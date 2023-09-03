@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <unistd.h>
 #include <ncurses.h>
 
@@ -13,6 +14,8 @@
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
 #define TYPE_INDEX 2
+
+using namespace std;
 
 enum InputState {
     Stop, Up, Down, Right, Left, Command, WARN
@@ -55,6 +58,9 @@ public: // main framework variable
     std::vector<std::string> codes;
     std::vector<std::string> recordLines;
     std::vector<std::string> commands;
+
+    std::map<string, string> valShadowMemory;
+    std::map<string, string> ptrShadowMemroy;
 
     InputState inputState;
     RecordType recordType;

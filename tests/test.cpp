@@ -29,6 +29,9 @@ tempstr[7] = 'Q';
   {
 
   }
+
+  int *tempnum1;
+  tempnum1 = &num1;
 }
 
 

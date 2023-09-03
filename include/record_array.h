@@ -4,10 +4,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "record_data.h"
 #include "console_table.h"
 #include "console_table_row.h"
+
+using namespace std;
 
 struct ArrayStruct
 {
@@ -44,6 +47,8 @@ private:
     std::vector<std::string> array1;
     std::vector<std::vector<std::string> > array2;
     std::vector<std::vector<std::vector<std::string> > > array3;
+
+    std::map<std::string, std::string> shadowMemory;
 };
 
 #endif //RECORD_ARRAY_H

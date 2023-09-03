@@ -17,6 +17,17 @@ RecordArray::RecordArray(int _dimension) {
 }
 
 void RecordArray::InitArray() {
+    // 배열의 시작주소와 자료형 타입을 받아서 주소를 계산하는 코드를 작성
+    std::string _startPtr = "0x252d2da"; // 테스트를 위한 주소
+    int _arraySize = 10; // 배열의 크기
+    int _arrayTypeSize = 4; // 배열 타입 크기
+    int _value = 5;
+
+    for(int i = 0 ; i < _arraySize; i++) {
+        shadowMemory[AddHexaInt(_startPtr, i * _arrayTypeSize)] = std::to_string(_value);
+    }
+
+    
     std::cout << "Call InitArray func(RecordArray), dimension = " << dimension << std::endl;
     switch(dimension) {
     case 1: {
@@ -220,6 +231,9 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
                 //////////////////////////////////////////////////////////////////
             }
             //////////////////////////////////////////////////////////////////
+        }
+        else if(_message.find("findptr") != std::string::npos) {
+
         }
         else { // 정의되지 않은 명령어일 경우
 

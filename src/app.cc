@@ -55,7 +55,7 @@ void App::Init() {
     }
     
     int _addIndex = 0;
-    std::string _nameStr("");
+    std::string _lineStr("");
 
     for(int i = 0 ; i < recordLines.size(); i++) {
         _line = recordLines[i];
@@ -68,14 +68,14 @@ void App::Init() {
         while (getline(_ss, _word, ' ')){
             _words.push_back(_word);
         }
-        std::cout << "record line : " << _line << std::endl;
     
         if(_words[1] != "retval") {
-            if(_words[JUDGMENT_INDEX] == "isArr" ) {
-                if(_nameStr == _words[1]) {
+            if(_words[JUDGMENT_INDEX] == "isArr" ) { // 배열일 경우
+                if(_lineStr == _words[_words.size() - 2]) {
                     records[_addIndex]->UpdateRecordData(_words);
                 } else {
                     int _dimension = _words.size() - 8;
+                    valShadowMemory[_words[1]] = _words[_words.size() - 3];
 
                     RecordData* _data = new RecordArray(_dimension);
 
@@ -86,12 +86,11 @@ void App::Init() {
                     _data->InitRecordData(_words);
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
-                    _nameStr = _words[1];
+                    _lineStr = _words[_words.size() - 2];
                 }
             }
             else { // 일반 기록파일
                 if(_words[TYPE_INDEX] == "string") {
-
                     std::string _nameVal = "";
                     std::string _typeVal = "";
                     std::string _strVal = "";
@@ -129,7 +128,7 @@ void App::Init() {
                         _ptrVal = _words[_words.size() - 3];
                         _lenVal = records[_findIndex]->length;
                         if(stoi(records[_findIndex]->length) < _changeIndex) {
-                            _infoMessage = "문자열의 범위를 벗어난 요청입니다.";
+                            _infoMessage = "문자열의 범위 밖 요청입니다";
                         }
                     }
                     else {
@@ -192,6 +191,7 @@ void App::Init() {
                 else { // 문자열을 제외한 일반 타입
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
+                    if(_words[2] == "i32p") _words[2] = "int pointer";
                     _resultWord.push_back(_words[2]);
                     _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_words[4]);
@@ -215,7 +215,7 @@ void App::Init() {
     }
 
     std::cout << "record count : " << records.size() << std::endl;
-    
+
     while (std::getline(srcStream, _line)) {
         codes.push_back(_line);
         if(_line.find("main") != std::string::npos) {
@@ -344,11 +344,52 @@ void App::Render() {
         //std::cout << "find record data" << std::endl;
         //std::cout << "current index : " << currentLine + 1 << std::endl;
         int _findIndex = FindRecordData(currentLine + 1);
-        //std::cout << "find Index : " << _findIndex << std::endl;
-        //std::cout << "command message : " << commandMessage << std::endl;
-        //this->recordType = records[FindRecordData(currentLine + 1)]->recordType;
-        systemMessage = records[_findIndex]->PrintRecordTable(commandMessage);
-        commandMessage = "";
+        valShadowMemory.clear();
+        ptrShadowMemroy.clear();
+        for(int i = 0 ; i < _findIndex + 1; i++) {
+            valShadowMemory[records[i]->ptr] = records[i]->name;
+            ptrShadowMemroy[records[i]->ptr] = records[i]->value;
+        }
+        map<string, string>::iterator p;
+
+        for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
+            cout << "(" << p->first << "," << p->second << ")\n";
+        }
+
+        for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
+            cout << "(" << p->first << "," << p->second << ")\n";
+        }
+        if(commandMessage.find("findptr") != std::string::npos) {
+            cout << "findptr inside" << endl;
+            std::stringstream _cmdss(commandMessage);
+            // 공백 분리 결과를 저장할 배열
+            std::vector<std::string> _cmdWords;
+            std::string _cmdWord;
+            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+            while (getline(_cmdss, _cmdWord, ' ')){
+                _cmdWords.push_back(_cmdWord);
+            }
+
+            ConsoleTable _ct(BASIC);
+            _ct.SetPadding(1);
+            _ct.AddColumn("Name");
+            _ct.AddColumn("Ptr");
+            _ct.AddColumn("Value");
+
+            ConsoleTableRow* _entry = new ConsoleTableRow(3);
+            
+            _entry->AddEntry(valShadowMemory[_cmdWords[1]], 0);
+            _entry->AddEntry(_cmdWords[1], 1);
+            _entry->AddEntry(ptrShadowMemroy[_cmdWords[1]], 2);
+
+            _ct.AddRow(_entry);
+
+            _ct.PrintTable();
+        }
+        else {
+            systemMessage = records[_findIndex]->PrintRecordTable(commandMessage);
+            commandMessage = "";
+        }
     }
 
     std::cout << std::endl;
@@ -410,6 +451,7 @@ bool App::IsEqualData(std::string _str, std::string _line, std::string _col) {
 ///////////////////////////////Command method///////////////////////////////
 void App::InitCommand() {
     commands.push_back("mvarray");
+    commands.push_back("findptr");
 }
 bool App::FindCommand(std::string _command) {
     std::cout << "command : " << _command << std::endl;

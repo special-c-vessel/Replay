@@ -8,4 +8,5 @@ store num1 int 44444 0x16b872550 20 5
 load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 21 14
 store tempstr string 7 Q 0x16b872560 27 12
 load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 28 14
-load retval int 0 0x16b87257c 32 1
+store tempnum1 i32p 0x16b872550 0x16d8a52f8 34 12
+load retval int 0 0x16b87257c 35 1
