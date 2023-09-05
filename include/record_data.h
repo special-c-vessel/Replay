@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 
+#define ARRAY_TYPE_IDX 2
+
 enum RecordType {
     None,
     Array1,

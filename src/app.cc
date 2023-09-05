@@ -71,19 +71,12 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[JUDGMENT_INDEX] == "isArr" ) { // 배열일 경우
-                if(_lineStr == _words[_words.size() - 2]) {
+                if(_lineStr == _words[_words.size() - 2]) { // 같은 라인 번호인지를 확인
                     records[_addIndex]->UpdateRecordData(_words);
                 } else {
                     int _dimension = _words.size() - 8;
-                    valShadowMemory[_words[1]] = _words[_words.size() - 3];
-
-                    RecordData* _data = new RecordArray(_dimension);
-
-                    if(_dimension == 1) _data->recordType = RecordType::Array1;
-                    else if(_dimension == 2) _data->recordType = RecordType::Array2;
-                    else if(_dimension == 3) _data->recordType = RecordType::Array3;
-
-                    _data->InitRecordData(_words);
+                    RecordData* _data = new RecordArray(_words);
+                    _data->UpdateRecordData(_words);
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
                     _lineStr = _words[_words.size() - 2];

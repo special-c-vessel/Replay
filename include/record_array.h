@@ -24,10 +24,8 @@ struct ArrayStruct
 class RecordArray : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordArray(); // 일반 생성자
-    RecordArray(int); // 차원을 전달받는 생성자
+    RecordArray(std::vector<std::string>); // 차원을 전달받는 생성자
     ~RecordArray();
-private: // 동적 할당 메소드
-    void InitArray();
 public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
     void UpdateRecordData(std::vector<std::string>) override;
@@ -49,6 +47,8 @@ private:
     std::vector<std::vector<std::vector<std::string> > > array3;
 
     std::map<std::string, std::string> shadowMemory;
+    int shadowMemorySize = 0;
+    int arrayTypeSize = 0;
 };
 
 #endif //RECORD_ARRAY_H

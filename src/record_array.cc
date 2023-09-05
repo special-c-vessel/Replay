@@ -5,62 +5,14 @@ RecordArray::RecordArray() {
     currentPage = 1;
     prevPage = 1;
     std::cout << "Call Normal Constructor(RecordArray)" << std::endl;
-    InitArray();
 }
 
-RecordArray::RecordArray(int _dimension) {
-    std::cout << "Call Dimension Constructor(RecordArray), dimension = " << _dimension << std::endl;
-    dimension = _dimension;
+RecordArray::RecordArray(std::vector<std::string> _words) {
+    std::cout << "Call Dimension Constructor(RecordArray), dimension = " << std::endl;
     currentPage = 1;
     prevPage = 1;
-    InitArray();
-}
-
-void RecordArray::InitArray() {
-    // 배열의 시작주소와 자료형 타입을 받아서 주소를 계산하는 코드를 작성
-    std::string _startPtr = "0x252d2da"; // 테스트를 위한 주소
-    int _arraySize = 10; // 배열의 크기
-    int _arrayTypeSize = 4; // 배열 타입 크기
-    int _value = 5;
-
-    for(int i = 0 ; i < _arraySize; i++) {
-        shadowMemory[AddHexaInt(_startPtr, i * _arrayTypeSize)] = std::to_string(_value);
-    }
-
-    
-    std::cout << "Call InitArray func(RecordArray), dimension = " << dimension << std::endl;
-    switch(dimension) {
-    case 1: {
-        maxPageIndex = ((max_array1 % 100) / 10) +  1;
-        array1.resize(max_array1);
-        for(int i = 0; i < max_array1; i++) {
-            array1.push_back("0");
-        }
-        break;
-    }
-    case 2: {
-        maxPageIndex = ((max_array1 * max_array2) / 10) + 1;
-        array2.resize(max_array1);
-        for(int i = 0; i < max_array1; i++) {
-            array2[i].resize(max_array2);
-        }
-        break;
-    }
-    case 3: {
-        maxPageIndex = ((max_array1 * max_array2 * max_array3) / 10) + 1;
-        array3.resize(max_array1);
-        for(int i = 0; i < max_array1; i++) {
-            array3[i].resize(max_array2);
-            for(int j = 0; j < max_array2; j++) {
-                array3[i][j].resize(max_array3);
-                for(int z = 0; z < max_array3; z++) {
-                    array3[i][j][z] = " ";
-                }
-            }
-        }
-        break;
-    }
-    }
+    shadowMemorySize = 0;
+    InitRecordData(_words);
 }
 
 RecordArray::~RecordArray() {
@@ -82,42 +34,35 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     this->line = _words[_words.size() - 2];
     this->ptr = _words[_words.size() - 3];
 
-    std::cout << ptr << std::endl;
+    if(type == "int") {
+        arrayTypeSize = 4;
+    }
+    else {
+        arrayTypeSize = 1;
+    }
+    shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMemorySize ))] = _words[_words.size() - 4];
+    shadowMemorySize++;
 
-    UpdateRecordData(_words);
 }
 
 void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
     std::cout << "Call UpdateRecordData func(RecordArray), dimension = " << dimension << std::endl;
-    switch(dimension) {
-    case 1: {
-        std::cout << "one dimension" << std::endl;
-        int _arrayIndex = stoi(_words[4]);
-        array1[_arrayIndex] = _words[5];
-        break;
-    }
-    case 2: {
-        std::cout << "two dimension" << std::endl;
-        int _arrayIndex1 = stoi(_words[4]);
-        int _arrayIndex2 = stoi(_words[5]);
-        array2[_arrayIndex1][_arrayIndex2] = _words[6];
-        break;
-    }
-    case 3: {
-        std::cout << "three dimension" << std::endl;
-        int _arrayIndex1 = stoi(_words[4]);
-        int _arrayIndex2 = stoi(_words[5]);
-        int _arrayIndex3 = stoi(_words[6]);
-        std::cout << "one index : " << _arrayIndex1 << std::endl;
-        std::cout << "two index : " << _arrayIndex2 << std::endl;
-        std::cout << "three index : " << _arrayIndex3 << std::endl;
-
-        array3[_arrayIndex1][_arrayIndex2][_arrayIndex3] = _words[7];
-        break;
-    }
-    default:
-        std::cout << "default dimension" << std::endl;
-        break;
+    
+    int _idx = std::stoi(_words[_words.size() - 5]);
+    int _subIdx = shadowMemorySize - _idx;
+    
+    if(_subIdx < 0) {
+        _subIdx *= -1;
+        for(int i = 0; i < _subIdx; i++) {
+            if(i == _subIdx - 1) {
+                shadowMemory[(AddHexaInt(this->ptr, shadowMemorySize * arrayTypeSize * i))] = " ";
+                shadowMemorySize++;
+            }
+            else {
+                shadowMemory[(AddHexaInt(this->ptr, shadowMemorySize * arrayTypeSize))] = _words[_words.size() - 4];
+                shadowMemorySize++;
+            }
+        }
     }
 }
 
