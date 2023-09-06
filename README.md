@@ -14,7 +14,7 @@
 
 ### 명령어 목록
 
-1. findptr [pointer address] : 지정한 포인터 주소값의 저장되어 있는 값을 출력
-2. mvarray [index] : 배열의 지정한 인덱스의 값을 출력
+1. findptr [pointer address] : 지정한 포인터 주소값의 저장되어 있는 값을 출력 ex) findptr 0x25faddb2
+2. mvarray [index] : 배열의 지정한 인덱스의 값을 출력 ex) mvarray 10
 
 

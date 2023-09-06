@@ -24,7 +24,7 @@ struct ArrayStruct
 class RecordArray : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordArray(); // 일반 생성자
-    RecordArray(std::vector<std::string>); // 차원을 전달받는 생성자
+    RecordArray(std::vector<std::string>, std::vector<std::string>); // 차원을 전달받는 생성자
     ~RecordArray();
 public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
@@ -36,19 +36,13 @@ private: // 편의성 함수
     std::string AddHexaInt(std::string, int);
 
 private:
-    int dimension = 0;
     int currentPage = 0;
     int prevPage = 0;
-    int max_array1 = 47;
-    int max_array2 = 18;
-    int max_array3 = 17;
-    std::vector<std::string> array1;
-    std::vector<std::vector<std::string> > array2;
-    std::vector<std::vector<std::vector<std::string> > > array3;
+    int shadowMaxIdx = 0;
+    int arrayTypeSize = 0;
 
     std::map<std::string, std::string> shadowMemory;
-    int shadowMemorySize = 0;
-    int arrayTypeSize = 0;
+    std::vector<int> dimension;
 };
 
 #endif //RECORD_ARRAY_H

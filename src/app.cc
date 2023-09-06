@@ -75,7 +75,7 @@ void App::Init() {
                     records[_addIndex]->UpdateRecordData(_words);
                 } else {
                     int _dimension = _words.size() - 8;
-                    RecordData* _data = new RecordArray(_words);
+                    RecordData* _data = new RecordArray(_words, _words);
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
                     _addIndex = records.size() - 1;

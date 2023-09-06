@@ -1,68 +1,82 @@
 #include "record_array.h"
 
 RecordArray::RecordArray() {
-    dimension = 1;
+    std::cout << "Call Normal Constructor(RecordArray)" << std::endl;
     currentPage = 1;
     prevPage = 1;
-    std::cout << "Call Normal Constructor(RecordArray)" << std::endl;
 }
 
-RecordArray::RecordArray(std::vector<std::string> _words) {
+RecordArray::RecordArray(std::vector<std::string> _words, std::vector<std::string> _dimension) {
     std::cout << "Call Dimension Constructor(RecordArray), dimension = " << std::endl;
     currentPage = 1;
     prevPage = 1;
-    shadowMemorySize = 0;
+    shadowMaxIdx = 0;
+
+    for(int i = 0; i < _dimension.size(); i++) {
+        dimension.push_back(std::stoi(_dimension[i]));
+    }
+
     InitRecordData(_words);
 }
 
 RecordArray::~RecordArray() {
-    switch(dimension) {
-    case 1:
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    }
+    
 }
 
-void RecordArray::InitRecordData(std::vector<std::string> _words) {
-    std::cout << "Call InitRecordData func(RecordArray), dimension = " << dimension << std::endl;
-    this->name = _words[1];
-    this->type = _words[2];
-    this->col = _words[_words.size() - 1];
-    this->line = _words[_words.size() - 2];
-    this->ptr = _words[_words.size() - 3];
+/*
+words[0] - dimension
+words[1] - name
+words[2] - type
+words[3] - isArr
+words[4] - idx
+words[5] - value
+words[6] - ptr
+words[7] - line
+words[8] - col
+*/
 
+void RecordArray::InitRecordData(std::vector<std::string> _words) {
+    std::cout << "Call InitRecordData func(RecordArray), dimension = " <<  dimension.size() << std::endl;
+    name = _words[1];
+    type = _words[2];
+    col = _words[_words.size() - 1];
+    line = _words[_words.size() - 2];
+    ptr = _words[_words.size() - 3];
+
+    /*
     if(type == "int") {
         arrayTypeSize = 4;
     }
     else {
         arrayTypeSize = 1;
     }
-    shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMemorySize ))] = _words[_words.size() - 4];
-    shadowMemorySize++;
+
+    */
+    arrayTypeSize = 4;
+    shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx))] = _words[_words.size() - 4];
 
 }
 
 void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
-    std::cout << "Call UpdateRecordData func(RecordArray), dimension = " << dimension << std::endl;
+    std::cout << "Call UpdateRecordData func(RecordArray), dimension = " << dimension.size() << std::endl;
+    int _idx = std::stoi(_words[4]);
+    int _subIdx = shadowMaxIdx - _idx;
     
-    int _idx = std::stoi(_words[_words.size() - 5]);
-    int _subIdx = shadowMemorySize - _idx;
-    
-    if(_subIdx < 0) {
+    if(_subIdx < 0) { // 기존 shadow memory에 추가를 하지 않을 경우
         _subIdx *= -1;
         for(int i = 0; i < _subIdx; i++) {
             if(i == _subIdx - 1) {
-                shadowMemory[(AddHexaInt(this->ptr, shadowMemorySize * arrayTypeSize * i))] = " ";
-                shadowMemorySize++;
+                shadowMaxIdx++;
+                shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * arrayTypeSize)] = _words[_words.size() - 4];
             }
             else {
-                shadowMemory[(AddHexaInt(this->ptr, shadowMemorySize * arrayTypeSize))] = _words[_words.size() - 4];
-                shadowMemorySize++;
+                shadowMaxIdx++;
+                shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * arrayTypeSize)] = " ";
             }
         }
+    }
+    else {
+        shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * _idx)] = _words[5]; 
     }
 }
 
@@ -71,22 +85,6 @@ void RecordArray::PrintRecordData() {
     std::cout << "\033[1m" << "\t\t\tval type : " << this->type << "\033[0m" << std::endl;
     std::cout << "\033[1m" << "\t\t\tval value : " << this->ptr << "\033[0m" << std::endl;
     std::cout << "\033[1m" << "\t\t\tval line : " << this->line << "\033[0m" << std::endl;
-    switch(dimension) {
-    case 1: {
-        for(int i = 0 ; i < max_array1; i++) {
-            std::cout << "value[" << i << "] : " << array1[i] << std::endl;
-        }
-        break;
-    }
-    case 2: {
-        for(int i = 0 ; i < max_array1; i++) {
-            for(int j = 0; j < max_array2; j++) {
-                std::cout << "value[" << i << "][" << j << "] : " << array2[i][j] << std::endl;
-            }
-        }
-        break;
-    }
-    }
     std::cout << std::endl;
 }
 
@@ -117,62 +115,16 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
             //////////////////////////////////////////////////////////////////
             
             /////////////// 명령어가 인덱스의 수를 제대로 전달했는지 검사 ///////////////
-            if (_words.size() > dimension + 1) { // 명령어의 수가 차원보다 한개 높은지 검사
+            if (_words.size() > dimension.size() + 1) { // 명령어의 수가 차원보다 한개 높은지 검사
                 _returnMessage =  "WARNING 배열의 차원과 명령어가 맞지 않습니다."; // 잘못된 인덱스의 수
             }
             else {
                 ////////////////////////// 차원에 따른 처리 //////////////////////////
-                if(_words.size() == 2) { // 일차원 배열
-                    int _assignIndex = std::stoi(_words[1]);
-                    if(_assignIndex < max_array1) {
-                        currentPage = (_assignIndex / 10) + 1;
-                    }
-                    else {
-                        currentPage = prevPage;
-                        _returnMessage = "WARNING 배열의 범위를 벗어난 값입니다.";
-                    }
+                int _assignIndex = 1;
+                for(int i = 1; i < _words.size(); i++) {
+                    _assignIndex *= (std::stoi(_words[i]) + 1);
                 }
-                else if(_words.size() == 3) { // 이차원 배열
-                    int _assignIndex1 = std::stoi(_words[1]);
-                    int _assignIndex2 = std::stoi(_words[2]);
-                    if(_assignIndex1 < max_array1 && _assignIndex2 < max_array2) {
-                        int _index = 0;
-                        for(int i = 0; i < max_array1; i++) {
-                            for(int j = 0; j < max_array2; j++) {
-                                if(i == _assignIndex1 && j == _assignIndex2) goto endLoop2;
-                                else _index++;
-                            }   
-                        }
-                        endLoop2:
-                        currentPage = (_index / 10) + 1;
-                    }
-                    else {
-                        currentPage = prevPage;
-                        _returnMessage = "WARNING 배열의 범위를 벗어난 값입니다.";
-                    }
-                }
-                else if(_words.size() == 4) { // 삼차원 배열
-                    int _assignIndex1 = std::stoi(_words[1]);
-                    int _assignIndex2 = std::stoi(_words[2]);
-                    int _assignIndex3 = std::stoi(_words[3]);
-                    if(_assignIndex1 < max_array1 && _assignIndex2 < max_array2 && _assignIndex3 < max_array3) {
-                        int _index = 0;
-                        for(int i = 0; i < max_array1; i++) {
-                            for(int j = 0; j < max_array2; j++) {
-                                for(int z=  0; z < max_array3; z++) {
-                                    if(i == _assignIndex1 && j == _assignIndex2 && z == _assignIndex3) goto endLoop3;
-                                    else _index++;
-                                }
-                            }   
-                        }
-                        endLoop3:
-                        currentPage = (_index / 10) + 1;
-                    }
-                    else {
-                        currentPage = prevPage;
-                        _returnMessage = "WARNING 배열의 범위를 벗어난 값입니다.";
-                    }
-                }
+                currentPage = (_assignIndex / 10) + 1;
                 //////////////////////////////////////////////////////////////////
             }
             //////////////////////////////////////////////////////////////////
@@ -191,7 +143,32 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
     ct.AddColumn("Type");
     ct.AddColumn("Value");
     ct.AddColumn("Ptr");
-    
+
+    std::vector<ArrayStruct> _arrays;
+    int _arrayCnt = 0;
+    for(int i = 0; i < dimension.size(); i++) {
+        for(int _idx = 0; i < dimension[i]; _idx++) {
+            ArrayStruct _arrayStruct;
+            _arrayStruct.arrayName = this->name;
+            _arrayStruct.arrayType = this->type;
+            _arrayStruct.arrayValue = this->shadowMemory[AddHexaInt(this->ptr, _arrayCnt * arrayTypeSize)];
+            _arrayStruct.arrayPtr = AddHexaInt(this->ptr, _arrayCnt * arrayTypeSize);
+            //_arrayStruct.arrayIndex.push_back(s)
+            _arrays.push_back(_arrayStruct);
+        }
+    }
+    /*
+    for(int i = 0; i < max_array1; i++) {
+        ArrayStruct _arrayStruct;
+        _arrayStruct.arrayName = this->name;
+        _arrayStruct.arrayType = this->type;
+        _arrayStruct.arrayValue = array1[i];
+        _arrayStruct.arrayPtr = AddHexaInt(this->ptr, i * 4);
+        _arrayStruct.arrayIndex.push_back(std::to_string(i));
+        _arrays.push_back(_arrayStruct);
+    }
+    */
+    /*
     switch(this->dimension) {
     case 1: {
         std::vector<ArrayStruct> _arrays;
@@ -300,7 +277,7 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
         break;
     }
     }
-
+    */
     prevPage = currentPage;
     return _returnMessage;
 }

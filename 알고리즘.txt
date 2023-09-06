@@ -3,10 +3,45 @@
 3 20 ~ 29 = (3 * 10 - 10) ~ (3 * 10 - 1)
 4 30 ~ 39 = (4 * 10 - 10) ~ (4 * 10 - 1)
 
-
 max array 10
 max array 20
 
 5 10
 
 20
+
+shadow memory
+0x1 20 idx = 0, shadowMaxIdx = 0
+0x2 20 idx = 1, shadowMaxIdx = 1
+0x3 30 idx = 2, shadowMaxIdx = 2
+
+==========================================================
+input shadowMemory 0x8 24 idx = 7 shadowMaxIdx = 2
+_subIdx = 2 - 7 = -5 * -1 = 5
+
+반복문이 4번 반복(0 <= i <= 4)
+- 첫번째 반복(i = 0) shadowMaxIdx = 3 shadowMemory[0x4, " "]
+- 두번째 반복(i = 1) shadowMaxIdx = 4 shadowMemory[0x5, " "]
+- 세번째 반복(i = 2) shadowMaxIdx = 5 shadowMemory[0x6, " "]
+- 네번째 반복(i = 3) shadowMaxIdx = 6 shadowMemory[0x7, " "]
+- 다섯번째 반복(i = 4) shadowMaxIdx = 7 shadowMemory[0x8, 24]
+==========================================================
+input shadowMemory 0x4 24 idx = 3 shadowMaxIdx = 2
+_subIdx = 2 - 3 = -1 * -1 = 1
+
+반복문이 1번 반복
+- 첫번째 반복(i = 0) shadowMaxIdx = 3 shadowMemory[0x4, 24]
+==========================================================
+input shadowMemory 0x2 24 idx = 1 shadowMaxIdx = 2
+_subIdx = 2 - 1 = 1
+
+반복문이 1번 반복
+- 첫번쨰 반복(i = 0) shadowMaxIdx = 2 shadowMemory[0x2, 24]
+==========================================================
+input shadowMemory 0x3 24 idx = 2 shadowMaxIdx = 2
+_subIdx = 2 - 2 = 0
+
+반복문이 1번 반복
+- 첫번쨰 반복(i = 0) shadowMaxIdx = 2 shadowMemory[0x3, 24]
+==========================================================
+ㄴ _subIdx < 0 ? 반복문 필요 : 반복문 불필요
