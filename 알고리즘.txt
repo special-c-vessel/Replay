@@ -45,3 +45,15 @@ _subIdx = 2 - 2 = 0
 - 첫번쨰 반복(i = 0) shadowMaxIdx = 2 shadowMemory[0x3, 24]
 ==========================================================
 ㄴ _subIdx < 0 ? 반복문 필요 : 반복문 불필요
+
+배열 이동 명령어
+max_array1 = 14, max_array2 = 10, max_array3 = 4
+
+mvarray 10 5 3, _assignIndex = 1, currentPage = 1, _index = 
+_index = (10 - 1 * max_array2 * max_array3) + (5 - 1 * max_array3) + (4 - 1)
+mvarray 5, _assignIndex = 6, currentPage = 1
+mvarray 0 5
+mvarray 5 5
+mvarray 0 0 5
+mvarray 0 5 5
+mvarray 5 5 5

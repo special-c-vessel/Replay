@@ -9,6 +9,7 @@
 #include "record_data.h"
 #include "console_table.h"
 #include "record_array.h"
+#include "record_vector.h"
 #include "record_prim.h"
 
 #define CODE_SHOW_RANGE 10

@@ -74,8 +74,24 @@ void App::Init() {
                 if(_lineStr == _words[_words.size() - 2]) { // 같은 라인 번호인지를 확인
                     records[_addIndex]->UpdateRecordData(_words);
                 } else {
-                    int _dimension = _words.size() - 8;
-                    RecordData* _data = new RecordArray(_words, _words);
+                    int _dimensionSize = _words.size() - 8;
+                    std::vector<std::string> _dimension;
+                    for(int i = 0; i < _dimensionSize; i++) {
+                        _dimension.push_back(_words[i + 4]);
+                    }
+
+                    RecordData* _data = new RecordArray(_words, _dimension);
+                    _data->UpdateRecordData(_words);
+                    records.push_back(_data);
+                    _addIndex = records.size() - 1;
+                    _lineStr = _words[_words.size() - 2];
+                }
+            }
+            else if(_words[1] == "push_back" ) { // 벡터일 경우
+                if(_lineStr == _words[_words.size() - 2]) { 
+                    records[_addIndex]->UpdateRecordData(_words);
+                } else {
+                    RecordData* _data = new RecordVector();
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
@@ -184,7 +200,7 @@ void App::Init() {
                 else { // 문자열을 제외한 일반 타입
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
-                    if(_words[2] == "i32p") _words[2] = "int pointer";
+                    if(_words[2] == "i32p") _words[2] = "int pointer"; // 임시
                     _resultWord.push_back(_words[2]);
                     _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_words[4]);
