@@ -40,8 +40,7 @@ private:
     int prevPage = 0;
     int shadowMaxIdx = 0;
     int arrayTypeSize = 0;
-
-    std::map<std::string, std::string> shadowMemory;
+    
     std::vector<int> dimension;
 };
 

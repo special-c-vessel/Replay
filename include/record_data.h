@@ -44,6 +44,7 @@ public:
 	std::string line;
 	std::string col;
     std::string length;
+    std::string dataFunc;
 
     RecordType recordType;
 
@@ -51,6 +52,8 @@ public:
     
     // 해당 기록파일의 특이 정보를 가지고 있는 문자열
     std::string infoMessage;
+    
+    std::map<std::string, std::string> shadowMemory;
 };
 
 #endif //RECORD_DATA_H

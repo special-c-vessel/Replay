@@ -7,19 +7,42 @@ RecordVector::RecordVector() {
     shadowMaxIdx = 0;
 }
 
+RecordVector::RecordVector(std::vector<std::string> _words) {
+    std::cout << "Call Normal Constructor(RecordVector)" << std::endl;
+    currentPage = 1;
+    prevPage = 1;
+    shadowMaxIdx = 0;
+
+    InitRecordData(_words);
+}
+
+
 RecordVector::~RecordVector() {
     
 }
 
 void RecordVector::InitRecordData(std::vector<std::string> _words) {
     std::cout << "Call InitRecordData func(RecordVector)" << std::endl;
-    name = _words[1];
-    type = _words[2];
+
+    std::stringstream _ss(_words[2]);
+    // 공백 분리 결과를 저장할 배열
+    std::vector<std::string> _names;
+    std::string _word;
+    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+    while (getline(_ss, _word, '_')){
+        _names.push_back(_word);
+    }
+
+    dataFunc = _names[0];
+    name = _names[1];
+    type = _words[3];
     col = _words[_words.size() - 1];
     line = _words[_words.size() - 2];
     ptr = _words[_words.size() - 3];
+    value = _words[_words.size() - 4];
 
     arrayTypeSize = 4;
+
     shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx))] = _words[_words.size() - 4];
 
 }
@@ -57,38 +80,31 @@ void RecordVector::PrintRecordData() {
 
 std::string RecordVector::PrintRecordTable(std::string _message) {
     std::string _returnMessage;
-
-    if(_message == "left") { // 페이지 왼쪽으로 이동
-        if(currentPage > 1) { // 현재 페이지가 1일 경우 첫번째 페이지이므로 이동 불가능
-            currentPage--;
-        }
-    }
-    else if(_message == "right") { // 페이지를 오른쪽으로 이동
-        if(currentPage < maxPageIndex) { // 현재 페이지가 1일 경우 첫번째 페이지이므로 이동 불가능
-            currentPage++;
-        }
-    }
-    else { // 명령어 또는 정의되지 않은 명령어
-        if(_message.find("mvarray") != std::string::npos) { // 정의된 명령어일 경우
-            //////////////////////////// 명령어 분리 ////////////////////////////
-            std::stringstream _ss(_message);
-            // 공백 분리 결과를 저장할 배열
-            std::vector<std::string> _words;
-            std::string _word;
-            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-            while (getline(_ss, _word, ' ')){
-                _words.push_back(_word);
-            }
-            //////////////////////////////////////////////////////////////////
-        }
-    }
+    std::cout << "Call PrintRecordTable func(RecordVector)" << std::endl;
 
     ConsoleTable ct(BASIC);
     ct.SetPadding(1);
+    ct.AddColumn("Function");
     ct.AddColumn("Name");
     ct.AddColumn("Type");
     ct.AddColumn("Value");
     ct.AddColumn("Ptr");
+    ct.AddColumn("Index");
+
+    int _tableIdx = 0;
+
+    for (auto iter = shadowMemory.begin(); iter != shadowMemory.end(); ++iter){
+        ConsoleTableRow* _entry = new ConsoleTableRow(6);
+        _entry->AddEntry(this->dataFunc, 0);
+        _entry->AddEntry(this->name, 1);
+        _entry->AddEntry(this->type, 2);
+        _entry->AddEntry(iter->second, 3);
+        _entry->AddEntry(iter->first, 4);
+        _entry->AddEntry(std::to_string(_tableIdx), 5);
+        _tableIdx++;
+        ct.AddRow(_entry);
+    }
+
     ct.PrintTable();
     
     prevPage = currentPage;

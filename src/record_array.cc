@@ -54,7 +54,6 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     */
     arrayTypeSize = 4;
     shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx))] = _words[_words.size() - 4];
-
 }
 
 void RecordArray::UpdateRecordData(std::vector<std::string> _words) {

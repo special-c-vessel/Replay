@@ -88,15 +88,29 @@ void App::Init() {
                 }
             }
             else if(_words[1] == "push_back" ) { // 벡터일 경우
-                if(_lineStr == _words[_words.size() - 2]) { 
-                    records[_addIndex]->UpdateRecordData(_words);
-                } else {
-                    RecordData* _data = new RecordVector();
+                /* 개발중
+                int _findIdx = -1;
+                for(int i = records.size(); i >= 0; i--) {
+                    std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                    if(_comparisonStr == _words[2]) {
+                        _findIdx = i;
+                        break;
+                    }
+                }
+                if(_findIdx != -1) { 
+                    //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
+                    RecordData* _data = new RecordVector(_words);
+                    _data->shadowMemory = records[_findIdx]->shadowMemory;
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
-                    _addIndex = records.size() - 1;
-                    _lineStr = _words[_words.size() - 2];
+
+                } else {
+                    std::cout << "vector recordata create" << std::endl;
+                    RecordData* _data = new RecordVector(_words);
+                    _data->UpdateRecordData(_words);
+                    records.push_back(_data);
                 }
+                */
             }
             else { // 일반 기록파일
                 if(_words[TYPE_INDEX] == "string") {

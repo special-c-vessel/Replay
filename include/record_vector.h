@@ -15,6 +15,7 @@ using namespace std;
 class RecordVector : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordVector(); // 일반 생성자
+    RecordVector(std::vector<std::string>);
     ~RecordVector();
 public: // 오버라이드 함수
     void InitRecordData(std::vector<std::string>) override;
@@ -30,8 +31,6 @@ private:
     int prevPage = 0;
     int shadowMaxIdx = 0;
     int arrayTypeSize = 0;
-
-    std::map<std::string, std::string> shadowMemory;
 };
 
 #endif //RECORD_VECTOR_H
