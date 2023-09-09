@@ -22,7 +22,7 @@ RecordVector::~RecordVector() {
 }
 
 void RecordVector::InitRecordData(std::vector<std::string> _words) {
-    std::cout << "Call InitRecordData func(RecordVector)" << std::endl;
+    std::cout << "===========Call InitRecordData func(RecordVector)===========" << std::endl;
 
     std::stringstream _ss(_words[2]);
     // 공백 분리 결과를 저장할 배열
@@ -32,6 +32,12 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     while (getline(_ss, _word, '_')){
         _names.push_back(_word);
     }
+    std::cout << "RecordVector Initialization Info" << std::endl;
+    std::cout << "dataFunc : " << _names[0] << std::endl;
+    std::cout << "name : " << _names[1] << std::endl;
+    std::cout << "type : " << _words[3] << std::endl;
+    std::cout << "ptr : " << _words[_words.size() - 3] << std::endl;
+    std::cout << "value : " << _words[_words.size() - 4] << std::endl;
 
     dataFunc = _names[0];
     name = _names[1];
@@ -40,34 +46,26 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     line = _words[_words.size() - 2];
     ptr = _words[_words.size() - 3];
     value = _words[_words.size() - 4];
-
     arrayTypeSize = 4;
 
-    shadowMemory[(AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx))] = _words[_words.size() - 4];
-
+    std::cout << "============================================================" << std::endl;
 }
 
 void RecordVector::UpdateRecordData(std::vector<std::string> _words) {
-    std::cout << "Call UpdateRecordData func(RecordVector)" << std::endl;
-    int _idx = std::stoi(_words[4]);
-    int _subIdx = shadowMaxIdx - _idx;
+    std::cout << "===========Call UpdateRecordData func(RecordVector)===========" << std::endl;
     
-    if(_subIdx < 0) { 
-        _subIdx *= -1;
-        for(int i = 0; i < _subIdx; i++) {
-            if(i == _subIdx - 1) {
-                shadowMaxIdx++;
-                shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * arrayTypeSize)] = _words[_words.size() - 4];
-            }
-            else {
-                shadowMaxIdx++;
-                shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * arrayTypeSize)] = " ";
-            }
-        }
-    }
-    else {
-        shadowMemory[AddHexaInt(this->ptr, shadowMaxIdx * _idx)] = _words[5]; 
-    }
+    std::string _shadowMemoryStr = (AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx));
+    shadowMaxIdx++;
+    
+    PrintShadowMemory();
+
+    std::cout << "Shadow memory str : " << _shadowMemoryStr << std::endl;
+    std::cout << "Value : " << _words[_words.size() - 4] << std::endl;
+
+    shadowMemory[_shadowMemoryStr] = _words[_words.size() - 4];
+
+    PrintShadowMemory();
+    std::cout << "============================================================" << std::endl;
 }
 
 void RecordVector::PrintRecordData() {
@@ -79,8 +77,47 @@ void RecordVector::PrintRecordData() {
 }
 
 std::string RecordVector::PrintRecordTable(std::string _message) {
-    std::string _returnMessage;
-    std::cout << "Call PrintRecordTable func(RecordVector)" << std::endl;
+   std::string _returnMessage;
+
+    if(_message == "left") { // 페이지 왼쪽으로 이동
+        if(currentPage > 1) { // 현재 페이지가 1일 경우 첫번째 페이지이므로 이동 불가능
+            currentPage--;
+        }
+    }
+    else if(_message == "right") { // 페이지를 오른쪽으로 이동
+        if(currentPage < maxPageIndex) { // 현재 페이지가 1일 경우 첫번째 페이지이므로 이동 불가능
+            currentPage++;
+        }
+    }
+    else { // 명령어 또는 정의되지 않은 명령어
+        if(_message.find("mvindex") != std::string::npos) { // 정의된 명령어일 경우
+            //////////////////////////// 명령어 분리 ////////////////////////////
+            std::stringstream _ss(_message);
+            // 공백 분리 결과를 저장할 배열
+            std::vector<std::string> _words;
+            std::string _word;
+            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+            while (getline(_ss, _word, ' ')){
+                _words.push_back(_word);
+            }
+            //////////////////////////////////////////////////////////////////
+            
+            /////////////// 명령어가 인덱스의 수를 제대로 전달했는지 검사 ///////////////
+            if (_words.size() != 2) { // 명령어의 수가 차원보다 한개 높은지 검사
+                _returnMessage =  "WARNING 명령어의 인덱싱이 올바르지 않습니다."; // 잘못된 인덱스의 수
+            }
+            else {
+                ////////////////////////// 차원에 따른 처리 //////////////////////////
+                int _assignIndex = std::stoi(_words[2]);
+                currentPage = (_assignIndex / 10) + 1;
+                //////////////////////////////////////////////////////////////////
+            }
+            //////////////////////////////////////////////////////////////////
+        }
+        else { // 정의되지 않은 명령어일 경우
+
+        }
+    }
 
     ConsoleTable ct(BASIC);
     ct.SetPadding(1);
@@ -91,20 +128,36 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
     ct.AddColumn("Ptr");
     ct.AddColumn("Index");
 
-    int _tableIdx = 0;
-
+    std::vector<VectorStruct> _vectors;
     for (auto iter = shadowMemory.begin(); iter != shadowMemory.end(); ++iter){
-        ConsoleTableRow* _entry = new ConsoleTableRow(6);
-        _entry->AddEntry(this->dataFunc, 0);
-        _entry->AddEntry(this->name, 1);
-        _entry->AddEntry(this->type, 2);
-        _entry->AddEntry(iter->second, 3);
-        _entry->AddEntry(iter->first, 4);
-        _entry->AddEntry(std::to_string(_tableIdx), 5);
-        _tableIdx++;
-        ct.AddRow(_entry);
+        VectorStruct _vectorStruct;
+        _vectorStruct.vectorPtr = iter->first;
+        _vectorStruct.vectorValue = iter->second;
+        _vectors.push_back(_vectorStruct);
     }
 
+    for(int i = 0 ; i < _vectors.size(); i++) {
+        _vectors[i].vectorFunc = this->dataFunc;
+        _vectors[i].vectorName = this->name;
+        _vectors[i].vectorType = this->type;
+        _vectors[i].vectorIndex = std::to_string(i);
+    }
+
+    int _startIndex = (currentPage * 10) - 10;
+    int _endIndex = (currentPage * 10);
+    if(_startIndex > _vectors.size() - 1) _startIndex = _vectors.size() - 1;
+    if(_endIndex > _vectors.size()) _endIndex = _vectors.size();
+    for(int i = _startIndex ; i < _endIndex; i++) {
+        ConsoleTableRow* entry = new ConsoleTableRow(6);
+        entry->AddEntry(_vectors[i].vectorFunc, 0);
+        entry->AddEntry(_vectors[i].vectorName, 1);
+        entry->AddEntry(_vectors[i].vectorType, 2);
+        entry->AddEntry(_vectors[i].vectorValue, 3);
+        entry->AddEntry(_vectors[i].vectorPtr, 4);
+        entry->AddEntry(_vectors[i].vectorIndex, 5);
+            
+        ct.AddRow(entry);
+    }
     ct.PrintTable();
     
     prevPage = currentPage;
@@ -120,17 +173,44 @@ bool RecordVector::IsNumber(std::string const &_str) {
 }
 
 std::string RecordVector::AddHexaInt(std::string _hexaStr, int _addVal) {
-    std::string pureHex = _hexaStr.substr(2);
+    std::string convertedHexStr = _hexaStr;
+    if(_addVal != 0) {
+        std::string pureHex = _hexaStr.substr(2);
 
-    // "0x" 포함 16진수 문자열을 int 형으로 변환
-    unsigned long long intVal = std::stoull(pureHex, nullptr, 16);
+        // "0x" 포함 16진수 문자열을 int 형으로 변환
+        unsigned long long intVal = std::stoull(pureHex, nullptr, 16);
 
-    intVal += _addVal;
+        intVal += _addVal;
 
-    // int 값을 다시 16진수 문자열로 변환
-    std::stringstream ss;
-    ss << "0x" << std::hex << intVal;
-    std::string convertedHexStr = ss.str();
+        // int 값을 다시 16진수 문자열로 변환
+        std::stringstream ss;
+        ss << "0x" << std::hex << intVal;
+        convertedHexStr = ss.str();
+    }
 
     return convertedHexStr;
+}
+
+void RecordVector::SetShadowMemory(std::map<std::string, std::string> _shadowMemory) {
+    this->shadowMemory = _shadowMemory;
+    this->shadowMaxIdx = this->shadowMemory.size();
+    PrintShadowMemory();
+}
+
+std::map<std::string, std::string> RecordVector::GetShadowMemory() {
+    return this->shadowMemory;
+}
+
+void RecordVector::PrintShadowMemory() {
+    for (auto iter = shadowMemory.begin() ; iter !=  shadowMemory.end(); iter++) {
+        std::cout << "Shadow Memory : " << iter->first << "," << iter->second << std::endl;
+    }
+}
+
+void RecordVector::SetShadowMemorySize(int _size) {
+    this->shadowMaxIdx = _size;
+}
+
+int RecordVector::GetShadowMemorySize() {
+    return this->shadowMaxIdx;
 }

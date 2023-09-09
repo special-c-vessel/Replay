@@ -40,8 +40,9 @@ private:
     int prevPage = 0;
     int shadowMaxIdx = 0;
     int arrayTypeSize = 0;
-    
+
     std::vector<int> dimension;
+    std::map<std::string, std::string> shadowMemory;
 };
 
 #endif //RECORD_ARRAY_H

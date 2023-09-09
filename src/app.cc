@@ -88,19 +88,22 @@ void App::Init() {
                 }
             }
             else if(_words[1] == "push_back" ) { // 벡터일 경우
-                /* 개발중
+                std::cout << "vector push back data" << std::endl;
                 int _findIdx = -1;
-                for(int i = records.size(); i >= 0; i--) {
+                for(int i = records.size() - 1; i >= 0; i--) {
                     std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
                     if(_comparisonStr == _words[2]) {
                         _findIdx = i;
+                        std::cout << "_findIdx : " << _findIdx << std::endl;
                         break;
                     }
                 }
                 if(_findIdx != -1) { 
+                    std::cout << "detect vector record data" << std::endl;
                     //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                     RecordData* _data = new RecordVector(_words);
-                    _data->shadowMemory = records[_findIdx]->shadowMemory;
+                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
+                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
 
@@ -110,7 +113,6 @@ void App::Init() {
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
                 }
-                */
             }
             else { // 일반 기록파일
                 if(_words[TYPE_INDEX] == "string") {
@@ -369,11 +371,15 @@ void App::Render() {
         int _findIndex = FindRecordData(currentLine + 1);
         valShadowMemory.clear();
         ptrShadowMemroy.clear();
-        for(int i = 0 ; i < _findIndex + 1; i++) {
-            valShadowMemory[records[i]->ptr] = records[i]->name;
-            ptrShadowMemroy[records[i]->ptr] = records[i]->value;
-        }
         map<string, string>::iterator p;
+
+        for(int i = 0 ; i < _findIndex + 1; i++) {
+            std::map<std::string, std::string> _shadowMem = records[i]->GetShadowMemory();
+            for (p = _shadowMem.begin(); p != _shadowMem.end(); ++p) {
+                valShadowMemory[p->first] = records[i]->name;
+                ptrShadowMemroy[p->first] = p->second;
+            }
+        }
 
         for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
@@ -475,6 +481,7 @@ bool App::IsEqualData(std::string _str, std::string _line, std::string _col) {
 void App::InitCommand() {
     commands.push_back("mvarray");
     commands.push_back("findptr");
+    commands.push_back("mvindex");
 }
 bool App::FindCommand(std::string _command) {
     std::cout << "command : " << _command << std::endl;

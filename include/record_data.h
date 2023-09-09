@@ -2,6 +2,7 @@
 #define RECORD_DATA_H
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 
 #define ARRAY_TYPE_IDX 2
@@ -36,6 +37,13 @@ public: // 가상 함수
     virtual void UpdateRecordData(std::vector<std::string>);
     virtual void PrintRecordData();
     virtual std::string PrintRecordTable(std::string);
+
+public:
+    virtual void SetShadowMemory(std::map<std::string, std::string>);
+    virtual std::map<std::string, std::string> GetShadowMemory();
+
+    virtual void SetShadowMemorySize(int);
+    virtual int GetShadowMemorySize();
 public:
 	std::string name;
 	std::string type;
@@ -52,8 +60,6 @@ public:
     
     // 해당 기록파일의 특이 정보를 가지고 있는 문자열
     std::string infoMessage;
-    
-    std::map<std::string, std::string> shadowMemory;
 };
 
 #endif //RECORD_DATA_H
