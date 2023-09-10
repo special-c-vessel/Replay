@@ -14,8 +14,11 @@ App::~App() {
     for(std::vector<RecordData*>::iterator iter = records.begin(); iter != records.end(); ++iter) {
         delete *iter;
     }
+
     records.clear();
     std::vector<RecordData*>().swap(records);
+    std::map<std::string, std::string>().swap(valShadowMemory);
+    std::map<std::string, std::string>().swap(ptrShadowMemroy);
 }
 
 void App::Run() {
@@ -87,6 +90,96 @@ void App::Init() {
                     _lineStr = _words[_words.size() - 2];
                 }
             }
+            else if(_line.find("_ref.tmp") != std::string::npos) {
+                std::cout << "inside ref tmp" << std::endl;
+                ///////////////////////////string 일 경우/////////////////////////////
+                std::string _refValue;
+                std::string _refType = _words[3];
+                if(_words[TYPE_INDEX] == "string") {
+                    if(_line.find("StringEnd") != std::string::npos) {
+                        int _i = STRING_START_IDX;
+                        while(_words[_i] != "StringEnd") {
+                            _refValue += _words[_i];
+                            _refValue += " ";
+                            _i++;
+                        }
+                    }
+                    else {
+                        int _strValIndex = STRING_START_IDX;
+                        for(int _i = _strValIndex; _i < _words.size(); _i++) {
+                            if(_i == _words.size() - 1) {
+                                _refValue = _refValue + _words[_i] + "\\n";
+                            }
+                            else {
+                                _refValue = _refValue + _words[_i] + " ";
+                            }
+                        }
+                        i++;
+                        while(recordLines[i].find("StringEnd") == std::string::npos) {
+                            _refValue = _refValue + recordLines[i] + "\\n";
+                            i++;
+                        }
+                        std::stringstream _ss2(recordLines[i]);
+                        // 공백 분리 결과를 저장할 배열
+                        std::vector<std::string> _words2;
+                        std::string _word2;
+                        // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+                        while (getline(_ss2, _word2, ' ')){
+                            _words2.push_back(_word2);
+                        }
+                        int _i = 0;
+                        while(_words2[_i] != "StringEnd") {
+                            _refValue += _words2[_i];
+                            _refValue += " ";
+                            _i++;
+                        }
+                    }
+                }
+                else {
+                    _refValue = _words[3];
+                }
+                ////////////////////////////////////////////////////////////////////
+                std::cout << "_refValue : " << _refValue << std::endl;
+                i++;
+                std::cout << "recordLines : " << recordLines[i] << std::endl;
+                std::stringstream _ss2(recordLines[i]);
+                // 공백 분리 결과를 저장할 배열
+                std::vector<std::string> _words2;
+                std::string _word2;
+                // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+                while (getline(_ss2, _word2, ' ')){
+                    _words2.push_back(_word2);
+                }
+                if(_words2[1] == "push_back" ) { // 벡터일 경우
+                    _words2[4] = _refValue;
+                    _words2[3] = _refType;
+                    std::cout << "vector push back data" << std::endl;
+                    int _findIdx = -1;
+                    for(int i = records.size() - 1; i >= 0; i--) {
+                        std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                        if(_comparisonStr == _words2[2]) {
+                            _findIdx = i;
+                            std::cout << "_findIdx : " << _findIdx << std::endl;
+                            break;
+                        }
+                    }
+                    if(_findIdx != -1) { 
+                        std::cout << "detect vector record data" << std::endl;
+                        //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
+                        RecordData* _data = new RecordVector(_words2);
+                        std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
+                        _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
+                        _data->UpdateRecordData(_words2);
+                        records.push_back(_data);
+
+                    } else {
+                        std::cout << "vector recordata create" << std::endl;
+                        RecordData* _data = new RecordVector(_words2);
+                        _data->UpdateRecordData(_words2);
+                        records.push_back(_data);
+                    }
+                }
+            }
             else if(_words[1] == "push_back" ) { // 벡터일 경우
                 std::cout << "vector push back data" << std::endl;
                 int _findIdx = -1;
@@ -128,7 +221,7 @@ void App::Init() {
                     std::cout<< "word index 1 : " << FindRecordDataStr(_words[1]) << std::endl;
 
                     if(_line.find("StringEnd") != std::string::npos) {
-                        int _i = JUDGMENT_INDEX + 2;
+                        int _i = STRING_START_IDX;
                         while(_words[_i] != "StringEnd") {
                             _strVal += _words[_i];
                             _strVal += " ";
@@ -137,10 +230,10 @@ void App::Init() {
                         _colVal = _words[_words.size() - 1];
                         _lineVal = _words[_words.size() - 2];
                         _ptrVal = _words[_words.size() - 3];
-                        _lenVal = _words[JUDGMENT_INDEX + 1];
+                        _lenVal = _words[STRING_LEN_IDX];
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
-                    else if(FindRecordDataStr(_words[1]) != -1) {
+                    else if(FindRecordDataStr(_words[2]) != -1) {
                         std::cout << "find record data " << std::endl;
                         int _findIndex = FindRecordDataStr(_words[1]);
                         int _changeIndex = std::stoi(_words[3]);
@@ -157,7 +250,7 @@ void App::Init() {
                         }
                     }
                     else {
-                        int _strValIndex = JUDGMENT_INDEX + 2;
+                        int _strValIndex = STRING_START_IDX;
                         for(int _i = _strValIndex; _i < _words.size(); _i++) {
                             if(_i == _words.size() - 1) {
                                 _strVal = _strVal + _words[_i] + "\\n";
@@ -193,8 +286,8 @@ void App::Init() {
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
                     std::vector<std::string> _resultWord;
-                    _resultWord.push_back(_words[1]);
                     _resultWord.push_back(_words[2]);
+                    _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_strVal);
                     _resultWord.push_back(_ptrVal);
                     _resultWord.push_back(_lineVal);
@@ -217,12 +310,17 @@ void App::Init() {
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
                     if(_words[2] == "i32p") _words[2] = "int pointer"; // 임시
+                    else if(_words[2] == "i32pp") _words[2] = "int pointer"; // 임시
+                    else if(_words[2] == "i32ppp") _words[2] = "int pointer"; // 임시
+                    else if(_words[2] == "i32") _words[2] = "int";
+                    else if(_words[2] == "i8") _words[2] = "boolean";
+                    else if(_words[2] == "i64") _words[2] = "long long int";
                     _resultWord.push_back(_words[2]);
                     _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_words[4]);
                     _resultWord.push_back(_words[5]);
                     _resultWord.push_back(_words[6]);
-                    _resultWord.push_back("4");
+                    _resultWord.push_back("");
 
                     for(int i = 0; i < _resultWord.size(); i++) {
                         std::cout << "result word : " << _resultWord[i] << std::endl;
@@ -380,7 +478,7 @@ void App::Render() {
                 ptrShadowMemroy[p->first] = p->second;
             }
         }
-
+        /*
         for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
@@ -388,6 +486,7 @@ void App::Render() {
         for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
+        */
         if(commandMessage.find("findptr") != std::string::npos) {
             cout << "findptr inside" << endl;
             std::stringstream _cmdss(commandMessage);

@@ -20,6 +20,18 @@ public: // 오버라이드 함수
     void UpdateRecordData(std::vector<std::string>) override;
     void PrintRecordData() override;
     std::string PrintRecordTable(std::string) override;
+
+    void SetShadowMemory(std::map<std::string, std::string>);
+    std::map<std::string, std::string> GetShadowMemory();
+    void SetShadowMemorySize(int);
+    int GetShadowMemorySize();
+
+public: // 편의성 함수
+    void PrintShadowMemory();
+
+private:
+     std::map<std::string, std::string> shadowMemory;
+     int shadowMaxIdx = 0;
 };
 
 #endif //RECORD_PRIM_H

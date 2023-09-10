@@ -14,7 +14,9 @@
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
-#define TYPE_INDEX 2
+#define TYPE_INDEX 3
+#define STRING_START_IDX 6
+#define STRING_LEN_IDX 5
 
 using namespace std;
 

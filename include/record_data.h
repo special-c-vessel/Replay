@@ -53,6 +53,7 @@ public:
 	std::string col;
     std::string length;
     std::string dataFunc;
+    std::string originName;
 
     RecordType recordType;
 

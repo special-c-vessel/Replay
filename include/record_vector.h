@@ -47,10 +47,10 @@ private: // 편의성 함수
 private:
     int currentPage = 0;
     int prevPage = 0;
-    int shadowMaxIdx = 0;
     int arrayTypeSize = 0;
 
      std::map<std::string, std::string> shadowMemory;
+     int shadowMaxIdx = 0;
 };
 
 #endif //RECORD_VECTOR_H
