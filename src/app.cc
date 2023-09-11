@@ -73,21 +73,25 @@ void App::Init() {
         }
     
         if(_words[1] != "retval") {
-            if(_words[JUDGMENT_INDEX] == "isArr" ) { // 배열일 경우
-                if(_lineStr == _words[_words.size() - 2]) { // 같은 라인 번호인지를 확인
-                    records[_addIndex]->UpdateRecordData(_words);
-                } else {
-                    int _dimensionSize = _words.size() - 8;
-                    std::vector<std::string> _dimension;
-                    for(int i = 0; i < _dimensionSize; i++) {
-                        _dimension.push_back(_words[i + 4]);
+            if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
+                int _dimension = _words.size() - 8;
+                int _findIdx = -1;
+                for(int j = records.size() - 1; j >= 0; j--) {
+                    std::string _nameFunc = records[j]->dataFunc + "_" + records[j]->name;
+                    std::cout << "nameFUnc : " << _nameFunc << std::endl;
+                    if(records[j]->line == _words[_words.size() - 2]
+                    && _nameFunc == _words[1]) {
+                        _findIdx = j;
+                        break;
                     }
+                }
 
+                if(_findIdx != -1) {
+                    records[_findIdx]->InitRecordData(_words);
+                }
+                else {
                     RecordData* _data = new RecordArray(_words, _dimension);
-                    _data->UpdateRecordData(_words);
                     records.push_back(_data);
-                    _addIndex = records.size() - 1;
-                    _lineStr = _words[_words.size() - 2];
                 }
             }
             else if(_line.find("_ref.tmp") != std::string::npos) {
