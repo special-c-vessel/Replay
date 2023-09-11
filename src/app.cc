@@ -208,16 +208,15 @@ void App::Init() {
                 }
             }
             else { // 일반 기록파일
+                std::string _nameVal = "";
+                std::string _typeVal = "";
+                std::string _strVal = "";
+                std::string _ptrVal = "";
+                std::string _lenVal = "";
+                std::string _lineVal = "";
+                std::string _colVal = "";
+                std::string _infoMessage = "";
                 if(_words[TYPE_INDEX] == "string") {
-                    std::string _nameVal = "";
-                    std::string _typeVal = "";
-                    std::string _strVal = "";
-                    std::string _ptrVal = "";
-                    std::string _lenVal = "";
-                    std::string _lineVal = "";
-                    std::string _colVal = "";
-                    std::string _infoMessage = "";
-                    
                     std::cout<< "word index 1 : " << FindRecordDataStr(_words[1]) << std::endl;
 
                     if(_line.find("StringEnd") != std::string::npos) {
@@ -305,6 +304,52 @@ void App::Init() {
                     _data->recordType = RecordType::Prim;
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
+                }
+                else if(FindRecordDataPtr(_words[_words.size() - 3]) != -1) {
+                    int _findIdx = FindRecordDataPtr(_words[_words.size() - 3]);
+                    std::cout << "find record data, _findIdx :  " << _findIdx << std::endl;
+                    int _changeIndex = std::stoi(_words[3]);
+                    std::cout << "change index :  " << _changeIndex << std::endl;
+                    _nameVal = records[_findIdx]->dataFunc + "_" + records[_findIdx]->name;
+                    std::cout << "name :  " << _nameVal << std::endl;
+                    _typeVal = records[_findIdx]->ptr;
+                    std::cout << "type :  " << _typeVal << std::endl;
+                    _strVal = records[_findIdx]->value;
+                    _strVal[_changeIndex] = _words[4].c_str()[0];
+                    std::cout << "value :  " << _strVal << std::endl;
+                    _colVal = _words[_words.size() - 1];
+                    _lineVal = _words[_words.size() - 2];
+                    _ptrVal = _words[_words.size() - 3];
+                    _lenVal = _words[3];
+                    std::cout << "len :  " << _lenVal << std::endl;
+                    if(std::stoi(_lenVal) < _changeIndex) {
+                        _infoMessage = "문자열의 범위 밖 요청입니다";
+                    }
+                    else {
+                        _infoMessage = " ";
+                    }
+                    std::cout << "set default information" << std::endl;
+                    std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_nameVal);
+                    _resultWord.push_back(_typeVal);
+                    _resultWord.push_back(_strVal);
+                    _resultWord.push_back(_ptrVal);
+                    _resultWord.push_back(_lineVal);
+                    _resultWord.push_back(_colVal);
+                    _resultWord.push_back(_lenVal);
+                    _resultWord.push_back(_infoMessage);
+
+                    for(int i = 0; i < _resultWord.size(); i++) {
+                        std::cout << "result word : " << _resultWord[i] << std::endl;
+                    }
+
+                    RecordData* _data = new RecordPrim();
+
+                    _data->InitRecordData(_resultWord);
+                    _data->recordType = RecordType::Prim;
+                    records.push_back(_data);
+                    _addIndex = records.size() - 1;
+
                 }
                 else { // 문자열을 제외한 일반 타입
                     std::vector<std::string> _resultWord;
@@ -546,6 +591,13 @@ bool App::FindRecord(int _line) {
     return false;
 }
 
+int App::FindRecordDataPtr(std::string _ptr) {
+    for(int i = records.size() - 1; i >= 0; i--) {
+        if(records[i]->ptr == _ptr && records[i]->type == "string") return i; 
+    }
+    return -1;
+}
+
 int App::FindRecordDataStr(std::string _name) {
     std::cout << "record size : " << records.size() << std::endl;
     for(int i = records.size() - 1 ; i >= 0; i--) {
@@ -582,6 +634,7 @@ void App::InitCommand() {
     commands.push_back("findptr");
     commands.push_back("mvindex");
 }
+
 bool App::FindCommand(std::string _command) {
     std::cout << "command : " << _command << std::endl;
     for(int i = 0; i < commands.size(); i++) {

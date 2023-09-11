@@ -38,7 +38,8 @@ public: // main framework function
 private: // app class function
     void AddRecordTable(int);
     bool FindRecord(int);
-
+    
+    int FindRecordDataPtr(std::string);
     int FindRecordDataStr(std::string);
     int FindRecordData(int);
 
