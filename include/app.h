@@ -21,7 +21,7 @@
 using namespace std;
 
 enum InputState {
-    Stop, Up, Down, Right, Left, Command, WARN
+    Stop, Up, DoubleUp, Down, DoubleDown, Right, Left, Command, WARN
 };
 
 class App {
@@ -57,6 +57,7 @@ public: // main framework variable
     char* recordFile;
     bool programOver;  
     int currentLine;
+    bool isDone;
 
     std::vector<RecordData*> records;
     std::vector<std::string> codes;

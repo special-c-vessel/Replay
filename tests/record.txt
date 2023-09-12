@@ -1,3 +1,10 @@
+isStruct main_x11111 AAAAA i32 99 i32 -1 string isStruct B 0x16d8a5360 999
+isStruct main_x22222 AAAAA i32 99 i32 -1 string isStruct B 0x16d8a5338 999
+isStruct main_xBBBBB B i32 -99 i32 -88 0x16d8a5318 999
+isStruct main_qwe QQQQQ i32 30 i32 40 0x16d8a5310 999
+store _Z11testFunc111v_a i32 1 0x16d8a512c 12 7
+store _Z11testFunc111v_b i32 2 0x16d8a5128 13 7
+store _Z11testFunc111v_c i32 3 0x16d8a5124 15 7
 store main_xxxxx i32 50 0x16d8a5360 84 16
 store main_yyyyy i32 100 0x16d8a5364 85 16
 store main_x1Ptr class.AAAAAp 0x16d8a5360 0x16d8a5320 87 9
@@ -30,11 +37,11 @@ store main_num4 i64 111111 0x16d8a52b8 167 17
 store main_ffffstatic float 112.241402 0x16d8a52b4 168 9
 store main_vvvv double 525.124000 0x16d8a52a8 169 10
 store main_isisis i8  0x16d8a52a7 170 8
-store main_ResetArr i32 isArr 0 11 0x16d8a5520 175 7
-store main_ResetArr i32 isArr 1 22 0x16d8a5524 175 7
-store main_ResetArr i32 isArr 2 33 0x16d8a5528 175 7
-store main_ResetArr i32 isArr 3 44 0x16d8a552c 175 7
-store main_ResetArr i32 isArr 4 55 0x16d8a5530 175 7
+store main_28 i32 11 0x16d8a5520 175 7
+store main_29 i32 22 0x16d8a5524 175 7
+store main_30 i32 33 0x16d8a5528 175 7
+store main_31 i32 44 0x16d8a552c 175 7
+store main_32 i32 55 0x16d8a5530 175 7
 store main_arrTest float isPointerArr 30 12.000000 0x16d8aa410 177 15
 store main_arrTest2 i64 isPointerArr 25 25 55555 0x16d8a55f0 178 20
 store main_num333 i32 5 0x16d8a52a0 182 7
@@ -73,4 +80,3 @@ store push_back main_sssss S_12basic_stringIcNS_11char_traitsIcEE 0x16d8a51a0 0x
 
 
  StringEnd 0x16d8a5170 221 30
-store main_retval i32 0 0x16d8a538c 225 3

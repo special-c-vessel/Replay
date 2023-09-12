@@ -32,6 +32,7 @@ void App::Run() {
 }
 
 void App::Init() {
+    isDone = false;
     programOver = false;
     currentLine = 0;
     inputState = InputState::Stop;
@@ -73,7 +74,10 @@ void App::Init() {
         }
     
         if(_words[1] != "retval") {
-            if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
+            if(_words[0] == "isStruct") {
+
+            }
+            else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
                 int _dimension = _words.size() - 8;
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
@@ -386,6 +390,14 @@ void App::Init() {
         }
     }
 
+    if(records[records.size() - 1]->name == "retval") {
+        isDone = true;
+    }
+    else {
+        isDone = false;
+        records[records.size() - 1]->infoMessage = "오류 발생 지점 예상";
+    }
+
     std::cout << "record count : " << records.size() << std::endl;
 
     while (std::getline(srcStream, _line)) {
@@ -407,11 +419,22 @@ void App::Input() {
         if(_input == "s") {
             std::cout << "Down" << std::endl;
             this->inputState = InputState::Down;
+            this->commandMessage = "down";
+        }
+        else if(_input == "ss") {
+            std::cout << "Double Down" << std::endl;
+            this->inputState = InputState::DoubleDown;
+            this->commandMessage = "doubledown";
         }
         else if(_input == "w") {
             std::cout << "Up" << std::endl;
             this->inputState = InputState::Up;
             this->commandMessage = "up";
+        }
+        else if(_input == "ww") {
+            std::cout << "Double Up" << std::endl;
+            this->inputState = InputState::DoubleUp;
+            this->commandMessage = "doubleup";
         }
         else if(_input == "a") {
             this->inputState = InputState::Left;
@@ -437,6 +460,14 @@ void App::Input() {
 void App::Update() {
     if(inputState == InputState::Up) {
         this->commandMessage = "up";
+        for(int i = currentLine; i > 0; i--) {
+            currentLine--;
+            if(FindRecord(currentLine + 1)) break;
+        }
+        inputState = InputState::Stop;
+    }
+    else if(inputState == InputState::DoubleUp) {
+        this->commandMessage = "doubleup";
         if(currentLine > 0) {
             std::string _eraseStr = codes[currentLine - 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
@@ -455,6 +486,14 @@ void App::Update() {
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
+        for(int i = currentLine; i < codes.size(); i++) {
+            currentLine++;
+            if(FindRecord(currentLine + 1)) break;
+        }
+        inputState = InputState::Stop;
+    } 
+    else if(inputState == InputState::DoubleDown) {
+        this->commandMessage = "double down";
         if(currentLine < codes.size() - 1) {
             std::string _eraseStr = codes[currentLine + 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
@@ -470,7 +509,7 @@ void App::Update() {
             }
             inputState = InputState::Stop;
         }
-    }   
+    }
     else if(inputState == InputState::Right) {
         this->commandMessage = "right";
     }
@@ -567,6 +606,9 @@ void App::Render() {
             systemMessage = records[_findIndex]->PrintRecordTable(commandMessage);
             commandMessage = "";
         }
+    }
+    else {
+        std::cout << "                             기록정보 없음                               \n";
     }
 
     std::cout << std::endl;
