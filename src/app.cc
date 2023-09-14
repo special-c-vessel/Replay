@@ -362,13 +362,7 @@ void App::Init() {
                 else { // 문자열을 제외한 일반 타입
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
-                    if(_words[2] == "i32p") _words[2] = "int pointer"; // 임시
-                    else if(_words[2] == "i32pp") _words[2] = "int pointer"; // 임시
-                    else if(_words[2] == "i32ppp") _words[2] = "int pointer"; // 임시
-                    else if(_words[2] == "i32") _words[2] = "int";
-                    else if(_words[2] == "i8") _words[2] = "boolean";
-                    else if(_words[2] == "i64") _words[2] = "long long int";
-                    _resultWord.push_back(_words[2]);
+                    _resultWord.push_back(GetType(_words[2]));
                     _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_words[4]);
                     _resultWord.push_back(_words[5]);
@@ -415,7 +409,6 @@ void App::Input() {
     std::cout << std::endl << "User input : ";
     getline(std::cin, _input);
     if(!IsNumber(_input)) { // 사용자 입력 값이 숫자가 아닐 경우
-        std::cout << "\ninput string : " << _input << std::endl;
         if(_input == "s") {
             std::cout << "Down" << std::endl;
             this->inputState = InputState::Down;
@@ -447,6 +440,7 @@ void App::Input() {
         else if(FindCommand(_input)) {
             this->inputState = InputState::Command;
             this->commandMessage = _input;
+            std::cout << "\ncommandMessage : " << commandMessage << std::endl;
         }
         else {
             std::cout << "undefined command" << std::endl;
@@ -517,7 +511,19 @@ void App::Update() {
         this->commandMessage = "left";
     }
     else if(inputState == InputState::Command) {
-        
+        if(commandMessage.find("mvline") != std::string::npos) {
+            std::cout << "mvline inside" << std::endl;
+            std::stringstream _cmdss(commandMessage);
+            // 공백 분리 결과를 저장할 배열
+            std::vector<std::string> _cmdWords;
+            std::string _cmdWord;
+            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+            while (getline(_cmdss, _cmdWord, ' ')){
+                _cmdWords.push_back(_cmdWord);
+            }
+
+            currentLine = std::stoi(_cmdWords[1]) - 1;
+        }
     }
 }
 
@@ -576,7 +582,7 @@ void App::Render() {
         }
         */
         if(commandMessage.find("findptr") != std::string::npos) {
-            cout << "findptr inside" << endl;
+            std::cout << "findptr inside" << std::endl;
             std::stringstream _cmdss(commandMessage);
             // 공백 분리 결과를 저장할 배열
             std::vector<std::string> _cmdWords;
@@ -603,8 +609,31 @@ void App::Render() {
             _ct.PrintTable();
         }
         else {
-            systemMessage = records[_findIndex]->PrintRecordTable(commandMessage);
-            commandMessage = "";
+            ConsoleTable _ct(BASIC);
+            _ct.SetPadding(1);
+            _ct.AddColumn("Function");
+            _ct.AddColumn("Name");
+            _ct.AddColumn("Type");
+            _ct.AddColumn("Ptr");
+            _ct.AddColumn("Value");
+            _ct.AddColumn("Line");
+
+            for(int i = 0; i < records.size(); i++) {
+                if(records[i]->line == std::to_string(currentLine + 1)) {
+                    std::cout << "Find index : " << currentLine + 1 << std::endl;
+                    ConsoleTableRow* _entry = new ConsoleTableRow(6);
+                    
+                    _entry->AddEntry(records[i]->dataFunc, 0);
+                    _entry->AddEntry(records[i]->name, 1);
+                    _entry->AddEntry(records[i]->type, 2);
+                    _entry->AddEntry(records[i]->ptr, 3);
+                    _entry->AddEntry(records[i]->value, 4);
+                    _entry->AddEntry(records[i]->line, 5);
+
+                    _ct.AddRow(_entry);
+                }
+            }
+            _ct.PrintTable();
         }
     }
     else {
@@ -679,6 +708,7 @@ void App::InitCommand() {
     commands.push_back("mvarray");
     commands.push_back("findptr");
     commands.push_back("mvindex");
+    commands.push_back("mvline");
 }
 
 bool App::FindCommand(std::string _command) {
@@ -696,4 +726,68 @@ void App::ErrorHandling(std::string _message) {
         systemMessage = "";
         inputState = InputState::WARN;
     }
+}
+
+// 
+std::string App::GetType(std::string& _word) {
+    if(_word.find("p") != std::string::npos) { // pointer data type
+        std::string _removeStr = RemoveChar(_word, 'p');
+
+        if(_removeStr == "i32") {
+            _removeStr = "int";
+        }
+        else if(_removeStr == "i64") {
+            _removeStr = "long long int";
+        }
+        else if(_removeStr == "i8") {
+            _removeStr = "boolean";
+        }
+
+        std::string _pointerStr;
+        int _pCount = CountChar(_word, 'p');
+
+        if(_pCount == 1) {
+            _pointerStr = " pointer";
+        }
+        else {
+            _pointerStr = " multiple pointer-" + std::to_string(_pCount);
+        }
+
+        return _removeStr + _pointerStr;
+    }
+    else { // normal data type
+        if(_word == "i32") {
+            return "int";
+        }
+        else if(_word == "i64") {
+            return "long long int";
+        }
+        else if(_word == "i8") {
+            return "boolean";
+        }
+        else {
+            return "undefined type";
+        }
+    }
+}
+
+int App::CountChar(std::string &_str, char _findWord) {
+    int _count = 0;
+    for (char _ch : _str) {
+        if (_ch == _findWord) {
+            _count++;
+        }
+    }
+    return _count;
+}
+
+std::string App::RemoveChar(const std::string &_str, char _removeWord) {
+    std::string _result = _str;
+    size_t _pos = 0;
+    
+    while ((_pos = _result.find(_removeWord, _pos)) != std::string::npos) {
+        _result.erase(_pos, 1);
+    }
+    
+    return _result;
 }

@@ -146,7 +146,7 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
     ct.AddColumn("Ptr");
 
     for(int i = 0; i < dimension; i++) {
-        ct.AddColumn("Index");
+        ct.AddColumn("dimension-" + std::to_string(i + 1));
     }
 
     int _startIndex = (currentPage * 10) - 10;

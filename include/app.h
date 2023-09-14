@@ -52,6 +52,11 @@ private: // app class function
 
     // Error handling method
     void ErrorHandling(std::string);
+
+    // Type check method
+    std::string GetType(std::string&);
+    std::string RemoveChar(const std::string&, char);
+    int CountChar(std::string&, char);
 public: // main framework variable
     char* srcFile;
     char* recordFile;

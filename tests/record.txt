@@ -1,82 +1,125 @@
-isStruct main_x11111 AAAAA i32 99 i32 -1 string isStruct B 0x16d8a5360 999
-isStruct main_x22222 AAAAA i32 99 i32 -1 string isStruct B 0x16d8a5338 999
-isStruct main_xBBBBB B i32 -99 i32 -88 0x16d8a5318 999
-isStruct main_qwe QQQQQ i32 30 i32 40 0x16d8a5310 999
-store _Z11testFunc111v_a i32 1 0x16d8a512c 12 7
-store _Z11testFunc111v_b i32 2 0x16d8a5128 13 7
-store _Z11testFunc111v_c i32 3 0x16d8a5124 15 7
-store main_xxxxx i32 50 0x16d8a5360 84 16
-store main_yyyyy i32 100 0x16d8a5364 85 16
-store main_x1Ptr class.AAAAAp 0x16d8a5360 0x16d8a5320 87 9
-store main_xxxxx6 i32 11 0x16d8a5338 89 16
-store main_yyyyy7 i32 22 0x16d8a533c 90 16
-store main_a123 i32 10 0x16d8a5310 92 12
-store main_num11 i32 50 0x16d8a530c 103 9
-store main_num22 i32 100 0x16d8a5308 104 9
-store main_tempnum1 i32p 0x16d8a5360 0x16d8a52f8 106 12
-store main_tempnum2 i32p 0x16d8a5364 0x16d8a52f0 107 12
-store main_num33 i32 50 0x16d8a5304 109 9
-store main_num44 i32 100 0x16d8a5300 110 9
-store main_8 i32 55555 0x16d8a5360 117 13
-store main_num11 i32 55565 0x16d8a530c 132 9
-store main_num22 i32 100 0x16d8a5308 133 9
-store main_xxxxx50 i32 55 0x16d8a5338 141 16
-store main_yyyyy51 i32 99 0x16d8a533c 142 16
-store main_num11 i32 55 0x16d8a530c 144 9
-store main_num22 i32 99 0x16d8a5308 145 9
-store main_num22 i32 88 0x16d8a5308 152 9
-store push_back main_VA AAAAA 0x16d8a5360 0x16d8a52d8 156 6
-store push_back main_VA AAAAA 0x16d8a5360 0x16d8a52d8 157 6
-store push_back main_VA AAAAA 0x16d8a5338 0x16d8a52d8 158 6
-store main_ptr1111 i32p 0x16d8a5360 0x16d8a52d0 160 9
-store main_ptr2222 i32 55565 0x16d8a52cc 161 7
-store main_num1 i32 10 0x16d8a52c8 163 7
-store main_num2 i32 20 0x16d8a52c4 164 7
-store main_num3 i32 30 0x16d8a52c0 165 7
-store main_num4 i64 111111 0x16d8a52b8 167 17
-store main_ffffstatic float 112.241402 0x16d8a52b4 168 9
-store main_vvvv double 525.124000 0x16d8a52a8 169 10
-store main_isisis i8  0x16d8a52a7 170 8
-store main_28 i32 11 0x16d8a5520 175 7
-store main_29 i32 22 0x16d8a5524 175 7
-store main_30 i32 33 0x16d8a5528 175 7
-store main_31 i32 44 0x16d8a552c 175 7
-store main_32 i32 55 0x16d8a5530 175 7
-store main_arrTest float isPointerArr 30 12.000000 0x16d8aa410 177 15
-store main_arrTest2 i64 isPointerArr 25 25 55555 0x16d8a55f0 178 20
-store main_num333 i32 5 0x16d8a52a0 182 7
-store main_ptrarrTest i32p 0x16d8a52a0 0x16d8a5298 183 9
-store main_pptrarrTest i32pp 0x16d8a5298 0x16d8a5290 184 10
-store main_ppptrarrTest i32ppp 0x16d8a5290 0x16d8a5288 185 11
-store main_kkk i32 11111 0x16d8a5284 188 7
-store main_34 i32 22222 0x16d8a52a0 189 17
-store main_37 i32 55555 0x16d8a52a0 190 19
+isStruct main_x11111 AAAAA i32 99 i32 -1 string isStruct B 0x16fafa330 999
+isStruct main_x22222 AAAAA i32 99 i32 -1 string isStruct B 0x16fafa308 999
+isStruct main_xBBBBB B i32 -99 i32 -88 0x16fafa2e8 999
+isStruct main_qwe QQQQQ i32 30 i32 40 0x16fafa2e0 999
+store main_tempnumVal i32 12321 0x16fafa360 73 7
+store main_tempfloatVal float 0.000000 0x16fafa35c 74 9
+store _Z11testFunc111v_a i32 1 0x16faf96bc 12 7
+store _Z11testFunc111v_b i32 2 0x16faf96b8 13 7
+load _Z11testFunc111v_a i32 1 0x16faf96bc 15 11
+load _Z11testFunc111v_b i32 2 0x16faf96b8 15 15
+store _Z11testFunc111v_c i32 3 0x16faf96b4 15 7
+store _Z11testFunc222v_a i32 1 0x16faf96bc 20 7
+store _Z11testFunc222v_b i32 2 0x16faf96b8 21 7
+load _Z11testFunc222v_a i32 1 0x16faf96bc 23 11
+load _Z11testFunc222v_b i32 2 0x16faf96b8 23 15
+store _Z11testFunc222v_c i32 3 0x16faf96b4 23 7
+store main_xxxxx i32 50 0x16fafa330 89 16
+store main_yyyyy i32 100 0x16fafa334 90 16
+store main_x1Ptr class.AAAAAp 0x16fafa330 0x16fafa2f0 92 9
+store main_xxxxx6 i32 11 0x16fafa308 94 16
+store main_yyyyy7 i32 22 0x16fafa30c 95 16
+store main_a123 i32 10 0x16fafa2e0 97 12
+load main_xxxxx8 i32 50 0x16fafa330 108 18
+store main_num11 i32 50 0x16fafa2dc 108 9
+load main_yyyyy9 i32 100 0x16fafa334 109 18
+store main_num22 i32 100 0x16fafa2d8 109 9
+store main_tempnum1 i32p 0x16fafa330 0x16fafa2c8 111 12
+store main_tempnum2 i32p 0x16fafa334 0x16fafa2c0 112 12
+load main_xxxxx12 i32 50 0x16fafa330 114 18
+store main_num33 i32 50 0x16fafa2d4 114 9
+load main_yyyyy13 i32 100 0x16fafa334 115 18
+store main_num44 i32 100 0x16fafa2d0 115 9
+load main_num33 i32 50 0x16fafa2d4 120 11
+load main_num44 i32 100 0x16fafa2d0 120 27
+load main_tempnum1 i32p 0x16fafa330 0x16fafa2c8 122 4
+store main_8 i32 55555 0x16fafa330 122 13
+load main_num11 i32 50 0x16fafa2dc 124 11
+load main_tempnum1 i32p 0x16fafa330 0x16fafa2c8 125 11
+load main_xxxxx30 i32 55555 0x16fafa330 126 18
+load main_num22 i32 100 0x16fafa2d8 128 11
+load main_xxxxx40 i32 55565 0x16fafa330 137 18
+store main_num11 i32 55565 0x16fafa2dc 137 9
+load main_yyyyy41 i32 100 0x16fafa334 138 18
+store main_num22 i32 100 0x16fafa2d8 138 9
+load main_num11 i32 55565 0x16fafa2dc 140 11
+load main_num22 i32 100 0x16fafa2d8 141 11
+store main_xxxxx50 i32 55 0x16fafa308 146 16
+store main_yyyyy51 i32 99 0x16fafa30c 147 16
+load main_xxxxx52 i32 55 0x16fafa308 149 18
+store main_num11 i32 55 0x16fafa2dc 149 9
+load main_yyyyy53 i32 99 0x16fafa30c 150 18
+store main_num22 i32 99 0x16fafa2d8 150 9
+load main_num11 i32 55 0x16fafa2dc 152 11
+load main_num22 i32 99 0x16fafa2d8 152 28
+load main_yyyyy64 i32 88 0x16fafa30c 157 18
+store main_num22 i32 88 0x16fafa2d8 157 9
+store push_back main_VA AAAAA 0x16fafa330 0x16fafa2a8 161 6
+store push_back main_VA AAAAA 0x16fafa330 0x16fafa2a8 162 6
+store push_back main_VA AAAAA 0x16fafa308 0x16fafa2a8 163 6
+store main_ptr1111 i32p 0x16fafa330 0x16fafa2a0 165 9
+load main_call74 i32 55565 0x16fafa330 166 24
+store main_ptr2222 i32 55565 0x16fafa29c 166 7
+store main_num1 i32 10 0x16fafa298 168 7
+store main_num2 i32 20 0x16fafa294 168 24
+load main_num1 i32 10 0x16fafa298 168 47
+load main_num2 i32 20 0x16fafa294 168 54
+store main_num3 i32 30 0x16fafa290 168 40
+store main_num4 i64 111111 0x16fafa288 170 17
+store main_ffffstatic float 0.000000 0x16fafa284 171 9
+store main_vvvv double 525.124000 0x16fafa278 172 10
+store main_isisis i8  0x16fafa277 173 8
+store main_28 i32 11 0x16fafa4f8 178 7
+store main_29 i32 22 0x16fafa4fc 178 7
+store main_30 i32 33 0x16fafa500 178 7
+store main_31 i32 44 0x16fafa504 178 7
+store main_32 i32 55 0x16fafa508 178 7
+store main_arrTest float isPointerArr 30 0.000000 0x16faff3e0 180 15
+store main_arrTest2 i64 isPointerArr 25 25 55555 0x16fafa5c0 181 20
+store main_arrTest2 i64 isPointerArr 0 1 1 0x16fafa5c0 183 18
+store main_arrTest2 i64 isPointerArr 1 2 2 0x16fafa5c0 184 18
+store main_arrTest2 i64 isPointerArr 3 4 3 0x16fafa5c0 185 18
+store main_arrTest2 i64 isPointerArr 1 2 222 0x16fafa5c0 187 18
+store main_num333 i32 5 0x16fafa270 191 7
+store main_ptrarrTest i32p 0x16fafa270 0x16fafa268 192 9
+store main_pptrarrTest i32pp 0x16fafa268 0x16fafa260 193 10
+store main_ppptrarrTest i32ppp 0x16fafa260 0x16fafa258 194 11
+store main_kkk i32 11111 0x16fafa254 197 7
+load main_pptrarrTest i32pp 0x16fafa268 0x16fafa260 198 5
+load main_33 i32p 0x16fafa270 0x16fafa268 198 4
+store main_34 i32 22222 0x16fafa270 198 17
+load main_ppptrarrTest i32ppp 0x16fafa260 0x16fafa258 199 6
+load main_35 i32pp 0x16fafa268 0x16fafa260 199 5
+load main_36 i32p 0x16fafa270 0x16fafa268 199 4
+store main_37 i32 55555 0x16fafa270 199 19
 12 store main_str1111 string StringStart 12 hello world
- StringEnd 0x16d8a5268 192 20
-8 store main_str1111 string StringStart 8 faewfefe StringEnd 0x16d8a5268 193 11
+ StringEnd 0x16fafa238 201 20
+8 store main_str1111 string StringStart 8 faewfefe StringEnd 0x16fafa238 202 11
 12 store main_str2222 string StringStart 12 hello world
- StringEnd 0x16d8a5250 196 20
+ StringEnd 0x16fafa220 205 20
 13 store main_str2222 string StringStart 13 change value
- StringEnd 0x16d8a5250 197 11
-store main_lll i32 123123 0x16d8a524c 198 7
-store main_str2222 i8 5 e 0x16d8a5250 200 14
-store main_ref.tmp i32 55555 0x16d8a51e4 207 19
-store push_back main_vvvvv i32 0x16d8a51e4 0x16d8a5230 207 9
-store main_ref.tmp105 i32 66 0x16d8a51e0 208 19
-store push_back main_vvvvv i32 0x16d8a51e0 0x16d8a5230 208 9
-store main_ref.tmp107 i32 77 0x16d8a51dc 209 19
-store push_back main_vvvvv i32 0x16d8a51dc 0x16d8a5230 209 9
-store main_ref.tmp109 i64 12345 0x16d8a51d0 211 21
-store push_back main_vvvvv22 i64 0x16d8a51d0 0x16d8a5218 211 11
-store main_ref.tmp111 i64 3456 0x16d8a51c8 212 21
-store push_back main_vvvvv22 i64 0x16d8a51c8 0x16d8a5218 212 11
-store main_ref.tmp113 i64 56789 0x16d8a51c0 213 21
-store push_back main_vvvvv22 i64 0x16d8a51c0 0x16d8a5218 213 11
-store main_ref.tmp115 float 111.241241 0x16d8a51bc 216 19
-store push_back main_fffff float 0x16d8a51bc 0x16d8a5200 216 9
-18 store main_ref.tmp117 string StringStart 18 vector string test StringEnd 0x16d8a51a0 218 19
-store push_back main_sssss S_12basic_stringIcNS_11char_traitsIcEE 0x16d8a51a0 0x16d8a51e8 218 9
+ StringEnd 0x16fafa220 206 11
+store main_lll i32 123123 0x16fafa21c 207 7
+store main_str2222 i8 5 e 0x16fafa220 209 14
+store main_ref.tmp i32 55555 0x16fafa1b4 216 19
+store push_back main_vvvvv i32 0x16fafa1b4 0x16fafa200 216 9
+store main_ref.tmp113 i64 12345 0x16fafa1a8 218 21
+store push_back main_vvvvv22 i64 0x16fafa1a8 0x16fafa1e8 218 11
+store main_ref.tmp115 i64 3456 0x16fafa1a0 219 21
+store push_back main_vvvvv22 i64 0x16fafa1a0 0x16fafa1e8 219 11
+store main_ref.tmp117 i32 66 0x16fafa19c 223 19
+store push_back main_vvvvv i32 0x16fafa19c 0x16fafa200 223 9
+store main_ref.tmp119 i32 77 0x16fafa198 224 19
+store push_back main_vvvvv i32 0x16fafa198 0x16fafa200 224 9
+store main_ref.tmp121 i64 56789 0x16fafa190 227 21
+store push_back main_vvvvv22 i64 0x16fafa190 0x16fafa1e8 227 11
+store main_ref.tmp123 float 0.000000 0x16fafa18c 230 19
+store push_back main_fffff float 0x16fafa18c 0x16fafa1d0 230 9
+18 store main_ref.tmp125 string StringStart 18 vector string test StringEnd 0x16fafa170 232 19
+store push_back main_sssss S_12basic_stringIcNS_11char_traitsIcEE 0x16fafa170 0x16fafa1b8 232 9
 14 store main_compareStringTest string StringStart 14 asdfgzxcvbn
 
 
- StringEnd 0x16d8a5170 221 30
+ StringEnd 0x16fafa140 235 30
+store main_retval i32 0 0x16fafa364 239 3
+load main_retval i32 0 0x16fafa364 240 1
