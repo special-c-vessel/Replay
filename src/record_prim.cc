@@ -3,6 +3,7 @@
 RecordPrim::RecordPrim() {
     std::cout << "Call Normal Constructor(RecordPrim)" << std::endl;
     shadowMaxIdx = 0;
+    recordType = RecordType::Prim;
 }
 
 RecordPrim::~RecordPrim() {
@@ -21,9 +22,15 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
         _names.push_back(_word);
     }
 
+    if(IsNumeric(_names[_names.size() - 1])) {
+        this->name = "literal";
+    }
+    else {
+        this->name = _names[_names.size() - 1];
+    }
+
     this->originName = _words[0];
-    this->dataFunc = _names[0];
-    this->name = _names[1];
+    this->dataFunc = _names[_names.size() - 2];
     this->type = _words[1];
     this->value = _words[2];
     this->ptr = _words[3];
@@ -98,4 +105,28 @@ void RecordPrim::SetShadowMemorySize(int _size) {
 
 int RecordPrim::GetShadowMemorySize() {
     return this->shadowMaxIdx;
+}
+
+bool RecordPrim::IsNumeric(const std::string& _str) {
+    // 문자열이 비어있는 경우 숫자가 아님
+    if (_str.empty()) {
+        return false;
+    }
+
+    // 문자열의 각 문자를 확인하며 숫자인지 검사
+    for (char _c : _str) {
+        if (!isdigit(_c)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void RecordPrim::SetArrrays(std::vector<ArrayStruct> _arrays) {
+    
+}
+
+std::vector<ArrayStruct> RecordPrim::GetArrays() {
+    
 }

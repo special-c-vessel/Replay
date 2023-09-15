@@ -12,18 +12,6 @@
 
 using namespace std;
 
-struct ArrayStruct
-{
-    std::string arrayFunc;
-    std::string arrayName;
-    std::string arrayType;
-    std::string arrayValue;
-    std::string arrayPtr;
-    std::string arrayLine;
-    std::string arrayCol;
-    std::vector<std::string> arrayIndex;
-};
-
 class RecordArray : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordArray(); // 일반 생성자
@@ -35,11 +23,15 @@ public: // 오버라이드 함수
     void PrintRecordData() override;
     std::string PrintRecordTable(std::string) override;
 
-    virtual void SetShadowMemory(std::map<std::string, std::string>);
-    virtual std::map<std::string, std::string> GetShadowMemory();
+    void SetShadowMemory(std::map<std::string, std::string>) override;
+    std::map<std::string, std::string> GetShadowMemory() override;
 
-    virtual void SetShadowMemorySize(int);
-    virtual int GetShadowMemorySize();
+    void SetShadowMemorySize(int) override;
+    int GetShadowMemorySize()override ;
+
+    void SetArrrays(std::vector<ArrayStruct>) override;
+    std::vector<ArrayStruct> GetArrays() override;
+    
 private: // 편의성 함수
     bool IsNumber(std::string const&);
     std::string AddHexaInt(std::string, int);

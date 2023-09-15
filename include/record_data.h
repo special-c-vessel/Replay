@@ -9,10 +9,20 @@
 
 enum RecordType {
     None,
-    Array1,
-    Array2,
-    Array3,
+    Array,
     Prim
+};
+
+struct ArrayStruct
+{
+    std::string arrayFunc;
+    std::string arrayName;
+    std::string arrayType;
+    std::string arrayValue;
+    std::string arrayPtr;
+    std::string arrayLine;
+    std::string arrayCol;
+    std::vector<std::string> arrayIndex;
 };
 
 class RecordData {
@@ -44,6 +54,9 @@ public:
 
     virtual void SetShadowMemorySize(int);
     virtual int GetShadowMemorySize();
+
+    virtual void SetArrrays(std::vector<ArrayStruct>);
+    virtual std::vector<ArrayStruct> GetArrays();
 public:
 	std::string name;
 	std::string type;

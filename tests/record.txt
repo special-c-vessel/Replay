@@ -69,11 +69,11 @@ store main_num4 i64 111111 0x16fafa288 170 17
 store main_ffffstatic float 0.000000 0x16fafa284 171 9
 store main_vvvv double 525.124000 0x16fafa278 172 10
 store main_isisis i8  0x16fafa277 173 8
-store main_28 i32 11 0x16fafa4f8 178 7
-store main_29 i32 22 0x16fafa4fc 178 7
-store main_30 i32 33 0x16fafa500 178 7
-store main_31 i32 44 0x16fafa504 178 7
-store main_32 i32 55 0x16fafa508 178 7
+store main_ResetArr i32 isArr 0 11 0x16fafa4f8 178 7
+store main_ResetArr i32 isArr 1 22 0x16fafa4fc 178 7
+store main_ResetArr i32 isArr 2 33 0x16fafa500 178 7
+store main_ResetArr i32 isArr 3 44 0x16fafa504 178 7
+store main_ResetArr i32 isArr 4 55 0x16fafa508 178 7
 store main_arrTest float isPointerArr 30 0.000000 0x16faff3e0 180 15
 store main_arrTest2 i64 isPointerArr 25 25 55555 0x16fafa5c0 181 20
 store main_arrTest2 i64 isPointerArr 0 1 1 0x16fafa5c0 183 18

@@ -14,9 +14,15 @@ App::~App() {
     for(std::vector<RecordData*>::iterator iter = records.begin(); iter != records.end(); ++iter) {
         delete *iter;
     }
-
     records.clear();
     std::vector<RecordData*>().swap(records);
+
+    for(std::vector<RecordData*>::iterator iter = currentRecords.begin(); iter != currentRecords.end(); ++iter) {
+        delete *iter;
+    }
+    currentRecords.clear();
+    std::vector<RecordData*>().swap(currentRecords);
+
     std::map<std::string, std::string>().swap(valShadowMemory);
     std::map<std::string, std::string>().swap(ptrShadowMemroy);
 }
@@ -35,6 +41,8 @@ void App::Init() {
     isDone = false;
     programOver = false;
     currentLine = 0;
+    currentIndex = -1;
+    prevLine = -1;
     inputState = InputState::Stop;
     systemMessage = "None";
     InitCommand();
@@ -82,19 +90,68 @@ void App::Init() {
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
                     std::string _nameFunc = records[j]->dataFunc + "_" + records[j]->name;
-                    std::cout << "nameFUnc : " << _nameFunc << std::endl;
-                    if(records[j]->line == _words[_words.size() - 2]
-                    && _nameFunc == _words[1]) {
+                    if(_nameFunc == _words[1]) {
                         _findIdx = j;
                         break;
                     }
                 }
 
                 if(_findIdx != -1) {
-                    records[_findIdx]->InitRecordData(_words);
+                    std::cout << "detect vector record data" << std::endl;
+                    //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
+                    RecordData* _data = new RecordArray(_words, _dimension);
+                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
+                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
+                    _data->SetArrrays(records[_findIdx]->GetArrays());
+                    records.push_back(_data);
                 }
                 else {
                     RecordData* _data = new RecordArray(_words, _dimension);
+                    records.push_back(_data);
+                    std::string _checkLine = recordLines[i + 1];
+                    std::vector<std::string> _splitWords = SplitString(_checkLine, ' ');
+                    
+                    if(_splitWords[1] == _words[1]
+                    && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                        _data->UpdateRecordData(_splitWords);
+                        i += 2;
+                        _checkLine = recordLines[i];
+                        _splitWords = SplitString(_checkLine, ' ');
+                        while(_splitWords[1] == _words[1]
+                            && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                            _data->UpdateRecordData(_splitWords);
+                            i++;
+                            _checkLine = recordLines[i];
+                            _splitWords = SplitString(_checkLine, ' ');
+                        }
+                        i--;
+                    }
+                }
+            }
+            else if(_words[1] == "push_back" ) { // 벡터일 경우
+                std::cout << "vector push back data" << std::endl;
+                int _findIdx = -1;
+                for(int i = records.size() - 1; i >= 0; i--) {
+                    std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                    if(_comparisonStr == _words[2]) {
+                        _findIdx = i;
+                        std::cout << "_findIdx : " << _findIdx << std::endl;
+                        break;
+                    }
+                }
+                if(_findIdx != -1) { 
+                    std::cout << "detect vector record data" << std::endl;
+                    //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
+                    RecordData* _data = new RecordVector(_words);
+                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
+                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
+                    _data->UpdateRecordData(_words);
+                    records.push_back(_data);
+
+                } else {
+                    std::cout << "vector recordata create" << std::endl;
+                    RecordData* _data = new RecordVector(_words);
+                    _data->UpdateRecordData(_words);
                     records.push_back(_data);
                 }
             }
@@ -397,7 +454,7 @@ void App::Init() {
     while (std::getline(srcStream, _line)) {
         codes.push_back(_line);
         if(_line.find("main") != std::string::npos) {
-            currentLine = codes.size() - 1;
+            currentLine = codes.size();
         }
     }
     Render();
@@ -480,10 +537,18 @@ void App::Update() {
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
-        for(int i = currentLine; i < codes.size(); i++) {
-            currentLine++;
-            if(FindRecord(currentLine + 1)) break;
+        prevLine = currentLine;
+        currentIndex++;
+        currentLine = std::stoi(records[currentIndex]->line);
+        std::cout << "prev line : " << prevLine << std::endl;
+        std::cout << "current line : " << currentLine << std::endl;
+
+        /*
+        while(prevLine == currentLine) {
+            currentLine = std::stoi(records[currentIndex]->line);
+            currentIndex++;
         }
+        */
         inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
@@ -539,12 +604,12 @@ void App::Render() {
 
     int _startLine = (currentLine < CODE_SHOW_RANGE) 
     ? 0 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
-    int _endLine = ((currentLine + CODE_SHOW_RANGE) > codes.size() - 1) 
+    int _endLine = ((currentLine + CODE_SHOW_RANGE) > codes.size()) 
     ? _endLine = codes.size() - 1 : _endLine = currentLine + CODE_SHOW_RANGE; // 코드 마지막 줄 번호
 
     for(int i = _startLine; i <= _endLine; i++) {
         std::cout << i + 1 << "      ";
-        if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
+        if(i == currentLine - 1) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
 
@@ -557,15 +622,17 @@ void App::Render() {
     std::cout << "+--------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
-    if(FindRecord(currentLine + 1)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
+    std::cout << std::endl << "current line : " << currentLine << std::endl;
+
+    if(FindRecord(currentLine)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
         //std::cout << "find record data" << std::endl;
         //std::cout << "current index : " << currentLine + 1 << std::endl;
-        int _findIndex = FindRecordData(currentLine + 1);
+        int _findIndex = FindRecordData(currentLine);
         valShadowMemory.clear();
         ptrShadowMemroy.clear();
         map<string, string>::iterator p;
 
-        for(int i = 0 ; i < _findIndex + 1; i++) {
+        for(int i = 0 ; i <= _findIndex; i++) {
             std::map<std::string, std::string> _shadowMem = records[i]->GetShadowMemory();
             for (p = _shadowMem.begin(); p != _shadowMem.end(); ++p) {
                 valShadowMemory[p->first] = records[i]->name;
@@ -609,31 +676,27 @@ void App::Render() {
             _ct.PrintTable();
         }
         else {
-            ConsoleTable _ct(BASIC);
-            _ct.SetPadding(1);
-            _ct.AddColumn("Function");
-            _ct.AddColumn("Name");
-            _ct.AddColumn("Type");
-            _ct.AddColumn("Ptr");
-            _ct.AddColumn("Value");
-            _ct.AddColumn("Line");
+            std::cout << "line information" << std::endl << std::endl;
+            std::vector<std::string> _names;
+            std::string _dataFunc;
+            std::string _line;
+            std::string _ptr;
 
-            for(int i = 0; i < records.size(); i++) {
-                if(records[i]->line == std::to_string(currentLine + 1)) {
-                    std::cout << "Find index : " << currentLine + 1 << std::endl;
-                    ConsoleTableRow* _entry = new ConsoleTableRow(6);
-                    
-                    _entry->AddEntry(records[i]->dataFunc, 0);
-                    _entry->AddEntry(records[i]->name, 1);
-                    _entry->AddEntry(records[i]->type, 2);
-                    _entry->AddEntry(records[i]->ptr, 3);
-                    _entry->AddEntry(records[i]->value, 4);
-                    _entry->AddEntry(records[i]->line, 5);
-
-                    _ct.AddRow(_entry);
+            records[currentIndex]->PrintRecordTable(commandMessage);
+            _names.push_back(records[currentIndex]->name);
+            _dataFunc = records[currentIndex]->dataFunc;
+            _ptr = records[currentIndex]->ptr;
+            
+            for(int i = currentIndex - 1; i >= 0; i--) {
+                for(int j = 0; j < _names.size(); j++) {
+                    if(_ptr == records[i]->ptr 
+                    && _dataFunc == records[i]->dataFunc 
+                    && _names[j] == records[i]->name 
+                    && records[i]->recordType != RecordType::Array) {
+                        records[i]->PrintRecordTable(commandMessage);
+                    }
                 }
             }
-            _ct.PrintTable();
         }
     }
     else {
@@ -789,5 +852,17 @@ std::string App::RemoveChar(const std::string &_str, char _removeWord) {
         _result.erase(_pos, 1);
     }
     
+    return _result;
+}
+
+std::vector<std::string> App::SplitString(const std::string &_str, char _delimiter) {
+    std::vector<std::string> _result;
+    std::string _token;
+    std::istringstream _tokenStream(_str);
+
+    while (std::getline(_tokenStream, _token, _delimiter)) {
+        _result.push_back(_token);
+    }
+
     return _result;
 }

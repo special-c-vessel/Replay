@@ -5,6 +5,7 @@ RecordVector::RecordVector() {
     currentPage = 1;
     prevPage = 1;
     shadowMaxIdx = 0;
+    recordType = RecordType::Array;
 }
 
 RecordVector::RecordVector(std::vector<std::string> _words) {
@@ -12,6 +13,7 @@ RecordVector::RecordVector(std::vector<std::string> _words) {
     currentPage = 1;
     prevPage = 1;
     shadowMaxIdx = 0;
+    recordType = RecordType::Array;
 
     InitRecordData(_words);
 }
@@ -38,6 +40,7 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     std::cout << "type : " << _words[3] << std::endl;
     std::cout << "ptr : " << _words[_words.size() - 3] << std::endl;
     std::cout << "value : " << _words[_words.size() - 4] << std::endl;
+    std::cout << "line : " << _words[_words.size() - 2] << std::endl;
 
     dataFunc = _names[0];
     name = _names[1];
@@ -213,4 +216,12 @@ void RecordVector::SetShadowMemorySize(int _size) {
 
 int RecordVector::GetShadowMemorySize() {
     return this->shadowMaxIdx;
+}
+
+void RecordVector::SetArrrays(std::vector<ArrayStruct> _arrays) {
+    
+}
+
+std::vector<ArrayStruct> RecordVector::GetArrays() {
+    
 }

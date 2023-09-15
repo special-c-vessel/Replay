@@ -4,6 +4,8 @@ RecordArray::RecordArray() {
     std::cout << "Call Normal Constructor(RecordArray)" << std::endl;
     currentPage = 1;
     prevPage = 1;
+    shadowMaxIdx = 0;
+    recordType = RecordType::Array;
 }
 
 RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
@@ -12,6 +14,7 @@ RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
     prevPage = 1;
     shadowMaxIdx = 0;
     dimension = _dimension;
+    recordType = RecordType::Array;
 
     InitRecordData(_words);
 }
@@ -35,7 +38,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     ArrayStruct _arrayStruct;
     _arrayStruct.arrayFunc = _names[0];
     _arrayStruct.arrayName = _names[1];
-    _arrayStruct.arrayType = _words[3];
+    _arrayStruct.arrayType = _words[2];
     _arrayStruct.arrayValue = _words[_words.size() - 4];
     _arrayStruct.arrayPtr = _words[_words.size() - 3];
     _arrayStruct.arrayLine = _words[_words.size() - 2];
@@ -51,6 +54,12 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     this->line = _arrayStruct.arrayLine;
     this->col = _arrayStruct.arrayCol;
 
+    arrays.push_back(_arrayStruct);
+    
+    this->shadowMemory[_arrayStruct.arrayPtr] = _arrayStruct.arrayValue;
+
+    maxPageIndex = (arrays.size() / 10) + 1;
+
     std::cout << "Func : " << _arrayStruct.arrayFunc << std::endl;
     std::cout << "Name : " << _arrayStruct.arrayName << std::endl;
     std::cout << "Type : " << _arrayStruct.arrayType << std::endl;
@@ -61,18 +70,48 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     for(int i = 0; i < _arrayStruct.arrayIndex.size(); i++) {
         std::cout << "Index" << i << " : " << _arrayStruct.arrayIndex[i] << std::endl;
     }
+}
+
+void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
+    std::stringstream _ss(_words[1]);
+    // 공백 분리 결과를 저장할 배열
+    std::vector<std::string> _names;
+    std::string _word;
+    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+    while (getline(_ss, _word, '_')){
+        _names.push_back(_word);
+    }
+
+    ArrayStruct _arrayStruct;
+    _arrayStruct.arrayFunc = _names[0];
+    _arrayStruct.arrayName = _names[1];
+    _arrayStruct.arrayType = _words[2];
+    _arrayStruct.arrayValue = _words[_words.size() - 4];
+    _arrayStruct.arrayPtr = _words[_words.size() - 3];
+    _arrayStruct.arrayLine = _words[_words.size() - 2];
+    _arrayStruct.arrayCol = _words[_words.size() - 1];
+
+    for(int i = 0; i < dimension; i++) {
+        _arrayStruct.arrayIndex.push_back(_words[4 + i]);
+    }
 
     arrays.push_back(_arrayStruct);
+
+    std::cout << "array size : " << arrays.size() << std::endl;
     
     this->shadowMemory[_arrayStruct.arrayPtr] = _arrayStruct.arrayValue;
 
     maxPageIndex = (arrays.size() / 10) + 1;
-    std::cout << "maxPageIndex : " << maxPageIndex << std::endl;
-}
-
-void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
-    std::cout << "Call UpdateRecordData func(RecordArray), dimension = " << dimension << std::endl;
-
+    std::cout << "Func : " << _arrayStruct.arrayFunc << std::endl;
+    std::cout << "Name : " << _arrayStruct.arrayName << std::endl;
+    std::cout << "Type : " << _arrayStruct.arrayType << std::endl;
+    std::cout << "Value : " << _arrayStruct.arrayValue << std::endl;
+    std::cout << "arrayPtr : " << _arrayStruct.arrayPtr << std::endl;
+    std::cout << "arrayPtr : " << _arrayStruct.arrayLine << std::endl;
+    std::cout << "arrayCol : " << _arrayStruct.arrayCol << std::endl;
+    for(int i = 0; i < _arrayStruct.arrayIndex.size(); i++) {
+        std::cout << "Index" << i << " : " << _arrayStruct.arrayIndex[i] << std::endl;
+    }
 }
 
 void RecordArray::PrintRecordData() {
@@ -226,4 +265,14 @@ void RecordArray::SetShadowMemorySize(int _size) {
 
 int RecordArray::GetShadowMemorySize() {
     return this->shadowMaxIdx;
+}
+
+void RecordArray::SetArrrays(std::vector<ArrayStruct> _arrays) {
+    for(int i = 0; i < _arrays.size(); i++) {
+        this->arrays.push_back(_arrays[i]);
+    }
+}
+
+std::vector<ArrayStruct> RecordArray::GetArrays() {
+    return this->arrays;
 }

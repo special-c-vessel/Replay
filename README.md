@@ -4,6 +4,10 @@
 ## Replay
 재현 파트
 
+### 지원 목록
+1. Array, Vector
+2. Primitive Data Types
+
 ### 실행 순서
 
 1. git clone https://github.com/special-c-vessel/Replay.git
@@ -25,5 +29,6 @@ d - 다음 페이지
 
 1. findptr [pointer address] : 지정한 포인터 주소값의 저장되어 있는 값을 출력 ex) findptr 0x25faddb2
 2. mvarray [index] : 배열의 지정한 인덱스의 값을 출력 ex) mvarray 10
+3. mvline [index] : 원하는 줄 번호로 이동 ex) mvline 150
 
 

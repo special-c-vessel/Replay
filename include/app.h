@@ -57,14 +57,21 @@ private: // app class function
     std::string GetType(std::string&);
     std::string RemoveChar(const std::string&, char);
     int CountChar(std::string&, char);
+
+public:
+    std::vector<std::string> SplitString(const std::string&, char);
+    
 public: // main framework variable
     char* srcFile;
     char* recordFile;
     bool programOver;  
+    int prevLine;
     int currentLine;
+    int currentIndex;
     bool isDone;
 
     std::vector<RecordData*> records;
+    std::vector<RecordData*> currentRecords;
     std::vector<std::string> codes;
     std::vector<std::string> recordLines;
     std::vector<std::string> commands;

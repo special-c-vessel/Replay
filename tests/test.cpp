@@ -15,13 +15,13 @@ void testFunc111()
   int c = a + b;
 }
 
-// void testFunc222()
-// {
-//   int aa = 1;
-//   int bb = 2;
+void testFunc222()
+{
+  int a = 1;
+  int b = 2;
 
-//   int cc = aa + bb;
-// }
+  int c = a + b;
+}
 
 class B {
   public:
@@ -70,6 +70,10 @@ class QQQQQ {
 
 int main()
 {
+  int tempnumVal = 12321;
+  float tempfloatVal = 12.421;
+
+
   AAAAA x11111;
   AAAAA x22222;
 
@@ -80,6 +84,7 @@ int main()
   QQQQQ qwe;
 
   testFunc111();
+  testFunc222();
 
   x11111.xxxxx = 50;
   x11111.yyyyy = 100;
@@ -160,9 +165,7 @@ int main()
   int * ptr1111 = x11111.get_x_ptr();
   int ptr2222 = x11111.get_x_ref();
 
-  int num1 = 10;
-  int num2 = 20;
-  int num3 = num1 + num2;
+  int num1 = 10;   int num2 = 20;  int num3 = num1 + num2;
 
   long long int num4 = 111111;
   float ffffstatic = 112.2414;
@@ -174,8 +177,14 @@ int main()
 
   int ResetArr[50] = {11, 22, 33, 44, 55};
 
-  arrTest[30] = 12;
+  arrTest[30] = 12.4f;
   arrTest2[25][25] = 55555;
+
+  arrTest2[0][1] = 1;
+  arrTest2[1][2] = 2;
+  arrTest2[3][4] = 3;
+
+  arrTest2[1][2] = 222;
 
   int arrTest1[100];
 
@@ -205,14 +214,19 @@ int main()
   vector<string> sssss;
 
   vvvvv.push_back(55555);
-  vvvvv.push_back(66);
-  vvvvv.push_back(77);
 
   vvvvv22.push_back(12345);
   vvvvv22.push_back(3456);
+
+
+
+  vvvvv.push_back(66);
+  vvvvv.push_back(77);
+
+  
   vvvvv22.push_back(56789);
 
-
+ 
   fffff.push_back(111.24124);
 
   sssss.push_back("vector string test");
@@ -224,4 +238,3 @@ int main()
 
   return 0;
 }
-

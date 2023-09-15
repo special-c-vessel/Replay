@@ -21,14 +21,18 @@ public: // 오버라이드 함수
     void PrintRecordData() override;
     std::string PrintRecordTable(std::string) override;
 
-    void SetShadowMemory(std::map<std::string, std::string>);
-    std::map<std::string, std::string> GetShadowMemory();
-    void SetShadowMemorySize(int);
-    int GetShadowMemorySize();
+    void SetShadowMemory(std::map<std::string, std::string>) override;
+    std::map<std::string, std::string> GetShadowMemory() override;
+    
+    void SetShadowMemorySize(int) override;
+    int GetShadowMemorySize() override;
+    
+     void SetArrrays(std::vector<ArrayStruct>) override;
+    std::vector<ArrayStruct> GetArrays() override;
 
 public: // 편의성 함수
     void PrintShadowMemory();
-
+    bool IsNumeric(const std::string& _str);
 private:
      std::map<std::string, std::string> shadowMemory;
      int shadowMaxIdx = 0;

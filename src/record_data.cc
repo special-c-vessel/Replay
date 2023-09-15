@@ -32,3 +32,19 @@ void RecordData::SetShadowMemory(std::map<std::string, std::string> _shadowMemor
 std::map<std::string, std::string> RecordData::GetShadowMemory() {
     
 }
+
+void RecordData::SetShadowMemorySize(int _size) {
+
+}
+
+int RecordData::GetShadowMemorySize() {
+    
+}
+
+void RecordData::SetArrrays(std::vector<ArrayStruct> _arrays) {
+    
+}
+
+std::vector<ArrayStruct> RecordData::GetArrays() {
+    
+}
