@@ -42,6 +42,7 @@ private: // app class function
     int FindRecordDataPtr(std::string);
     int FindRecordDataStr(std::string);
     int FindRecordData(int);
+    bool FindPrevRecordData(std::vector<std::string>, int);
 
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
@@ -60,7 +61,7 @@ private: // app class function
 
 public:
     std::vector<std::string> SplitString(const std::string&, char);
-    
+
 public: // main framework variable
     char* srcFile;
     char* recordFile;

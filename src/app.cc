@@ -511,9 +511,11 @@ void App::Input() {
 void App::Update() {
     if(inputState == InputState::Up) {
         this->commandMessage = "up";
-        for(int i = currentLine; i > 0; i--) {
-            currentLine--;
-            if(FindRecord(currentLine + 1)) break;
+        if(currentIndex > 0) {
+            currentIndex--;
+            currentLine = std::stoi(records[currentIndex]->line);
+            std::cout << "prev line : " << prevLine << std::endl;
+            std::cout << "current line : " << currentLine << std::endl;
         }
         inputState = InputState::Stop;
     }
@@ -525,47 +527,65 @@ void App::Update() {
             if(_eraseStr.size() < 2) {
                 while(_eraseStr.size() < 2 && (currentLine + 1) <= (codes.size() - 1)) {
                     currentLine--;
-                    _eraseStr = codes[currentLine];
+                    _eraseStr = codes[currentLine - 1];
                     _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
                 }
+                currentLine--;
             }
             else {
                 currentLine--;
             }
+            
+            for(int i = currentLine; i >= 0; i--) {
+                int _findIndex = FindRecordData(i);
+                if(_findIndex != -1) {
+                    currentIndex = _findIndex;
+                    break;
+                }
+            }
+
+            std::cout << "currentIndex : " << currentIndex << std::endl;
+            std::cout << "currentLine : " << currentLine << std::endl;
             inputState = InputState::Stop;
         }
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
-        prevLine = currentLine;
         currentIndex++;
         currentLine = std::stoi(records[currentIndex]->line);
         std::cout << "prev line : " << prevLine << std::endl;
         std::cout << "current line : " << currentLine << std::endl;
 
-        /*
-        while(prevLine == currentLine) {
-            currentLine = std::stoi(records[currentIndex]->line);
-            currentIndex++;
-        }
-        */
         inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
         this->commandMessage = "double down";
         if(currentLine < codes.size() - 1) {
-            std::string _eraseStr = codes[currentLine + 1];
+            std::string _eraseStr = codes[currentLine];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
             if(_eraseStr.size() < 2) {
-                while(_eraseStr.size() < 2 && (currentLine + 1) <= (codes.size() - 1)) {
+                while(_eraseStr.size() < 2 && (currentLine) <= (codes.size() - 1)) {
                     currentLine++;
                     _eraseStr = codes[currentLine];
                     _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
                 }
+                currentLine++;
             }
             else {
                 currentLine++;
             }
+
+            for(int i = currentLine; i >= 0; i--) {
+                int _findIndex = FindRecordData(i);
+                if(_findIndex != -1) {
+                    std::cout << "find index : " << _findIndex << std::endl;
+                    currentIndex = _findIndex;
+                    break;
+                }
+            }
+
+            std::cout << "currentIndex : " << currentIndex << std::endl;
+            std::cout << "currentLine : " << currentLine << std::endl;
             inputState = InputState::Stop;
         }
     }
@@ -587,7 +607,14 @@ void App::Update() {
                 _cmdWords.push_back(_cmdWord);
             }
 
-            currentLine = std::stoi(_cmdWords[1]) - 1;
+            currentLine = std::stoi(_cmdWords[1]);
+            for(int i = currentLine; i >= 0; i--) {
+                int _findIndex = FindRecordData(i);
+                if(_findIndex != -1) {
+                    currentIndex = _findIndex;
+                    break;
+                }
+            }
         }
     }
 }
@@ -675,27 +702,108 @@ void App::Render() {
 
             _ct.PrintTable();
         }
+        else if(commandMessage.find("findname") != std::string::npos) {
+            std::cout << "findname inside" << std::endl;
+            std::stringstream _cmdss(commandMessage);
+            // 공백 분리 결과를 저장할 배열
+            std::vector<std::string> _cmdWords;
+            std::string _cmdWord;
+            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+            while (getline(_cmdss, _cmdWord, ' ')){
+                _cmdWords.push_back(_cmdWord);
+            }
+
+            ConsoleTable _ct(BASIC);
+            _ct.SetPadding(1);
+            _ct.AddColumn("Name");
+            _ct.AddColumn("Type");
+            _ct.AddColumn("Ptr");
+            _ct.AddColumn("Value");
+            _ct.AddColumn("Line");
+
+            for(int i = 0; i <= currentIndex; i++) {
+                if(records[i]->name == _cmdWords[1] && records[i]->dataFunc == records[currentIndex]->dataFunc) {
+                    ConsoleTableRow* _entry = new ConsoleTableRow(5);
+                    _entry->AddEntry(records[i]->name, 0);
+                    _entry->AddEntry(records[i]->type, 1);
+                    _entry->AddEntry(records[i]->ptr, 2);
+                    _entry->AddEntry(records[i]->value, 3);
+                    _entry->AddEntry(records[i]->line, 4);
+                    _ct.AddRow(_entry);
+                }
+            }
+
+            _ct.PrintTable();
+        }
+        else if(commandMessage.find("findtype") != std::string::npos) {
+            std::cout << "findtype inside" << std::endl;
+            std::stringstream _cmdss(commandMessage);
+            // 공백 분리 결과를 저장할 배열
+            std::vector<std::string> _cmdWords;
+            std::string _cmdWord;
+            // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+            while (getline(_cmdss, _cmdWord, ' ')){
+                _cmdWords.push_back(_cmdWord);
+            }
+
+            ConsoleTable _ct(BASIC);
+            _ct.SetPadding(1);
+            _ct.AddColumn("Name");
+            _ct.AddColumn("Type");
+            _ct.AddColumn("Ptr");
+            _ct.AddColumn("Value");
+            _ct.AddColumn("Line");
+
+            for(int i = 0; i <= currentIndex; i++) {
+                if(records[i]->type == _cmdWords[1] && records[i]->dataFunc == records[currentIndex]->dataFunc) {
+                    ConsoleTableRow* _entry = new ConsoleTableRow(5);
+                    _entry->AddEntry(records[i]->name, 0);
+                    _entry->AddEntry(records[i]->type, 1);
+                    _entry->AddEntry(records[i]->ptr, 2);
+                    _entry->AddEntry(records[i]->value, 3);
+                    _entry->AddEntry(records[i]->line, 4);
+                    _ct.AddRow(_entry);
+                }
+            }
+
+            _ct.PrintTable();
+        }
         else {
             std::cout << "line information" << std::endl << std::endl;
-            std::vector<std::string> _names;
-            std::string _dataFunc;
-            std::string _line;
-            std::string _ptr;
+            std::vector<std::string> _info;
 
             records[currentIndex]->PrintRecordTable(commandMessage);
-            _names.push_back(records[currentIndex]->name);
-            _dataFunc = records[currentIndex]->dataFunc;
-            _ptr = records[currentIndex]->ptr;
-            
-            for(int i = currentIndex - 1; i >= 0; i--) {
-                for(int j = 0; j < _names.size(); j++) {
-                    if(_ptr == records[i]->ptr 
-                    && _dataFunc == records[i]->dataFunc 
-                    && _names[j] == records[i]->name 
+            _info.push_back(records[currentIndex]->ptr);
+            _info.push_back(records[currentIndex]->dataFunc);
+            _info.push_back(records[currentIndex]->name);
+            _info.push_back(records[currentIndex]->value);
+
+            if(FindPrevRecordData(_info, currentIndex)) {
+                std::cout << std::endl << "\033[1m" << "Previous Data List" << "\033[0m"<< std::endl;
+                ConsoleTable _ct(BASIC);
+                _ct.SetPadding(1);
+                _ct.AddColumn("Name");
+                _ct.AddColumn("Ptr");
+                _ct.AddColumn("Value");
+                _ct.AddColumn("Line");
+                
+                for(int i = currentIndex - 1; i >= 0; i--) {
+                    if(_info[0] == records[i]->ptr 
+                    && _info[1] == records[i]->dataFunc 
+                    && _info[2] == records[i]->name 
+                    && _info[3] != records[i]->value
                     && records[i]->recordType != RecordType::Array) {
-                        records[i]->PrintRecordTable(commandMessage);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(4);
+                
+                        _entry->AddEntry(records[i]->name, 0);
+                        _entry->AddEntry(records[i]->ptr, 1);
+                        _entry->AddEntry(records[i]->value, 2);
+                        _entry->AddEntry(records[i]->line, 3);
+
+                        _ct.AddRow(_entry);
                     }
                 }
+                _ct.PrintTable();
             }
         }
     }
@@ -748,8 +856,12 @@ int App::FindRecordDataStr(std::string _name) {
 
 int App::FindRecordData(int _line) {
     for(int i = 0; i < records.size(); i++) {
-        if(std::stoi(records[i]->line) == _line) return i;
+        if(std::stoi(records[i]->line) == _line) {
+            std::cout << "FIndRecordData line : " << i << std::endl;
+            return i;
+        }
     }
+    return -1;
 }
 
 bool App::IsEqualData(std::string _str, std::string _line, std::string _col) {
@@ -772,6 +884,8 @@ void App::InitCommand() {
     commands.push_back("findptr");
     commands.push_back("mvindex");
     commands.push_back("mvline");
+    commands.push_back("findtype");
+    commands.push_back("findname");
 }
 
 bool App::FindCommand(std::string _command) {
@@ -865,4 +979,17 @@ std::vector<std::string> App::SplitString(const std::string &_str, char _delimit
     }
 
     return _result;
+}
+
+bool App::FindPrevRecordData(std::vector<std::string> _str, int _currentIndex) {
+    for(int i = _currentIndex - 1; i >= 0; i--) {
+        if(_str[0] == records[i]->ptr 
+        && _str[1] == records[i]->dataFunc 
+        && _str[2] == records[i]->name 
+        && _str[3] != records[i]->value
+        && records[i]->recordType != RecordType::Array) {
+            return true;
+        }
+    }
+    return false;
 }

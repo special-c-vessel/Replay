@@ -27,8 +27,10 @@ d - 다음 페이지
 
 #### 명령어 목록
 
-1. findptr [pointer address] : 지정한 포인터 주소값의 저장되어 있는 값을 출력 ex) findptr 0x25faddb2
-2. mvarray [index] : 배열의 지정한 인덱스의 값을 출력 ex) mvarray 10
-3. mvline [index] : 원하는 줄 번호로 이동 ex) mvline 150
+1. findptr [address] : 지정한 포인터 주소값의 저장되어 있는 값을 출력 ex) findptr 0x25faddb2
+2. findtype [type] : 찾고자 하는 타입의 기록 정보들을 출력 ex) findtype string
+3. findname [name] : 찾고자 하는 이름의 기록 정보들을 출력 ex) findname num1
+3. mvarray [index] : 배열의 지정한 인덱스의 값을 출력 ex) mvarray 10
+4. mvline [index] : 원하는 줄 번호로 이동 ex) mvline 150
 
 
