@@ -74,16 +74,6 @@ store main_ResetArr i32 isArr 1 22 0x16fafa4fc 178 7
 store main_ResetArr i32 isArr 2 33 0x16fafa500 178 7
 store main_ResetArr i32 isArr 3 44 0x16fafa504 178 7
 store main_ResetArr i32 isArr 4 55 0x16fafa508 178 7
-store main_ResetArr i32 isArr 5 11 0x16fafa4f8 178 7
-store main_ResetArr i32 isArr 6 22 0x16fafa4fc 178 7
-store main_ResetArr i32 isArr 7 33 0x16fafa500 178 7
-store main_ResetArr i32 isArr 8 44 0x16fafa504 178 7
-store main_ResetArr i32 isArr 9 55 0x16fafa508 178 7
-store main_ResetArr i32 isArr 10 11 0x16fafa4f8 178 7
-store main_ResetArr i32 isArr 11 22 0x16fafa4fc 178 7
-store main_ResetArr i32 isArr 12 33 0x16fafa500 178 7
-store main_ResetArr i32 isArr 13 44 0x16fafa504 178 7
-store main_ResetArr i32 isArr 14 55 0x16fafa508 178 7
 store main_arrTest float isPointerArr 30 0.000000 0x16faff3e0 180 15
 store main_arrTest2 i64 isPointerArr 25 25 55555 0x16fafa5c0 181 20
 store main_arrTest2 i64 isPointerArr 0 1 1 0x16fafa5c0 183 18

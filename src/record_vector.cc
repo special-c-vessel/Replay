@@ -41,7 +41,9 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     std::cout << "ptr : " << _words[_words.size() - 3] << std::endl;
     std::cout << "value : " << _words[_words.size() - 4] << std::endl;
     std::cout << "line : " << _words[_words.size() - 2] << std::endl;
+    std::cout << "access type : " << _words[0] << std::endl;
 
+    accessType = _words[0];
     dataFunc = _names[0];
     name = _names[1];
     type = _words[3];
@@ -124,12 +126,15 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
 
     ConsoleTable ct(BASIC);
     ct.SetPadding(1);
-    ct.AddColumn("Function");
+    ct.AddColumn(" ");
+    ct.AddColumn("Current Function");
+    ct.AddColumn("Access Type");
     ct.AddColumn("Name");
     ct.AddColumn("Type");
     ct.AddColumn("Value");
-    ct.AddColumn("Ptr");
+    ct.AddColumn("Pointer Address");
     ct.AddColumn("Index");
+    ct.AddColumn("Container Type");
 
     std::vector<VectorStruct> _vectors;
     for (auto iter = shadowMemory.begin(); iter != shadowMemory.end(); ++iter){
@@ -143,6 +148,7 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
         _vectors[i].vectorFunc = this->dataFunc;
         _vectors[i].vectorName = this->name;
         _vectors[i].vectorType = this->type;
+        _vectors[i].vectorAccessType = this->accessType;
         _vectors[i].vectorIndex = std::to_string(i);
     }
 
@@ -150,14 +156,19 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
     int _endIndex = (currentPage * 10);
     if(_startIndex > _vectors.size() - 1) _startIndex = _vectors.size() - 1;
     if(_endIndex > _vectors.size()) _endIndex = _vectors.size();
+    int _tableIndex = 0;
     for(int i = _startIndex ; i < _endIndex; i++) {
-        ConsoleTableRow* entry = new ConsoleTableRow(6);
-        entry->AddEntry(_vectors[i].vectorFunc, 0);
-        entry->AddEntry(_vectors[i].vectorName, 1);
-        entry->AddEntry(_vectors[i].vectorType, 2);
-        entry->AddEntry(_vectors[i].vectorValue, 3);
-        entry->AddEntry(_vectors[i].vectorPtr, 4);
-        entry->AddEntry(_vectors[i].vectorIndex, 5);
+        ConsoleTableRow* entry = new ConsoleTableRow(9);
+        _tableIndex++;
+        entry->AddEntry(std::to_string(_tableIndex), 0);
+        entry->AddEntry(_vectors[i].vectorFunc, 1);
+        entry->AddEntry(_vectors[i].vectorAccessType, 2);
+        entry->AddEntry(_vectors[i].vectorName, 3);
+        entry->AddEntry(_vectors[i].vectorType, 4);
+        entry->AddEntry(_vectors[i].vectorValue, 5);
+        entry->AddEntry(_vectors[i].vectorPtr, 6);
+        entry->AddEntry(_vectors[i].vectorIndex, 7);
+        entry->AddEntry("Vector", 8);
             
         ct.AddRow(entry);
     }

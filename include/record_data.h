@@ -22,6 +22,7 @@ struct ArrayStruct
     std::string arrayPtr;
     std::string arrayLine;
     std::string arrayCol;
+    std::string arrayAccesType;
     std::vector<std::string> arrayIndex;
 };
 
@@ -58,6 +59,7 @@ public:
     virtual void SetArrrays(std::vector<ArrayStruct>);
     virtual std::vector<ArrayStruct> GetArrays();
 public:
+    std::string accessType;
 	std::string name;
 	std::string type;
 	std::string value;

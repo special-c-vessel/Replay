@@ -20,6 +20,7 @@ struct VectorStruct
     std::string vectorValue;
     std::string vectorPtr;
     std::string vectorIndex;
+    std::string vectorAccessType;
 };
 
 class RecordVector : public RecordData {

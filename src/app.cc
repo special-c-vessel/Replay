@@ -40,7 +40,7 @@ void App::Run() {
 void App::Init() {
     isDone = false;
     programOver = false;
-    currentLine = 0;
+    currentLine = 1;
     currentIndex = -1;
     prevLine = -1;
     inputState = InputState::Stop;
@@ -97,15 +97,38 @@ void App::Init() {
                 }
 
                 if(_findIdx != -1) {
-                    std::cout << "detect vector record data" << std::endl;
+                    std::cout << "detect array record data" << std::endl;
                     //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                     RecordData* _data = new RecordArray(_words, _dimension);
                     std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
                     _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
                     _data->SetArrrays(records[_findIdx]->GetArrays());
                     records.push_back(_data);
+                    
+                    std::string _checkLine = recordLines[i + 1];
+                    std::vector<std::string> _splitWords = SplitString(_checkLine, ' ');
+                    
+                    if(_splitWords[1] == _words[1]
+                    && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                        std::cout << "next array data" << std::endl;
+                        _data->UpdateRecordData(_splitWords);
+                        i += 2;
+                        _checkLine = recordLines[i];
+                        _splitWords = SplitString(_checkLine, ' ');
+                        while(_splitWords[1] == _words[1]
+                            && i < recordLines.size()
+                            && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                            std::cout << "next array data in while" << std::endl;
+                            _data->UpdateRecordData(_splitWords);
+                            i++;
+                            _checkLine = recordLines[i];
+                            _splitWords = SplitString(_checkLine, ' ');
+                        }
+                        i--;
+                    }
                 }
                 else {
+                    std::cout << "create array data" << std::endl;
                     RecordData* _data = new RecordArray(_words, _dimension);
                     records.push_back(_data);
                     std::string _checkLine = recordLines[i + 1];
@@ -113,12 +136,15 @@ void App::Init() {
                     
                     if(_splitWords[1] == _words[1]
                     && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                        std::cout << "next array data" << std::endl;
                         _data->UpdateRecordData(_splitWords);
                         i += 2;
                         _checkLine = recordLines[i];
                         _splitWords = SplitString(_checkLine, ' ');
                         while(_splitWords[1] == _words[1]
+                            && i < recordLines.size()
                             && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
+                            std::cout << "next array data in while" << std::endl;
                             _data->UpdateRecordData(_splitWords);
                             i++;
                             _checkLine = recordLines[i];
@@ -418,6 +444,7 @@ void App::Init() {
                 }
                 else { // 문자열을 제외한 일반 타입
                     std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_words[0]);
                     _resultWord.push_back(_words[1]);
                     _resultWord.push_back(GetType(_words[2]));
                     _resultWord.push_back(_words[3]);
@@ -450,11 +477,11 @@ void App::Init() {
     }
 
     std::cout << "record count : " << records.size() << std::endl;
-
+    codes.push_back(" ");
     while (std::getline(srcStream, _line)) {
         codes.push_back(_line);
         if(_line.find("main") != std::string::npos) {
-            currentLine = codes.size();
+            currentLine = codes.size() - 1;
         }
     }
     Render();
@@ -511,8 +538,15 @@ void App::Input() {
 void App::Update() {
     if(inputState == InputState::Up) {
         this->commandMessage = "up";
+        std::cout << "current Index : " << currentIndex << std::endl;
         if(currentIndex > 0) {
-            currentIndex--;
+            if(std::stoi(records[currentIndex - 1]->line) < std::stoi(records[currentIndex]->line)
+            && std::stoi(records[currentIndex]->line) < currentLine) {
+                
+            }
+            else {
+                currentIndex--;
+            }
             currentLine = std::stoi(records[currentIndex]->line);
             std::cout << "prev line : " << prevLine << std::endl;
             std::cout << "current line : " << currentLine << std::endl;
@@ -521,16 +555,18 @@ void App::Update() {
     }
     else if(inputState == InputState::DoubleUp) {
         this->commandMessage = "doubleup";
-        if(currentLine > 0) {
+        if(currentLine > 1) {
+            // 이전 줄의 코드의 길이를 측정
             std::string _eraseStr = codes[currentLine - 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
+
+            // 이전 줄의 코드가 짧을 경우
             if(_eraseStr.size() < 2) {
-                while(_eraseStr.size() < 2 && (currentLine + 1) <= (codes.size() - 1)) {
+                while(_eraseStr.size() < 2 && (currentLine) <= (codes.size() - 1)) {
                     currentLine--;
-                    _eraseStr = codes[currentLine - 1];
+                    _eraseStr = codes[currentLine];
                     _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
                 }
-                currentLine--;
             }
             else {
                 currentLine--;
@@ -539,7 +575,7 @@ void App::Update() {
             for(int i = currentLine; i >= 0; i--) {
                 int _findIndex = FindRecordData(i);
                 if(_findIndex != -1) {
-                    currentIndex = _findIndex;
+                    currentIndex = _findIndex - 1 ;
                     break;
                 }
             }
@@ -553,7 +589,7 @@ void App::Update() {
         this->commandMessage = "down";
         currentIndex++;
         currentLine = std::stoi(records[currentIndex]->line);
-        std::cout << "prev line : " << prevLine << std::endl;
+        std::cout << "current Index : " << currentIndex<< std::endl;
         std::cout << "current line : " << currentLine << std::endl;
 
         inputState = InputState::Stop;
@@ -561,16 +597,20 @@ void App::Update() {
     else if(inputState == InputState::DoubleDown) {
         this->commandMessage = "double down";
         if(currentLine < codes.size() - 1) {
-            std::string _eraseStr = codes[currentLine];
+            // 다음 줄의 코드의 길이를 측정
+            std::string _eraseStr = codes[currentLine + 1];
             _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
+
+            // 다음 줄의 코드가 짧을 경우
             if(_eraseStr.size() < 2) {
-                while(_eraseStr.size() < 2 && (currentLine) <= (codes.size() - 1)) {
+                // 다음 줄의 길 떄까지 코드를 이동
+                while(_eraseStr.size() < 2 && (currentLine) < (codes.size() - 1)) {
                     currentLine++;
                     _eraseStr = codes[currentLine];
                     _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
                 }
-                currentLine++;
             }
+            // 다음 줄의 코드가 길 경우
             else {
                 currentLine++;
             }
@@ -630,13 +670,13 @@ void App::Render() {
     std::cout << std::endl;
 
     int _startLine = (currentLine < CODE_SHOW_RANGE) 
-    ? 0 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
+    ? 1 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
     int _endLine = ((currentLine + CODE_SHOW_RANGE) > codes.size()) 
     ? _endLine = codes.size() - 1 : _endLine = currentLine + CODE_SHOW_RANGE; // 코드 마지막 줄 번호
 
     for(int i = _startLine; i <= _endLine; i++) {
-        std::cout << i + 1 << "      ";
-        if(i == currentLine - 1) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
+        std::cout << i << "      ";
+        if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
 
@@ -782,28 +822,70 @@ void App::Render() {
                 std::cout << std::endl << "\033[1m" << "Previous Data List" << "\033[0m"<< std::endl;
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
+                _ct.AddColumn(" ");
+                _ct.AddColumn("Access Type");
                 _ct.AddColumn("Name");
+                _ct.AddColumn("Type");
                 _ct.AddColumn("Ptr");
                 _ct.AddColumn("Value");
                 _ct.AddColumn("Line");
                 
-                for(int i = currentIndex - 1; i >= 0; i--) {
+                int _tableIndex = 0;
+                for(int i = 0; i <= currentIndex; i++) {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
                     && _info[3] != records[i]->value
                     && records[i]->recordType != RecordType::Array) {
-                        ConsoleTableRow* _entry = new ConsoleTableRow(4);
-                
-                        _entry->AddEntry(records[i]->name, 0);
-                        _entry->AddEntry(records[i]->ptr, 1);
-                        _entry->AddEntry(records[i]->value, 2);
-                        _entry->AddEntry(records[i]->line, 3);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(7);
+                        _tableIndex++;
+                        _entry->AddEntry(std::to_string(_tableIndex), 0);
+                        _entry->AddEntry(records[i]->accessType, 1);
+                        _entry->AddEntry(records[i]->name, 2);
+                        _entry->AddEntry(records[i]->type, 3);
+                        _entry->AddEntry(records[i]->ptr, 4);
+                        _entry->AddEntry(records[i]->value, 5);
+                        _entry->AddEntry(records[i]->line, 6);
 
                         _ct.AddRow(_entry);
                     }
                 }
                 _ct.PrintTable();
+            }
+            if(FindAfterRecordData(_info, currentIndex)) {
+                std::cout << std::endl << "\033[1m" << "After Data List" << "\033[0m"<< std::endl;
+                ConsoleTable _ct(BASIC);
+                _ct.SetPadding(1);
+                _ct.AddColumn(" ");
+                _ct.AddColumn("Access Type");
+                _ct.AddColumn("Name");
+                _ct.AddColumn("Type");
+                _ct.AddColumn("Ptr");
+                _ct.AddColumn("Value");
+                _ct.AddColumn("Line");
+                
+                int _tableIndex = 0;
+                for(int i = currentIndex; i < records.size(); i++) {
+                    if(_info[0] == records[i]->ptr 
+                    && _info[1] == records[i]->dataFunc 
+                    && _info[2] == records[i]->name 
+                    && _info[3] != records[i]->value
+                    && records[i]->recordType != RecordType::Array) {
+                        ConsoleTableRow* _entry = new ConsoleTableRow(7);
+                        _tableIndex++;
+                        _entry->AddEntry(std::to_string(_tableIndex), 0);
+                        _entry->AddEntry(records[i]->accessType, 1);
+                        _entry->AddEntry(records[i]->name, 2);
+                        _entry->AddEntry(records[i]->type, 3);
+                        _entry->AddEntry(records[i]->ptr, 4);
+                        _entry->AddEntry(records[i]->value, 5);
+                        _entry->AddEntry(records[i]->line, 6);
+
+                        _ct.AddRow(_entry);
+                    }
+                }
+                _ct.PrintTable();
+
             }
         }
     }
@@ -919,6 +1001,9 @@ std::string App::GetType(std::string& _word) {
         else if(_removeStr == "i8") {
             _removeStr = "boolean";
         }
+        else if(_removeStr == "float") {
+            _removeStr = "float";
+        }
 
         std::string _pointerStr;
         int _pCount = CountChar(_word, 'p');
@@ -941,6 +1026,9 @@ std::string App::GetType(std::string& _word) {
         }
         else if(_word == "i8") {
             return "boolean";
+        }
+        else if(_word == "float") {
+            return "float";
         }
         else {
             return "undefined type";
@@ -983,6 +1071,19 @@ std::vector<std::string> App::SplitString(const std::string &_str, char _delimit
 
 bool App::FindPrevRecordData(std::vector<std::string> _str, int _currentIndex) {
     for(int i = _currentIndex - 1; i >= 0; i--) {
+        if(_str[0] == records[i]->ptr 
+        && _str[1] == records[i]->dataFunc 
+        && _str[2] == records[i]->name 
+        && _str[3] != records[i]->value
+        && records[i]->recordType != RecordType::Array) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) {
+    for(int i = _currentIndex; i < records.size(); i++) {
         if(_str[0] == records[i]->ptr 
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 

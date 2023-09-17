@@ -16,6 +16,8 @@ RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
     dimension = _dimension;
     recordType = RecordType::Array;
 
+
+
     InitRecordData(_words);
 }
 
@@ -36,6 +38,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     }
 
     ArrayStruct _arrayStruct;
+    _arrayStruct.arrayAccesType = _words[0];
     _arrayStruct.arrayFunc = _names[0];
     _arrayStruct.arrayName = _names[1];
     _arrayStruct.arrayType = _words[2];
@@ -48,6 +51,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
         _arrayStruct.arrayIndex.push_back(_words[4 + i]);
     }
 
+    this->accessType = _arrayStruct.arrayAccesType;
     this->dataFunc = _arrayStruct.arrayFunc;
     this->name = _arrayStruct.arrayName;
     this->ptr = _arrayStruct.arrayPtr;
@@ -60,6 +64,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
 
     maxPageIndex = (arrays.size() / 10) + 1;
 
+    std::cout << "Access Type : " << _arrayStruct.arrayAccesType << std::endl;
     std::cout << "Func : " << _arrayStruct.arrayFunc << std::endl;
     std::cout << "Name : " << _arrayStruct.arrayName << std::endl;
     std::cout << "Type : " << _arrayStruct.arrayType << std::endl;
@@ -83,6 +88,7 @@ void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
     }
 
     ArrayStruct _arrayStruct;
+    _arrayStruct.arrayAccesType = _words[0];
     _arrayStruct.arrayFunc = _names[0];
     _arrayStruct.arrayName = _names[1];
     _arrayStruct.arrayType = _words[2];
@@ -102,6 +108,7 @@ void RecordArray::UpdateRecordData(std::vector<std::string> _words) {
     this->shadowMemory[_arrayStruct.arrayPtr] = _arrayStruct.arrayValue;
 
     maxPageIndex = (arrays.size() / 10) + 1;
+    std::cout << "Access Type : " << _arrayStruct.arrayAccesType << std::endl;
     std::cout << "Func : " << _arrayStruct.arrayFunc << std::endl;
     std::cout << "Name : " << _arrayStruct.arrayName << std::endl;
     std::cout << "Type : " << _arrayStruct.arrayType << std::endl;
@@ -179,28 +186,41 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
 
     ConsoleTable ct(BASIC);
     ct.SetPadding(1);
+    ct.AddColumn(" ");
+    ct.AddColumn("Current Function");
+    ct.AddColumn("Access Type");
     ct.AddColumn("Name");
     ct.AddColumn("Type");
     ct.AddColumn("Value");
-    ct.AddColumn("Ptr");
+    ct.AddColumn("Pointer Address");
 
     for(int i = 0; i < dimension; i++) {
         ct.AddColumn("dimension-" + std::to_string(i + 1));
     }
+    ct.AddColumn("Container Type");
 
     int _startIndex = (currentPage * 10) - 10;
     int _endIndex = (currentPage * 10);
     if(_startIndex > arrays.size() - 1) _startIndex = arrays.size() - 1;
     if(_endIndex > arrays.size()) _endIndex = arrays.size();
+    int _tableIndex = 0;
     for(int i = _startIndex ; i < _endIndex; i++) {
-        ConsoleTableRow* entry = new ConsoleTableRow(6);
-        entry->AddEntry(arrays[i].arrayName, 0);
-        entry->AddEntry(arrays[i].arrayType, 1);
-        entry->AddEntry(arrays[i].arrayValue, 2);
-        entry->AddEntry(arrays[i].arrayPtr, 3);
-        for(int j = 0; j < arrays[i].arrayIndex.size(); j++)
-            entry->AddEntry(arrays[i].arrayIndex[j], 4 + j);
-            
+        ConsoleTableRow* entry = new ConsoleTableRow(8 + dimension);
+        _tableIndex++;
+        entry->AddEntry(std::to_string(_tableIndex), 0);
+        entry->AddEntry(arrays[i].arrayFunc, 1);
+        entry->AddEntry(arrays[i].arrayAccesType, 2);
+        entry->AddEntry(arrays[i].arrayName, 3);
+        entry->AddEntry(arrays[i].arrayType, 4);
+        entry->AddEntry(arrays[i].arrayValue, 5);
+        entry->AddEntry(arrays[i].arrayPtr, 6);
+        int _addIndex = 0;
+        for(int j = 0; j < arrays[i].arrayIndex.size(); j++) {
+            entry->AddEntry(arrays[i].arrayIndex[j], 7 + j);
+            _addIndex = j;
+        }
+        entry->AddEntry("Array", 8 + _addIndex);   
+        
         ct.AddRow(entry);
     }
     ct.PrintTable();
