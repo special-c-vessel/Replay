@@ -71,6 +71,7 @@ public: // main framework variable
     int currentLine;
     int currentIndex;
     bool isDone;
+    int currentPage;
 
     std::vector<RecordData*> records;
     std::vector<RecordData*> currentRecords;

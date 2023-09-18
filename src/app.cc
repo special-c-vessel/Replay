@@ -43,6 +43,7 @@ void App::Init() {
     currentLine = 1;
     currentIndex = -1;
     prevLine = -1;
+    currentPage = 1;
     inputState = InputState::Stop;
     systemMessage = "None";
     InitCommand();
@@ -550,6 +551,8 @@ void App::Update() {
             currentLine = std::stoi(records[currentIndex]->line);
             std::cout << "prev line : " << prevLine << std::endl;
             std::cout << "current line : " << currentLine << std::endl;
+
+            currentPage = 1;
         }
         inputState = InputState::Stop;
     }
@@ -579,11 +582,9 @@ void App::Update() {
                     break;
                 }
             }
-
-            std::cout << "currentIndex : " << currentIndex << std::endl;
-            std::cout << "currentLine : " << currentLine << std::endl;
-            inputState = InputState::Stop;
+            currentPage = 1;
         }
+        inputState = InputState::Stop;
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
@@ -624,16 +625,19 @@ void App::Update() {
                 }
             }
 
-            std::cout << "currentIndex : " << currentIndex << std::endl;
-            std::cout << "currentLine : " << currentLine << std::endl;
-            inputState = InputState::Stop;
+            currentPage = 1;
         }
+        inputState = InputState::Stop;
     }
     else if(inputState == InputState::Right) {
         this->commandMessage = "right";
+        currentPage++;
     }
     else if(inputState == InputState::Left) {
         this->commandMessage = "left";
+        if(currentPage > 1) {
+            currentPage--;
+        }
     }
     else if(inputState == InputState::Command) {
         if(commandMessage.find("mvline") != std::string::npos) {
@@ -817,6 +821,7 @@ void App::Render() {
             _info.push_back(records[currentIndex]->dataFunc);
             _info.push_back(records[currentIndex]->name);
             _info.push_back(records[currentIndex]->value);
+            _info.push_back(records[currentIndex]->type);
 
             if(FindPrevRecordData(_info, currentIndex)) {
                 std::cout << std::endl << "\033[1m" << "Previous Data List" << "\033[0m"<< std::endl;
@@ -831,11 +836,12 @@ void App::Render() {
                 _ct.AddColumn("Line");
                 
                 int _tableIndex = 0;
+                std::vector<ConsoleTableRow*> _entrys;
                 for(int i = 0; i <= currentIndex; i++) {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
-                    && _info[3] != records[i]->value
+                    && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array) {
                         ConsoleTableRow* _entry = new ConsoleTableRow(7);
                         _tableIndex++;
@@ -847,8 +853,18 @@ void App::Render() {
                         _entry->AddEntry(records[i]->value, 5);
                         _entry->AddEntry(records[i]->line, 6);
 
-                        _ct.AddRow(_entry);
+                        _entrys.push_back(_entry);
                     }
+                }
+                
+                int _startIndex = (_entrys.size() > (currentPage - 1) * 10) ? (currentPage - 1) * 10 : 0;
+                int _endIndex = (_entrys.size() > (currentPage * 10) - 1) ? (currentPage * 10) - 1 : _entrys.size() - 1;
+                std::cout << "StartIndex : " << _startIndex << std::endl;
+                std::cout << "EndIndex : " << _endIndex << std::endl;
+
+                for(int i = _startIndex; i <= _endIndex; i++) {
+                    std::cout << "PrevData Index : " << i << std::endl;
+                    _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
             }
@@ -869,7 +885,7 @@ void App::Render() {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
-                    && _info[3] != records[i]->value
+                    && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array) {
                         ConsoleTableRow* _entry = new ConsoleTableRow(7);
                         _tableIndex++;
@@ -1074,7 +1090,7 @@ bool App::FindPrevRecordData(std::vector<std::string> _str, int _currentIndex) {
         if(_str[0] == records[i]->ptr 
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 
-        && _str[3] != records[i]->value
+        && _str[4] == records[i]->type
         && records[i]->recordType != RecordType::Array) {
             return true;
         }
@@ -1087,7 +1103,7 @@ bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) 
         if(_str[0] == records[i]->ptr 
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 
-        && _str[3] != records[i]->value
+        && _str[4] == records[i]->type
         && records[i]->recordType != RecordType::Array) {
             return true;
         }
