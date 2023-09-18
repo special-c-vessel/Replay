@@ -1,7 +1,7 @@
 #include "app.h"
 
 App::App() {
-    std::cout << "Initialize app class" << std::endl;
+    std::cout << "Constructor app class" << std::endl;
 }
 
 App::App(char* _srcFile, char* _recordFile) 
@@ -38,34 +38,47 @@ void App::Run() {
 }
 
 void App::Init() {
+    std::cout << "Initialize app class" << std::endl;
     isDone = false;
     programOver = false;
     currentLine = 1;
     currentIndex = -1;
     prevLine = -1;
-    currentPage = 1;
+    prevCurPage = 1;
+    afterCurPage = 1;
     inputState = InputState::Stop;
     systemMessage = "None";
+    
+    recordLines.clear();
+    std::vector<std::string>().swap(recordLines);
+
     InitCommand();
 
-    // 소스 파일이 제대로 열렸는지 검사
-    std::ifstream srcStream(srcFile);
-    if (!srcStream) {
-        std::cerr << "Unable to open source file: " << srcFile << std::endl;
-        exit(0);
-    }
-
     // 기록 파일이 제대로 열렸는지 검사
-    std::ifstream recordStream(recordFile);
-    if (!recordStream) {
+    std::ifstream _recordStream(recordFile, std::ios::in);
+    if (!_recordStream.is_open()) {
         std::cerr << "Unable to open record file: " << recordFile << std::endl;
         exit(0);
     }
 
     std::string _line;
-    while (getline(recordStream, _line)) {
+    int _prevRecordSize = recordLines.size();
+    while (std::getline(_recordStream, _line)) {
+        //std::cout << "file open records line size : " << recordLines.size() << std::endl;
+        std::cout << "first size : " << recordLines.size() << " line size : " << _line.size() << std::endl;
         recordLines.push_back(_line);
+        if(recordLines.size() - 1 != _prevRecordSize) {
+            std::cout << "Error occur!!!!! Line Size : " << recordLines.size() << " Line is : " << _line << std::endl;
+            break;
+        }
+        else {
+            _prevRecordSize = recordLines.size();
+        }
     }
+
+    _recordStream.close();
+
+    std::cout << "file open records line size : " << recordLines.size() << std::endl;
     
     int _addIndex = 0;
     std::string _lineStr("");
@@ -477,14 +490,23 @@ void App::Init() {
         records[records.size() - 1]->infoMessage = "오류 발생 지점 예상";
     }
 
+    // 소스 파일이 제대로 열렸는지 검사
+    std::ifstream _srcStream(srcFile);
+    if (!_srcStream.is_open()) {
+        std::cerr << "Unable to open source file: " << srcFile << std::endl;
+        exit(0);
+    }
+
     std::cout << "record count : " << records.size() << std::endl;
     codes.push_back(" ");
-    while (std::getline(srcStream, _line)) {
+    while (std::getline(_srcStream, _line)) {
         codes.push_back(_line);
         if(_line.find("main") != std::string::npos) {
             currentLine = codes.size() - 1;
         }
     }
+    _srcStream.close();
+
     Render();
 }
 
@@ -552,7 +574,7 @@ void App::Update() {
             std::cout << "prev line : " << prevLine << std::endl;
             std::cout << "current line : " << currentLine << std::endl;
 
-            currentPage = 1;
+            afterCurPage = 1;
         }
         inputState = InputState::Stop;
     }
@@ -582,7 +604,7 @@ void App::Update() {
                     break;
                 }
             }
-            currentPage = 1;
+            afterCurPage = 1;
         }
         inputState = InputState::Stop;
     }
@@ -593,6 +615,7 @@ void App::Update() {
         std::cout << "current Index : " << currentIndex<< std::endl;
         std::cout << "current line : " << currentLine << std::endl;
 
+        afterCurPage = 1;    
         inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
@@ -625,18 +648,18 @@ void App::Update() {
                 }
             }
 
-            currentPage = 1;
+            afterCurPage = 1;
         }
         inputState = InputState::Stop;
     }
     else if(inputState == InputState::Right) {
         this->commandMessage = "right";
-        currentPage++;
+        afterCurPage++;
     }
     else if(inputState == InputState::Left) {
         this->commandMessage = "left";
-        if(currentPage > 1) {
-            currentPage--;
+        if(afterCurPage > 1) {
+            afterCurPage--;
         }
     }
     else if(inputState == InputState::Command) {
@@ -668,9 +691,9 @@ void App::Render() {
 
     std::cout << std::endl;
     std::cout << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
-    std::cout << "|                                    code                                  |\n";
-    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    std::cout << "|                                                            " << "\033[1m" << "Code" << "\033[0m" << "                                                        |\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
     int _startLine = (currentLine < CODE_SHOW_RANGE) 
@@ -685,15 +708,12 @@ void App::Render() {
     }
 
     std::cout << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
-
-    std::cout << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
-    std::cout << "|                            Information meseeage                          |\n";
-    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    std::cout << "|                                                        "<< "\033[1m" << "Info meseeage" << "\033[0m" <<"                                                   |\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
     std::cout << std::endl;
 
-    std::cout << std::endl << "current line : " << currentLine << std::endl;
+    //std::cout << std::endl << "current line : " << currentLine << std::endl;
 
     if(FindRecord(currentLine)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
         //std::cout << "find record data" << std::endl;
@@ -813,10 +833,8 @@ void App::Render() {
             _ct.PrintTable();
         }
         else {
-            std::cout << "line information" << std::endl << std::endl;
             std::vector<std::string> _info;
 
-            records[currentIndex]->PrintRecordTable(commandMessage);
             _info.push_back(records[currentIndex]->ptr);
             _info.push_back(records[currentIndex]->dataFunc);
             _info.push_back(records[currentIndex]->name);
@@ -828,12 +846,14 @@ void App::Render() {
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
-                _ct.AddColumn("Access Type");
+                _ct.AddColumn("Current Function");
+                _ct.AddColumn("Operation");
                 _ct.AddColumn("Name");
                 _ct.AddColumn("Type");
-                _ct.AddColumn("Ptr");
                 _ct.AddColumn("Value");
+                _ct.AddColumn("Pointer Address");
                 _ct.AddColumn("Line");
+                _ct.AddColumn("Column");
                 
                 int _tableIndex = 0;
                 std::vector<ConsoleTableRow*> _entrys;
@@ -843,27 +863,29 @@ void App::Render() {
                     && _info[2] == records[i]->name 
                     && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array) {
-                        ConsoleTableRow* _entry = new ConsoleTableRow(7);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(9);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
-                        _entry->AddEntry(records[i]->accessType, 1);
-                        _entry->AddEntry(records[i]->name, 2);
-                        _entry->AddEntry(records[i]->type, 3);
-                        _entry->AddEntry(records[i]->ptr, 4);
+                        _entry->AddEntry(records[i]->dataFunc, 1);
+                        _entry->AddEntry(records[i]->accessType, 2);
+                        _entry->AddEntry(records[i]->name, 3);
+                        _entry->AddEntry(records[i]->type, 4);
                         _entry->AddEntry(records[i]->value, 5);
-                        _entry->AddEntry(records[i]->line, 6);
+                        _entry->AddEntry(records[i]->ptr, 6);
+                        _entry->AddEntry(records[i]->line, 7);
+                        _entry->AddEntry(records[i]->col, 8);
 
                         _entrys.push_back(_entry);
                     }
                 }
                 
-                int _startIndex = (_entrys.size() > (currentPage - 1) * 10) ? (currentPage - 1) * 10 : 0;
-                int _endIndex = (_entrys.size() > (currentPage * 10) - 1) ? (currentPage * 10) - 1 : _entrys.size() - 1;
-                std::cout << "StartIndex : " << _startIndex << std::endl;
-                std::cout << "EndIndex : " << _endIndex << std::endl;
+                int _startIndex = (_entrys.size() > (prevCurPage - 1) * 5) ? (prevCurPage - 1) * 5 : 0;
+                int _endIndex = (_entrys.size() > (prevCurPage * 5) - 1) ? (prevCurPage * 5) - 1 : _entrys.size() - 1;
+                //std::cout << "StartIndex : " << _startIndex << std::endl;
+                //std::cout << "EndIndex : " << _endIndex << std::endl;
 
                 for(int i = _startIndex; i <= _endIndex; i++) {
-                    std::cout << "PrevData Index : " << i << std::endl;
+                    //std::cout << "PrevData Index : " << i << std::endl;
                     _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
@@ -873,35 +895,84 @@ void App::Render() {
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
-                _ct.AddColumn("Access Type");
+                _ct.AddColumn("Current Function");
+                _ct.AddColumn("Operation");
                 _ct.AddColumn("Name");
                 _ct.AddColumn("Type");
-                _ct.AddColumn("Ptr");
                 _ct.AddColumn("Value");
+                _ct.AddColumn("Pointer Address");
                 _ct.AddColumn("Line");
+                _ct.AddColumn("Column");
                 
                 int _tableIndex = 0;
-                for(int i = currentIndex; i < records.size(); i++) {
+                std::vector<ConsoleTableRow*> _entrys;
+                for(int i = 0; i <= currentIndex; i++) {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
                     && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array) {
-                        ConsoleTableRow* _entry = new ConsoleTableRow(7);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(9);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
-                        _entry->AddEntry(records[i]->accessType, 1);
-                        _entry->AddEntry(records[i]->name, 2);
-                        _entry->AddEntry(records[i]->type, 3);
-                        _entry->AddEntry(records[i]->ptr, 4);
+                        _entry->AddEntry(records[i]->dataFunc, 1);
+                        _entry->AddEntry(records[i]->accessType, 2);
+                        _entry->AddEntry(records[i]->name, 3);
+                        _entry->AddEntry(records[i]->type, 4);
                         _entry->AddEntry(records[i]->value, 5);
-                        _entry->AddEntry(records[i]->line, 6);
+                        _entry->AddEntry(records[i]->ptr, 6);
+                        _entry->AddEntry(records[i]->line, 7);
+                        _entry->AddEntry(records[i]->col, 8);
 
-                        _ct.AddRow(_entry);
+                        _entrys.push_back(_entry);
                     }
+                }
+                
+                int _startIndex = (_entrys.size() > (afterCurPage - 1) * 5) ? (afterCurPage - 1) * 5 : 0;
+                int _endIndex = (_entrys.size() > (afterCurPage * 5) - 1) ? (afterCurPage * 5) - 1 : _entrys.size() - 1;
+                //std::cout << "StartIndex : " << _startIndex << std::endl;
+                //std::cout << "EndIndex : " << _endIndex << std::endl;
+                //std::cout << "After data size : " << _entrys.size() << std::endl;
+
+                for(int i = _startIndex; i <= _endIndex; i++) {
+                    //std::cout << "AfterData Index : " << i << std::endl;
+                    _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
 
+            }
+            std::cout << std::endl << "\033[1m" << "Current Data Information" << "\033[0m" << std::endl << std::endl;
+            if(records[currentIndex]->recordType == RecordType::Prim) {
+                ConsoleTable _ct(BASIC);
+                _ct.SetPadding(1);
+                _ct.AddColumn(" ");
+                _ct.AddColumn("Current Function");
+                _ct.AddColumn("Operation");
+                _ct.AddColumn("Name");
+                _ct.AddColumn("Type");
+                _ct.AddColumn("Value");
+                _ct.AddColumn("Pointer Address");
+                _ct.AddColumn("Line");
+                _ct.AddColumn("Column");
+
+                ConsoleTableRow* _entry = new ConsoleTableRow(9);
+
+                _entry->AddEntry(" ", 0);
+                _entry->AddEntry(records[currentIndex]->dataFunc, 1);
+                _entry->AddEntry(records[currentIndex]->accessType, 2);
+                _entry->AddEntry(records[currentIndex]->name, 3);
+                _entry->AddEntry(records[currentIndex]->type, 4);
+                _entry->AddEntry(records[currentIndex]->value, 5);
+                _entry->AddEntry(records[currentIndex]->ptr, 6);
+                _entry->AddEntry(records[currentIndex]->line, 7);
+                _entry->AddEntry(records[currentIndex]->col, 8);
+
+                _ct.AddRow(_entry);
+
+                _ct.PrintTable();
+            }
+            else {
+                records[currentIndex]->PrintRecordTable(commandMessage);
             }
         }
     }
@@ -909,15 +980,11 @@ void App::Render() {
         std::cout << "                             기록정보 없음                               \n";
     }
 
-    std::cout << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
-
-    std::cout << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
-    std::cout << "|                            System meseeage                               |\n";
-    std::cout << "+--------------------------------------------------------------------------+\n";
-    std::cout << "                        " << systemMessage << std::endl;
-    std::cout << "+--------------------------------------------------------------------------+\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    std::cout << "|                                                       " << "\033[1m" <<"System meseeage" << "\033[0m" << "                                                  |\n";
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    std::cout << "                                             " << systemMessage << std::endl;
+    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
 }
 
 bool App::IsNumber(std::string const &_str) {
@@ -955,7 +1022,7 @@ int App::FindRecordDataStr(std::string _name) {
 int App::FindRecordData(int _line) {
     for(int i = 0; i < records.size(); i++) {
         if(std::stoi(records[i]->line) == _line) {
-            std::cout << "FIndRecordData line : " << i << std::endl;
+            //std::cout << "FIndRecordData line : " << i << std::endl;
             return i;
         }
     }
@@ -1109,4 +1176,17 @@ bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) 
         }
     }
     return false;
+}
+
+int App::FindIndexRecordData(std::string _line, std::string _name) {
+    int _count = 0;
+    for(int i = 0; i < records.size(); i++) {
+        if(records[i]->line == _line) {
+            _count++;
+            if(records[i]->name == _name) {
+                return _count;
+            }
+        }
+    }
+    return _count;
 }

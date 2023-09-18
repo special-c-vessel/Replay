@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <ncurses.h>
 
+
 #include "record_data.h"
 #include "console_table.h"
 #include "record_array.h"
@@ -44,6 +45,7 @@ private: // app class function
     int FindRecordData(int);
     bool FindPrevRecordData(std::vector<std::string>, int);
     bool FindAfterRecordData(std::vector<std::string>, int);
+    int FindIndexRecordData(std::string, std::string);
 
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
@@ -71,7 +73,8 @@ public: // main framework variable
     int currentLine;
     int currentIndex;
     bool isDone;
-    int currentPage;
+    int prevCurPage;
+    int afterCurPage;
 
     std::vector<RecordData*> records;
     std::vector<RecordData*> currentRecords;

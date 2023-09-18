@@ -1,7 +1,7 @@
-store dynamic_buffer_overrun_001_buf i8p 0x600001ba8020 0x16efda518 39 8
-load dynamic_buffer_overrun_001_buf i8p 0x600001ba8020 0x16efda518 41 5
-store dynamic_buffer_overrun_001_i i32 0 0x16efda514 43 9
-load dynamic_buffer_overrun_001_i i32 0 0x16efda514 43 12
+store dynamic_buffer_overrun_001-buf i8p 0x600001ba8020 0x16efda518 39 8
+load dynamic_buffer_overrun_001-buf i8p 0x600001ba8020 0x16efda518 41 5
+store dynamic_buffer_overrun_001-i i32 0 0x16efda514 43 9
+load dynamic_buffer_overrun_001-i i32 0 0x16efda514 43 12
 load dynamic_buffer_overrun_001_buf i8p 0x600001ba8020 0x16efda518 45 4
 load dynamic_buffer_overrun_001_i i32 0 0x16efda514 45 8
 load dynamic_buffer_overrun_001_i i32 0 0x16efda514 43 18
@@ -1687,7 +1687,7 @@ load dynamic_buffer_overrun_032_ptr_s struct.dynamic_buffer_overrun_s_005p 0x151
 load dynamic_buffer_overrun_032_i i32 0 0x16efda514 625 13
 load dynamic_buffer_overrun_032_i i32 0 0x16efda514 625 20
 load dynamic_buffer_overrun_032_i i32 0 0x16efda514 623 21
-store dynamic_buffer_overrun_032_i i32 1 0x16efda514 623 21
+store dynamic_buffer_overrun_032i i32 1 0x16efda514 623 21
 load dynamic_buffer_overrun_032_i i32 1 0x16efda514 623 14
 load dynamic_buffer_overrun_032_ptr_s struct.dynamic_buffer_overrun_s_005p 0x151714fa0 0x16efda518 625 7
 load dynamic_buffer_overrun_032_i i32 1 0x16efda514 625 13

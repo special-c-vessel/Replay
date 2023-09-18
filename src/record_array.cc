@@ -188,7 +188,7 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
     ct.SetPadding(1);
     ct.AddColumn(" ");
     ct.AddColumn("Current Function");
-    ct.AddColumn("Access Type");
+    ct.AddColumn("Operation");
     ct.AddColumn("Name");
     ct.AddColumn("Type");
     ct.AddColumn("Value");

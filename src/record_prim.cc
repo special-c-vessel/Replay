@@ -62,7 +62,7 @@ std::string RecordPrim::PrintRecordTable(std::string _message) {
         ConsoleTable _ct(BASIC);
         _ct.SetPadding(1);
         _ct.AddColumn("Current Function");
-        _ct.AddColumn("Access Type");
+        _ct.AddColumn("Operation");
         _ct.AddColumn("Name");
         _ct.AddColumn("Type");
         _ct.AddColumn("Value");
