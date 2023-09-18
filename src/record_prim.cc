@@ -18,7 +18,7 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     std::vector<std::string> _names;
     std::string _word;
     // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-    while (getline(_ss, _word, '_')){
+    while (getline(_ss, _word, '-')){
         _names.push_back(_word);
     }
 
