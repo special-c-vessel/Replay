@@ -57,10 +57,11 @@ private: // app class function
     // Error handling method
     void ErrorHandling(std::string);
 
-    // Type check method
+    // Check & Split cut method
     std::string GetType(std::string&);
     std::string RemoveChar(const std::string&, char);
     int CountChar(std::string&, char);
+    std::string RemoveLeadingWhitespace(const std::string&);
 
 public:
     std::vector<std::string> SplitString(const std::string&, char);
@@ -75,6 +76,8 @@ public: // main framework variable
     bool isDone;
     int prevCurPage;
     int afterCurPage;
+    int afterTableIndex;
+    int prevTableIndex;
 
     std::vector<RecordData*> records;
     std::vector<RecordData*> currentRecords;

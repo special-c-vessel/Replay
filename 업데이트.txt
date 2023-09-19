@@ -8,3 +8,5 @@
 8. 변수 이름으로 찾는 명령어 추가 - clear
 9. 베열 shadow memory 복사 - clear
 10. 원하는 라인 번호로 이동 보완 - clear
+s 다음에 이동 인덱스
+i16 추가

@@ -46,6 +46,8 @@ void App::Init() {
     prevLine = -1;
     prevCurPage = 1;
     afterCurPage = 1;
+    afterTableIndex = -1;
+    prevTableIndex = -1;
     inputState = InputState::Stop;
     systemMessage = "None";
     
@@ -575,6 +577,7 @@ void App::Update() {
             std::cout << "current line : " << currentLine << std::endl;
 
             afterCurPage = 1;
+            prevCurPage = 1;
         }
         inputState = InputState::Stop;
     }
@@ -605,6 +608,7 @@ void App::Update() {
                 }
             }
             afterCurPage = 1;
+            prevCurPage = 1;
         }
         inputState = InputState::Stop;
     }
@@ -615,7 +619,8 @@ void App::Update() {
         std::cout << "current Index : " << currentIndex<< std::endl;
         std::cout << "current line : " << currentLine << std::endl;
 
-        afterCurPage = 1;    
+        afterCurPage = 1;   
+        prevCurPage = 1; 
         inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
@@ -648,6 +653,7 @@ void App::Update() {
                 }
             }
 
+            prevCurPage = 1;
             afterCurPage = 1;
         }
         inputState = InputState::Stop;
@@ -683,6 +689,30 @@ void App::Update() {
                 }
             }
         }
+        else if(commandMessage.find("prevright") != std::string::npos) {
+            prevCurPage++;
+        }
+        else if(commandMessage.find("prevleft") != std::string::npos) {
+            if(prevCurPage > 1) prevCurPage--;
+        }
+        else if(commandMessage.find("followright") != std::string::npos) {
+            afterCurPage++;
+        }
+        else if(commandMessage.find("followleft") != std::string::npos) {
+            if(afterCurPage > 1) afterCurPage--;
+        }
+        else if(commandMessage.find("prevmove") != std::string::npos) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+            if(_cmdWords.size() > 1) {
+                prevTableIndex = std::stoi(_cmdWords[1]);
+            }
+        }
+        else if(commandMessage.find("followmove") != std::string::npos) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+            if(_cmdWords.size() > 1) {
+                afterTableIndex = std::stoi(_cmdWords[1]);
+            }
+        }
     }
 }
 
@@ -694,7 +724,6 @@ void App::Render() {
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
     std::cout << "|                                                            " << "\033[1m" << "Code" << "\033[0m" << "                                                        |\n";
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
-    std::cout << std::endl;
 
     int _startLine = (currentLine < CODE_SHOW_RANGE) 
     ? 1 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
@@ -707,11 +736,9 @@ void App::Render() {
         else std::cout << codes[i] << std::endl;
     }
 
-    std::cout << std::endl;
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
     std::cout << "|                                                        "<< "\033[1m" << "Info meseeage" << "\033[0m" <<"                                                   |\n";
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
-    std::cout << std::endl;
 
     //std::cout << std::endl << "current line : " << currentLine << std::endl;
 
@@ -842,7 +869,7 @@ void App::Render() {
             _info.push_back(records[currentIndex]->type);
 
             if(FindPrevRecordData(_info, currentIndex)) {
-                std::cout << std::endl << "\033[1m" << "Previous Data List" << "\033[0m"<< std::endl;
+                std::cout << "\033[1m" << "Previous Data List ,  다음 페이지 - prevright,  이전 페이지 - prevleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
@@ -879,10 +906,18 @@ void App::Render() {
                     }
                 }
                 
+                if(prevTableIndex != -1) {
+                    prevCurPage = (prevTableIndex / 5) + 1;
+                    prevTableIndex = -1;
+                }
                 int _startIndex = (_entrys.size() > (prevCurPage - 1) * 5) ? (prevCurPage - 1) * 5 : 0;
                 int _endIndex = (_entrys.size() > (prevCurPage * 5) - 1) ? (prevCurPage * 5) - 1 : _entrys.size() - 1;
+
+                if(_endIndex == _entrys.size() - 1) prevCurPage--;
                 //std::cout << "StartIndex : " << _startIndex << std::endl;
                 //std::cout << "EndIndex : " << _endIndex << std::endl;
+
+                std::cout << "이전 데이터 개수 : " << _entrys.size() << "\033[0m"<< std::endl;
 
                 for(int i = _startIndex; i <= _endIndex; i++) {
                     //std::cout << "PrevData Index : " << i << std::endl;
@@ -891,7 +926,7 @@ void App::Render() {
                 _ct.PrintTable();
             }
             if(FindAfterRecordData(_info, currentIndex)) {
-                std::cout << std::endl << "\033[1m" << "After Data List" << "\033[0m"<< std::endl;
+                std::cout << std::endl << "\033[1m" << "Following Data List,  다음 페이지 - followright,  이전 페이지 - followleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
@@ -906,7 +941,7 @@ void App::Render() {
                 
                 int _tableIndex = 0;
                 std::vector<ConsoleTableRow*> _entrys;
-                for(int i = 0; i <= currentIndex; i++) {
+                for(int i = currentIndex + 1; i < records.size(); i++) {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
@@ -927,12 +962,21 @@ void App::Render() {
                         _entrys.push_back(_entry);
                     }
                 }
+
+                std::cout << "이후 데이터 개수 : " << _entrys.size() << "\033[0m"<< std::endl;
+
+                if(afterTableIndex != -1) {
+                    afterCurPage = (afterTableIndex / 5) + 1;
+                    afterTableIndex = -1;
+                }
                 
                 int _startIndex = (_entrys.size() > (afterCurPage - 1) * 5) ? (afterCurPage - 1) * 5 : 0;
                 int _endIndex = (_entrys.size() > (afterCurPage * 5) - 1) ? (afterCurPage * 5) - 1 : _entrys.size() - 1;
                 //std::cout << "StartIndex : " << _startIndex << std::endl;
                 //std::cout << "EndIndex : " << _endIndex << std::endl;
                 //std::cout << "After data size : " << _entrys.size() << std::endl;
+
+                if(_endIndex == _entrys.size() - 1) afterCurPage--;
 
                 for(int i = _startIndex; i <= _endIndex; i++) {
                     //std::cout << "AfterData Index : " << i << std::endl;
@@ -941,7 +985,7 @@ void App::Render() {
                 _ct.PrintTable();
 
             }
-            std::cout << std::endl << "\033[1m" << "Current Data Information" << "\033[0m" << std::endl << std::endl;
+            std::cout << std::endl << "\033[1m" << "Current Data Information, 현재 코드 - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
             if(records[currentIndex]->recordType == RecordType::Prim) {
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1051,6 +1095,12 @@ void App::InitCommand() {
     commands.push_back("mvline");
     commands.push_back("findtype");
     commands.push_back("findname");
+    commands.push_back("followright");
+    commands.push_back("followleft");
+    commands.push_back("prevright");
+    commands.push_back("prevleft");
+    commands.push_back("prevmove");
+    commands.push_back("followmove");
 }
 
 bool App::FindCommand(std::string _command) {
@@ -1087,6 +1137,12 @@ std::string App::GetType(std::string& _word) {
         else if(_removeStr == "float") {
             _removeStr = "float";
         }
+        else if(_removeStr == "i16") {
+            _removeStr  ="short";
+        }
+        else {
+            _removeStr = "undefined type";
+        }
 
         std::string _pointerStr;
         int _pCount = CountChar(_word, 'p');
@@ -1112,6 +1168,9 @@ std::string App::GetType(std::string& _word) {
         }
         else if(_word == "float") {
             return "float";
+        }
+        else if(_word == "i16") {
+            return "short";
         }
         else {
             return "undefined type";
@@ -1189,4 +1248,22 @@ int App::FindIndexRecordData(std::string _line, std::string _name) {
         }
     }
     return _count;
+}
+
+std::string App::RemoveLeadingWhitespace(const std::string& _input) {
+    std::string _result;
+    bool _leadingWhitespace = true; // 첫 번째 문자를 찾기 위한 플래그
+
+    for (char _c : _input) {
+        if (_leadingWhitespace) {
+            if (_c != ' ' && _c != '\t') {
+                _result += _c;
+                _leadingWhitespace = false; // 첫 번째 문자를 찾았으므로 플래그를 끕니다.
+            }
+        } else {
+            _result += _c;
+        }
+    }
+
+    return _result;
 }
