@@ -1,0 +1,11 @@
+store retval int 0 0x16b87257c 0 0
+5 store tempstr string StringStart 5 11111 StringEnd 0x16b872560 8 20
+5 store tempstr string StringStart 5 32222 StringEnd 0x16b872560 9 11
+2 store tempstr string 2 A 0x16b872560 11 14
+2 load tempstr string 2 A 0x16b872560 15 6
+5 store tempstr string 5 G 0x16b872560 18 16
+store num1 int 44444 0x16b872550 20 5
+5 load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 21 14
+7 store tempstr string 7 Q 0x16b872560 27 12
+5 load tempstr string StringStart 5 32A22G StringEnd 0x16b872560 28 14
+load retval int 0 0x16b87257c 32 1

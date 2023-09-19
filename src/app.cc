@@ -326,7 +326,7 @@ void App::Init() {
                 if(_words[TYPE_INDEX] == "string") {
                     std::cout<< "word index 1 : " << FindRecordDataStr(_words[1]) << std::endl;
 
-                    if(_line.find("StringEnd") != std::string::npos) {
+                    if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
                         int _i = STRING_START_IDX;
                         while(_words[_i] != "StringEnd") {
                             _strVal += _words[_i];
@@ -392,6 +392,7 @@ void App::Init() {
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
                     std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_words[1]);
                     _resultWord.push_back(_words[2]);
                     _resultWord.push_back(_words[3]);
                     _resultWord.push_back(_strVal);
@@ -704,13 +705,13 @@ void App::Update() {
         else if(commandMessage.find("prevmove") != std::string::npos) {
             std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
             if(_cmdWords.size() > 1) {
-                prevTableIndex = std::stoi(_cmdWords[1]);
+                prevTableIndex = std::stoi(_cmdWords[1]) - 1;
             }
         }
         else if(commandMessage.find("followmove") != std::string::npos) {
             std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
             if(_cmdWords.size() > 1) {
-                afterTableIndex = std::stoi(_cmdWords[1]);
+                afterTableIndex = std::stoi(_cmdWords[1]) - 1;
             }
         }
     }
@@ -884,7 +885,7 @@ void App::Render() {
                 
                 int _tableIndex = 0;
                 std::vector<ConsoleTableRow*> _entrys;
-                for(int i = 0; i <= currentIndex; i++) {
+                for(int i = 0; i < currentIndex; i++) {
                     if(_info[0] == records[i]->ptr 
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
@@ -905,6 +906,8 @@ void App::Render() {
                         _entrys.push_back(_entry);
                     }
                 }
+
+                int _maxPage = (_entrys.size() / 5) + 1;
                 
                 if(prevTableIndex != -1) {
                     prevCurPage = (prevTableIndex / 5) + 1;
@@ -913,11 +916,12 @@ void App::Render() {
                 int _startIndex = (_entrys.size() > (prevCurPage - 1) * 5) ? (prevCurPage - 1) * 5 : 0;
                 int _endIndex = (_entrys.size() > (prevCurPage * 5) - 1) ? (prevCurPage * 5) - 1 : _entrys.size() - 1;
 
-                if(_endIndex == _entrys.size() - 1) prevCurPage--;
                 //std::cout << "StartIndex : " << _startIndex << std::endl;
                 //std::cout << "EndIndex : " << _endIndex << std::endl;
 
-                std::cout << "이전 데이터 개수 : " << _entrys.size() << "\033[0m"<< std::endl;
+                std::cout << "이전 데이터 개수 : " << _entrys.size() << " current page - " << prevCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
+
+                if(_maxPage < prevCurPage) prevCurPage = _maxPage;
 
                 for(int i = _startIndex; i <= _endIndex; i++) {
                     //std::cout << "PrevData Index : " << i << std::endl;
@@ -963,12 +967,14 @@ void App::Render() {
                     }
                 }
 
-                std::cout << "이후 데이터 개수 : " << _entrys.size() << "\033[0m"<< std::endl;
+                int _maxPage = (_entrys.size() / 5) + 1;
 
                 if(afterTableIndex != -1) {
                     afterCurPage = (afterTableIndex / 5) + 1;
                     afterTableIndex = -1;
                 }
+
+                std::cout << "이후 데이터 개수 : " << _entrys.size() << " current page : " << afterCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
                 
                 int _startIndex = (_entrys.size() > (afterCurPage - 1) * 5) ? (afterCurPage - 1) * 5 : 0;
                 int _endIndex = (_entrys.size() > (afterCurPage * 5) - 1) ? (afterCurPage * 5) - 1 : _entrys.size() - 1;
@@ -976,7 +982,7 @@ void App::Render() {
                 //std::cout << "EndIndex : " << _endIndex << std::endl;
                 //std::cout << "After data size : " << _entrys.size() << std::endl;
 
-                if(_endIndex == _entrys.size() - 1) afterCurPage--;
+                if(_maxPage < afterCurPage) afterCurPage = _maxPage;
 
                 for(int i = _startIndex; i <= _endIndex; i++) {
                     //std::cout << "AfterData Index : " << i << std::endl;
@@ -1225,15 +1231,17 @@ bool App::FindPrevRecordData(std::vector<std::string> _str, int _currentIndex) {
 }
 
 bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) {
-    for(int i = _currentIndex; i < records.size(); i++) {
+    for(int i = _currentIndex + 1; i < records.size(); i++) {
         if(_str[0] == records[i]->ptr 
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 
         && _str[4] == records[i]->type
         && records[i]->recordType != RecordType::Array) {
+            std::cout << "return true in find after data index : " << i << std::endl;
             return true;
         }
     }
+    std::cout << "return false in find after data" << std::endl;
     return false;
 }
 

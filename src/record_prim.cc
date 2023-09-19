@@ -19,6 +19,7 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     std::string _word;
     // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
     while (getline(_ss, _word, '-')){
+        std::cout << "word : " << _word << std::endl;
         _names.push_back(_word);
     }
 
@@ -44,6 +45,9 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     this->col = _words[6];
     this->infoMessage = _words[7];
 
+    std::cout << "name : " << this->name << std::endl;
+    std::cout << "current funtion : " << this->dataFunc << std::endl;
+
     this->shadowMemory[this->ptr] = this->value;
     shadowMaxIdx++;
 }
@@ -61,6 +65,7 @@ std::string RecordPrim::PrintRecordTable(std::string _message) {
     
         ConsoleTable _ct(BASIC);
         _ct.SetPadding(1);
+        _ct.AddColumn(" ");
         _ct.AddColumn("Current Function");
         _ct.AddColumn("Operation");
         _ct.AddColumn("Name");
@@ -70,16 +75,16 @@ std::string RecordPrim::PrintRecordTable(std::string _message) {
         _ct.AddColumn("Line");
         _ct.AddColumn("Column");
 
-        ConsoleTableRow* _entry = new ConsoleTableRow(8);
-
-        _entry->AddEntry(this->dataFunc, 0);
-        _entry->AddEntry(this->accessType, 1);
-        _entry->AddEntry(this->name, 2);
-        _entry->AddEntry(this->type, 3);
-        _entry->AddEntry(this->value, 4);
-        _entry->AddEntry(this->ptr, 5);
-        _entry->AddEntry(this->line, 6);
-        _entry->AddEntry(this->col, 7);
+        ConsoleTableRow* _entry = new ConsoleTableRow(9);
+        _entry->AddEntry(" ", 0);
+        _entry->AddEntry(this->dataFunc, 1);
+        _entry->AddEntry(this->accessType, 2);
+        _entry->AddEntry(this->name, 3);
+        _entry->AddEntry(this->type, 4);
+        _entry->AddEntry(this->value, 5);
+        _entry->AddEntry(this->ptr, 6);
+        _entry->AddEntry(this->line, 7);
+        _entry->AddEntry(this->col, 8);
 
         _ct.AddRow(_entry);
 
