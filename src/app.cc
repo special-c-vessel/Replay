@@ -394,6 +394,13 @@ void App::Init() {
                         _lenVal = _words[JUDGMENT_INDEX + 1];
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
+
+                        if(_strVal.size() > std::stoi(_lenVal)) {
+                            _infoMessage = "문자열의 범위 밖 요청입니다";
+                        }
+                        else {
+                            _infoMessage = "None";
+                        }
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
                     _resultWord.push_back(_words[2]);
