@@ -37,6 +37,9 @@ private: // 편의성 함수
     std::string AddHexaInt(std::string, int);
     bool IsSameIndex(std::vector<std::string>, std::vector<std::string>);
     void PrintShadowMemory();
+    std::string GetType(std::string&);
+    int CountChar(std::string&, char);
+    std::string RemoveChar(const std::string&, char);
 
 private:
     int currentPage = 0;

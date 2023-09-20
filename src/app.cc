@@ -1207,6 +1207,9 @@ std::string App::GetType(std::string& _word) {
         else if(_removeStr == "i16") {
             _removeStr  ="short";
         }
+        else if(_removeStr == "double") {
+            _removeStr = "double";
+        }
         else {
             _removeStr = "undefined type";
         }
@@ -1238,6 +1241,9 @@ std::string App::GetType(std::string& _word) {
         }
         else if(_word == "i16") {
             return "short";
+        }
+        else if(_word == "double") {
+            return "double";
         }
         else {
             return "undefined type";

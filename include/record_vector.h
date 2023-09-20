@@ -47,6 +47,9 @@ private: // 편의성 함수
     bool IsNumber(std::string const&);
     std::string AddHexaInt(std::string, int);
     void PrintShadowMemory();
+    std::string GetType(std::string&);
+    int CountChar(std::string&, char);
+    std::string RemoveChar(const std::string&, char);
 
 private:
     int currentPage = 0;

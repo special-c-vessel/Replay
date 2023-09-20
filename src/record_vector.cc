@@ -46,7 +46,7 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     accessType = _words[0];
     dataFunc = _names[0];
     name = _names[1];
-    type = _words[3];
+    type = GetType(_words[3]);
     col = _words[_words.size() - 1];
     line = _words[_words.size() - 2];
     ptr = _words[_words.size() - 3];
@@ -239,4 +239,94 @@ void RecordVector::SetArrrays(std::vector<ArrayStruct> _arrays) {
 
 std::vector<ArrayStruct> RecordVector::GetArrays() {
     
+}
+
+std::string RecordVector::GetType(std::string& _word) {
+    if(_word.find("p") != std::string::npos) { // pointer data type
+        std::string _removeStr = RemoveChar(_word, 'p');
+
+        if(_removeStr == "i32") {
+            _removeStr = "int";
+        }
+        else if(_removeStr == "i64") {
+            _removeStr = "long long int";
+        }
+        else if(_removeStr == "i8") {
+            _removeStr = "char";
+        }
+        else if(_removeStr == "float") {
+            _removeStr = "float";
+        }
+        else if(_removeStr == "i16") {
+            _removeStr  ="short";
+        }
+        else if(_removeStr == "double") {
+            _removeStr = "double";
+        }
+        else if(_removeStr == "string") {
+            _removeStr = "string";
+        }
+        else {
+            _removeStr = "undefined type";
+        }
+
+        std::string _pointerStr;
+        int _pCount = CountChar(_word, 'p');
+
+        if(_pCount == 1) {
+            _pointerStr = " pointer";
+        }
+        else {
+            _pointerStr = " multiple pointer-" + std::to_string(_pCount);
+        }
+
+        return _removeStr + _pointerStr;
+    }
+    else { // normal data type
+        if(_word == "i32") {
+            return "int";
+        }
+        else if(_word == "i64") {
+            return "long long int";
+        }
+        else if(_word == "i8") {
+            return "char";
+        }
+        else if(_word == "float") {
+            return "float";
+        }
+        else if(_word == "i16") {
+            return "short";
+        }
+        else if(_word == "double") {
+            return "double";
+        }
+        else if(_word == "string") {
+            return "string";
+        }
+        else {
+            return "undefined type";
+        }
+    }
+}
+
+int RecordVector::CountChar(std::string &_str, char _findWord) {
+    int _count = 0;
+    for (char _ch : _str) {
+        if (_ch == _findWord) {
+            _count++;
+        }
+    }
+    return _count;
+}
+
+std::string RecordVector::RemoveChar(const std::string &_str, char _removeWord) {
+    std::string _result = _str;
+    size_t _pos = 0;
+    
+    while ((_pos = _result.find(_removeWord, _pos)) != std::string::npos) {
+        _result.erase(_pos, 1);
+    }
+    
+    return _result;
 }
