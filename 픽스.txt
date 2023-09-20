@@ -1,1 +1,4 @@
 buf store 되는게 빠졌다.
+store, ,load findname 
+findptr 수정
+색 입히기

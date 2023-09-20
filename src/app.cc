@@ -801,17 +801,33 @@ void App::Render() {
 
             ConsoleTable _ct(BASIC);
             _ct.SetPadding(1);
+            _ct.AddColumn(" ");
+            _ct.AddColumn("Current Function");
+            _ct.AddColumn("Operation");
             _ct.AddColumn("Name");
-            _ct.AddColumn("Ptr");
+            _ct.AddColumn("Type");
             _ct.AddColumn("Value");
+            _ct.AddColumn("Pointer Address");
+            _ct.AddColumn("Line");
+            _ct.AddColumn("Column");
 
-            ConsoleTableRow* _entry = new ConsoleTableRow(3);
-            
-            _entry->AddEntry(valShadowMemory[_cmdWords[1]], 0);
-            _entry->AddEntry(_cmdWords[1], 1);
-            _entry->AddEntry(ptrShadowMemroy[_cmdWords[1]], 2);
-
-            _ct.AddRow(_entry);
+            int _tableIndex = 0;
+            for(int i = 0; i <= currentIndex; i++) {
+                if(records[i]->ptr == _cmdWords[1] && records[i]->dataFunc == records[currentIndex]->dataFunc) {
+                    ConsoleTableRow* _entry = new ConsoleTableRow(9);
+                    _tableIndex++;
+                    _entry->AddEntry(std::to_string(_tableIndex), 0);
+                    _entry->AddEntry(records[i]->dataFunc, 1);
+                    _entry->AddEntry(records[i]->accessType, 2);
+                    _entry->AddEntry(records[i]->name, 3);
+                    _entry->AddEntry(records[i]->type, 4);
+                    _entry->AddEntry(records[i]->value, 5);
+                    _entry->AddEntry(records[i]->ptr, 6);
+                    _entry->AddEntry(records[i]->line, 7);
+                    _entry->AddEntry(records[i]->col, 8);
+                    _ct.AddRow(_entry);
+                }
+            }
 
             _ct.PrintTable();
         }
@@ -828,20 +844,30 @@ void App::Render() {
 
             ConsoleTable _ct(BASIC);
             _ct.SetPadding(1);
+            _ct.AddColumn(" ");
+            _ct.AddColumn("Current Function");
+            _ct.AddColumn("Operation");
             _ct.AddColumn("Name");
             _ct.AddColumn("Type");
-            _ct.AddColumn("Ptr");
             _ct.AddColumn("Value");
+            _ct.AddColumn("Pointer Address");
             _ct.AddColumn("Line");
+            _ct.AddColumn("Column");
 
+            int _tableIndex = 0;
             for(int i = 0; i <= currentIndex; i++) {
                 if(records[i]->name == _cmdWords[1] && records[i]->dataFunc == records[currentIndex]->dataFunc) {
-                    ConsoleTableRow* _entry = new ConsoleTableRow(5);
-                    _entry->AddEntry(records[i]->name, 0);
-                    _entry->AddEntry(records[i]->type, 1);
-                    _entry->AddEntry(records[i]->ptr, 2);
-                    _entry->AddEntry(records[i]->value, 3);
-                    _entry->AddEntry(records[i]->line, 4);
+                    ConsoleTableRow* _entry = new ConsoleTableRow(9);
+                    _tableIndex++;
+                    _entry->AddEntry(std::to_string(_tableIndex), 0);
+                    _entry->AddEntry(records[i]->dataFunc, 1);
+                    _entry->AddEntry(records[i]->accessType, 2);
+                    _entry->AddEntry(records[i]->name, 3);
+                    _entry->AddEntry(records[i]->type, 4);
+                    _entry->AddEntry(records[i]->value, 5);
+                    _entry->AddEntry(records[i]->ptr, 6);
+                    _entry->AddEntry(records[i]->line, 7);
+                    _entry->AddEntry(records[i]->col, 8);
                     _ct.AddRow(_entry);
                 }
             }
@@ -1299,4 +1325,16 @@ std::string App::RemoveLeadingWhitespace(const std::string& _input) {
     }
 
     return _result;
+}
+
+void App::Red() {
+    std::cout << "\033[0;31m";
+}
+
+void App::Blue() {
+    std::cout << "\033[0;34m";
+}
+
+void App::Reset() {
+    std::cout << "\033[0m";
 }

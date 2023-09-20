@@ -66,6 +66,11 @@ private: // app class function
 public:
     std::vector<std::string> SplitString(const std::string&, char);
 
+public:
+    void Red();
+    void Blue();
+    void Reset();
+
 public: // main framework variable
     char* srcFile;
     char* recordFile;
