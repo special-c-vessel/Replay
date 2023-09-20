@@ -175,6 +175,10 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
     ct.PrintTable();
     
     prevPage = currentPage;
+    if(this->infoMessage != "") {
+        _returnMessage = infoMessage;
+    }
+    std::cout << "return message : " << _returnMessage << std::endl;
     return _returnMessage;
 }
 

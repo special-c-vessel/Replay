@@ -19,7 +19,7 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     std::string _word;
     // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
     while (getline(_ss, _word, '-')){
-        std::cout << "word : " << _word << std::endl;
+        //std::cout << "word : " << _word << std::endl;
         _names.push_back(_word);
     }
 
@@ -45,8 +45,12 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     this->col = _words[6];
     this->infoMessage = _words[7];
 
-    std::cout << "name : " << this->name << std::endl;
-    std::cout << "current funtion : " << this->dataFunc << std::endl;
+    if(this->type == "string") {
+        this->length = _words[8];
+    }
+
+    //std::cout << "name : " << this->name << std::endl;
+    //std::cout << "current funtion : " << this->dataFunc << std::endl;
 
     this->shadowMemory[this->ptr] = this->value;
     shadowMaxIdx++;
@@ -62,37 +66,40 @@ void RecordPrim::PrintRecordData() {
 
 std::string RecordPrim::PrintRecordTable(std::string _message) {
     std::string _returnMessage = "";
+
+    std::cout << "print record table" << std::endl;
     
-        ConsoleTable _ct(BASIC);
-        _ct.SetPadding(1);
-        _ct.AddColumn(" ");
-        _ct.AddColumn("Current Function");
-        _ct.AddColumn("Operation");
-        _ct.AddColumn("Name");
-        _ct.AddColumn("Type");
-        _ct.AddColumn("Value");
-        _ct.AddColumn("Pointer Address");
-        _ct.AddColumn("Line");
-        _ct.AddColumn("Column");
+    ConsoleTable _ct(BASIC);
+    _ct.SetPadding(1);
+    _ct.AddColumn(" ");
+    _ct.AddColumn("Current Function");
+    _ct.AddColumn("Operation");
+    _ct.AddColumn("Name");
+    _ct.AddColumn("Type");
+    _ct.AddColumn("Value");
+    _ct.AddColumn("Pointer Address");
+    _ct.AddColumn("Line");
+    _ct.AddColumn("Column");
 
-        ConsoleTableRow* _entry = new ConsoleTableRow(9);
-        _entry->AddEntry(" ", 0);
-        _entry->AddEntry(this->dataFunc, 1);
-        _entry->AddEntry(this->accessType, 2);
-        _entry->AddEntry(this->name, 3);
-        _entry->AddEntry(this->type, 4);
-        _entry->AddEntry(this->value, 5);
-        _entry->AddEntry(this->ptr, 6);
-        _entry->AddEntry(this->line, 7);
-        _entry->AddEntry(this->col, 8);
+    ConsoleTableRow* _entry = new ConsoleTableRow(9);
+    _entry->AddEntry(" ", 0);
+    _entry->AddEntry(this->dataFunc, 1);
+    _entry->AddEntry(this->accessType, 2);
+    _entry->AddEntry(this->name, 3);
+    _entry->AddEntry(this->type, 4);
+    _entry->AddEntry(this->value, 5);
+    _entry->AddEntry(this->ptr, 6);
+    _entry->AddEntry(this->line, 7);
+    _entry->AddEntry(this->col, 8);
 
-        _ct.AddRow(_entry);
+    _ct.AddRow(_entry);
 
-        _ct.PrintTable();
+    _ct.PrintTable();
 
-    if(this->infoMessage != "") {
+    if(this->infoMessage != "None") {
         _returnMessage = this->infoMessage;
     }
+    std::cout << "return message : " << _returnMessage << std::endl;
     return _returnMessage;
 }
 

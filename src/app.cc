@@ -105,7 +105,7 @@ void App::Init() {
                 int _dimension = _words.size() - 8;
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
-                    std::string _nameFunc = records[j]->dataFunc + "_" + records[j]->name;
+                    std::string _nameFunc = records[j]->dataFunc + "-" + records[j]->name;
                     if(_nameFunc == _words[1]) {
                         _findIdx = j;
                         break;
@@ -174,7 +174,7 @@ void App::Init() {
                 std::cout << "vector push back data" << std::endl;
                 int _findIdx = -1;
                 for(int i = records.size() - 1; i >= 0; i--) {
-                    std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                    std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
                     if(_comparisonStr == _words[2]) {
                         _findIdx = i;
                         std::cout << "_findIdx : " << _findIdx << std::endl;
@@ -263,7 +263,7 @@ void App::Init() {
                     std::cout << "vector push back data" << std::endl;
                     int _findIdx = -1;
                     for(int i = records.size() - 1; i >= 0; i--) {
-                        std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                        std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
                         if(_comparisonStr == _words2[2]) {
                             _findIdx = i;
                             std::cout << "_findIdx : " << _findIdx << std::endl;
@@ -291,7 +291,7 @@ void App::Init() {
                 std::cout << "vector push back data" << std::endl;
                 int _findIdx = -1;
                 for(int i = records.size() - 1; i >= 0; i--) {
-                    std::string _comparisonStr = records[i]->dataFunc + "_" + records[i]->name;
+                    std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
                     if(_comparisonStr == _words[2]) {
                         _findIdx = i;
                         std::cout << "_findIdx : " << _findIdx << std::endl;
@@ -324,8 +324,6 @@ void App::Init() {
                 std::string _colVal = "";
                 std::string _infoMessage = "";
                 if(_words[TYPE_INDEX] == "string") {
-                    std::cout<< "word index 1 : " << FindRecordDataStr(_words[1]) << std::endl;
-
                     if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
                         int _i = STRING_START_IDX;
                         while(_words[_i] != "StringEnd") {
@@ -339,20 +337,25 @@ void App::Init() {
                         _lenVal = _words[STRING_LEN_IDX];
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
-                    else if(FindRecordDataStr(_words[2]) != -1) {
-                        std::cout << "find record data " << std::endl;
-                        int _findIndex = FindRecordDataStr(_words[1]);
-                        int _changeIndex = std::stoi(_words[3]);
+                    else if(_line.find("StringStart") == std::string::npos 
+                    && FindRecordDataStr(_words[2]) != -1) {
+                        int _findIndex = FindRecordDataStr(_words[2]);
+                        int _changeIndex = std::stoi(_words[4]);
+                        std::cout << "find index : " << _findIndex << std::endl;
+                        std::cout << "change index : " << _changeIndex << std::endl;
                         _nameVal = _words[1];
                         _typeVal = _words[2];
                         _strVal = records[_findIndex]->value;
-                        _strVal[_changeIndex] = _words[4].c_str()[0];
+                        _strVal[_changeIndex] = _words[5].c_str()[0];
                         _colVal = _words[_words.size() - 1];
                         _lineVal = _words[_words.size() - 2];
                         _ptrVal = _words[_words.size() - 3];
                         _lenVal = records[_findIndex]->length;
                         if(stoi(records[_findIndex]->length) < _changeIndex) {
                             _infoMessage = "문자열의 범위 밖 요청입니다";
+                        }
+                        else {
+                            _infoMessage = "None";
                         }
                     }
                     else {
@@ -399,8 +402,8 @@ void App::Init() {
                     _resultWord.push_back(_ptrVal);
                     _resultWord.push_back(_lineVal);
                     _resultWord.push_back(_colVal);
-                    _resultWord.push_back(_lenVal);
                     _resultWord.push_back(_infoMessage);
+                    _resultWord.push_back(_lenVal);
 
                     for(int i = 0; i < _resultWord.size(); i++) {
                         std::cout << "result word : " << _resultWord[i] << std::endl;
@@ -418,7 +421,7 @@ void App::Init() {
                     std::cout << "find record data, _findIdx :  " << _findIdx << std::endl;
                     int _changeIndex = std::stoi(_words[3]);
                     std::cout << "change index :  " << _changeIndex << std::endl;
-                    _nameVal = records[_findIdx]->dataFunc + "_" + records[_findIdx]->name;
+                    _nameVal = records[_findIdx]->dataFunc + "-" + records[_findIdx]->name;
                     std::cout << "name :  " << _nameVal << std::endl;
                     _typeVal = records[_findIdx]->ptr;
                     std::cout << "type :  " << _typeVal << std::endl;
@@ -490,8 +493,10 @@ void App::Init() {
     }
     else {
         isDone = false;
-        records[records.size() - 1]->infoMessage = "오류 발생 지점 예상";
+        records[records.size() - 1]->infoMessage = "오류 발생 지점 예상 ";
     }
+    
+    records[records.size() - 1]->infoMessage = records[records.size() - 1]->infoMessage + "마지막 기록 데이터";
 
     // 소스 파일이 제대로 열렸는지 검사
     std::ifstream _srcStream(srcFile);
@@ -519,10 +524,16 @@ void App::Input() {
     std::cout << std::endl << "User input : ";
     getline(std::cin, _input);
     if(!IsNumber(_input)) { // 사용자 입력 값이 숫자가 아닐 경우
-        if(_input == "s") {
-            std::cout << "Down" << std::endl;
-            this->inputState = InputState::Down;
-            this->commandMessage = "down";
+        if(_input[0] == 's') {
+            std::vector<std::string> _cmdWords = SplitString(_input, ' ');
+            if(_cmdWords.size() == 2) {
+                
+            }
+            else {
+                std::cout << "Down" << std::endl;
+                this->inputState = InputState::Down;
+                this->commandMessage = "down";
+            }
         }
         else if(_input == "ss") {
             std::cout << "Double Down" << std::endl;
@@ -615,13 +626,17 @@ void App::Update() {
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
-        currentIndex++;
-        currentLine = std::stoi(records[currentIndex]->line);
-        std::cout << "current Index : " << currentIndex<< std::endl;
-        std::cout << "current line : " << currentLine << std::endl;
+        std::cout << "current index : " << currentIndex << std::endl;
+        std::cout << "records.size : " << records.size() - 1 << std::endl;
+        if(currentIndex < records.size() - 1 || currentIndex == -1) {
+            currentIndex++;
+            currentLine = std::stoi(records[currentIndex]->line);
+            std::cout << "current Index : " << currentIndex<< std::endl;
+            std::cout << "current line : " << currentLine << std::endl;
 
-        afterCurPage = 1;   
-        prevCurPage = 1; 
+            afterCurPage = 1;   
+            prevCurPage = 1; 
+        }
         inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
@@ -681,13 +696,19 @@ void App::Update() {
                 _cmdWords.push_back(_cmdWord);
             }
 
-            currentLine = std::stoi(_cmdWords[1]);
-            for(int i = currentLine; i >= 0; i--) {
-                int _findIndex = FindRecordData(i);
-                if(_findIndex != -1) {
-                    currentIndex = _findIndex;
-                    break;
+            if(IsNumber(_cmdWords[1])) {
+                currentLine = std::stoi(_cmdWords[1]);
+                for(int i = currentLine; i >= 0; i--) {
+                    int _findIndex = FindRecordData(i);
+                    if(_findIndex != -1) {
+                        currentIndex = _findIndex;
+                        break;
+                    }
                 }
+            }
+            else {
+                currentLine = std::stoi(records[records.size() - 1]->line);
+                currentIndex = records.size() - 1;
             }
         }
         else if(commandMessage.find("prevright") != std::string::npos) {
@@ -1019,10 +1040,14 @@ void App::Render() {
 
                 _ct.AddRow(_entry);
 
+                if(records[currentIndex]->infoMessage != "None") {
+                    systemMessage = records[currentIndex]->infoMessage;
+                }
+
                 _ct.PrintTable();
             }
             else {
-                records[currentIndex]->PrintRecordTable(commandMessage);
+                systemMessage = records[currentIndex]->PrintRecordTable(commandMessage);
             }
         }
     }
@@ -1033,7 +1058,7 @@ void App::Render() {
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
     std::cout << "|                                                       " << "\033[1m" <<"System meseeage" << "\033[0m" << "                                                  |\n";
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
-    std::cout << "                                             " << systemMessage << std::endl;
+    std::cout << "                                                      " << systemMessage << std::endl;
     std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
 }
 
@@ -1060,11 +1085,11 @@ int App::FindRecordDataPtr(std::string _ptr) {
 }
 
 int App::FindRecordDataStr(std::string _name) {
-    std::cout << "record size : " << records.size() << std::endl;
+    //std::cout << "record size : " << records.size() << std::endl;
     for(int i = records.size() - 1 ; i >= 0; i--) {
-        std::cout << "records name : " << records[i]->name << std::endl;
-        std::cout << "name : " << _name << std::endl;
-        if(records[i]->name == _name) return i;
+        //std::cout << "records name : " << records[i]->originName << std::endl;
+        //std::cout << "name : " << _name << std::endl;
+        if(records[i]->originName == _name) return i;
     }
     return -1;
 }
