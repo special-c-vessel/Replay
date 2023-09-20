@@ -1199,7 +1199,7 @@ std::string App::GetType(std::string& _word) {
             _removeStr = "long long int";
         }
         else if(_removeStr == "i8") {
-            _removeStr = "boolean";
+            _removeStr = "char";
         }
         else if(_removeStr == "float") {
             _removeStr = "float";
@@ -1231,7 +1231,7 @@ std::string App::GetType(std::string& _word) {
             return "long long int";
         }
         else if(_word == "i8") {
-            return "boolean";
+            return "char";
         }
         else if(_word == "float") {
             return "float";
