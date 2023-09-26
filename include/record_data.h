@@ -1,16 +1,19 @@
 #ifndef RECORD_DATA_H
 #define RECORD_DATA_H
+
+#include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <map>
-#include <iostream>
 
 #define ARRAY_TYPE_IDX 2
 
 enum RecordType {
     None,
     Array,
-    Prim
+    Prim,
+    Struct
 };
 
 struct ArrayStruct
@@ -58,6 +61,14 @@ public:
 
     virtual void SetArrrays(std::vector<ArrayStruct>);
     virtual std::vector<ArrayStruct> GetArrays();
+
+public:
+    bool IsNumber(std::string const&);
+    std::string AddHexaInt(std::string, int);
+    std::string GetType(std::string&);
+    int CountChar(std::string&, char);
+    std::string RemoveChar(const std::string&, char);
+
 public:
     std::string accessType;
 	std::string name;
