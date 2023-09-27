@@ -125,8 +125,8 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
         
 
 <br>
--Replay <br>
-<br>
+-Replay <br><br>
+
 - replay 모듈 다운로드 <br>
 ``` https://github.com/special-c-vessel/Replay.git ```
 <br>
