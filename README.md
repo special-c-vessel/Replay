@@ -130,7 +130,8 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 - replay 모듈 다운로드 <br>
 ``` https://github.com/special-c-vessel/Replay.git ```
 <br>
-- config.sh 편집 후 저장<br>
+
+- config.sh 수정 <br>
 
         config.sh 에서
         - RECORD_FILE_PATH    (기록 과정을 통해 생성된 기록 파일 경로)
