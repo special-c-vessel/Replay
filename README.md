@@ -68,6 +68,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 |Replay Command|Description|Example|
 |:-------------|:-------------------------|:------|
 |w             |(기록 파일 정보에 한해서)위로 이동|w      |
+|w             |(기록 파일 정보에 한해서)위로 이동|w      |
 
 <br><br>
 **향후 발전 계획:** <br>
