@@ -66,23 +66,8 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br><br>
 - 사용 가능한 명령어 <br>
 |Replay Command|Description|Example|
-|:---|:---|:---|
-|w|(기록 파일 정보에 한해서)위로 이동|w|
-|ww|(기록 파일 정보에 상관 없이)위로 이동|ww|
-|s|(기록 파일 정보에 한해서)아래로 이동|s|
-|ss|(기록 파일 정보에 상관 없이)아래로 이동|ss|
-|findptr [address]|입력한 포인터 주소에 저장되어 있는 값을 출력|findptr 0x25faddb2|
-|findtype [type]|입력한 타입에 해당되는 변수 목록을 출력|findtype string|
-|findname [name]|입력한 이름에 해당되는 변수 목록을 출력|findname num1|
-|mvline [line]|입력한 줄 번호로 이동(특수 명령어 - last(마지막 줄 번호로 이동)|mvline 149, mvline last|
-|mvarray [index]|array data table 원하는 인덱스로 이동|mvarray 10|
-|prevright|previous data table 다음 페이지로 이동|prevright|
-|prevleft|previous data table 이전 페이지로 이동|prevleft|
-|prevmove [index]|previous data table 원하는 인덱스로 이동|prevmove 15|
-|followright|following data table 다음 페이지로 이동|followright|
-|followleft|following data table 이전 페이지로 이동|followleft|
-|followmove [index]|follwing data table 원하는 인덱스로 이동|followmove 15|
-
+|:-------------|:-------------------------|:------|
+|w             |(기록 파일 정보에 한해서)위로 이동|w      |
 
 <br><br>
 **향후 발전 계획:** <br>
