@@ -126,15 +126,11 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br>
 -Replay <br>
- 
+<br>
 - replay 모듈 다운로드 <br>
 ``` https://github.com/special-c-vessel/Replay.git ```
 <br>
-
-- cd Replay <br>
-<br>
- 
-- config.sh 편집 <br>
+- config.sh 편집 후 저장<br>
 
         config.sh 에서
         - RECORD_FILE_PATH    (기록 과정을 통해 생성된 기록 파일 경로)
@@ -164,8 +160,9 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
    <br> culry에서는 Segfault 등 프로그램이 갑자기 종료되는 상황 또한 기록하기 위해 각 동작(기록의 대상이 되는 operation)마다 filestream을 진행하므로 많은 실행시간이 걸릴 것으로 예상합니다. <br>
    <br>
 3. 기록된 프로그램을 재현할 때 기존 프로그램과 메모리를 할당 크기는 얼마나 차이가 나는가?
-  - 기존 프로그램의 메모리 변화를 추적하기 위해서 변화를 위한 메모리 할당이 추가적으로 필요하기 떄문에 기존 프로그램보다
+   - 기존 프로그램의 메모리 변화를 추적하기 위해서 변화를 위한 메모리 할당이 추가적으로 필요하기 떄문에 기존 프로그램보다
   최소 2배 정도의 메모리를 사욜하게 됩니다.
+  <br><br>
 4. 메모리 보안
    - 서버나 시스템 안의 메모리를 참조할 때 보안상 취약점은 없는가?  <br>
    메모리 보호가 적용된 주소를 참조하여 기록하므로 culry 사용으로 인한 추가적인 보안 취약점은 없을 것으로 기대합니다.<br>
