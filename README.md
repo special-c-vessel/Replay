@@ -70,11 +70,11 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 |w             |(기록 파일 정보에 한해서)위로 이동|w      |
 |w             |(기록 파일 정보에 한해서)위로 이동|w      |
 
-|Replay Command|Description|Example|
-|------|---|---|
-|테스트1|테스트2|테스트3|
-|테스트1|테스트2|테스트3|
-|테스트1|테스트2|테스트3|
+  |Replay Command|Description|Example|
+  |------|---|---|
+  |w|(기록 파일 정보에 한해서)위로 이동|w|
+  |테스트1|테스트2|테스트3|
+  |테스트1|테스트2|테스트3|
 
 <br><br>
 **향후 발전 계획:** <br>
