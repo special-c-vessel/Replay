@@ -127,19 +127,21 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br>
 -Replay <br>
  
-- replay 모듈 다운로드<br>
+- replay 모듈 다운로드 <br>
 ``` https://github.com/special-c-vessel/Replay.git ```
 <br>
-- cd Replay
+
+- cd Replay <br>
 <br>
-- config.sh 수정
+ 
+- config.sh 편집 <br>
 
         config.sh 에서
         - RECORD_FILE_PATH    (기록 과정을 통해 생성된 기록 파일 경로)
         - TARGET_FILE_PATH     (타켓 원본 소스 파일 경로)
         총 2가지의 경로를 설정
-
-        경로 설정 후 ./config.sh  를 입력하여 쉘 코드 실행
+ 
+- ./config.sh <br>
 
 <br><br>
 **제약사항 :** <br>
