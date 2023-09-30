@@ -169,3 +169,15 @@ std::string RecordData::RemoveChar(const std::string &_str, char _removeWord) {
     
     return _result;
 }
+
+std::vector<std::string> RecordData::SplitString(const std::string &_str, char _delimiter) {
+    std::vector<std::string> _result;
+    std::string _token;
+    std::istringstream _tokenStream(_str);
+
+    while (std::getline(_tokenStream, _token, _delimiter)) {
+        _result.push_back(_token);
+    }
+
+    return _result;
+}

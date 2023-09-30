@@ -10,6 +10,8 @@
 #include "console_table.h"
 #include "console_table_row.h"
 
+#define VALUE_START_IDX 3
+
 class RecordStruct : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordStruct(); // 일반 생성자
@@ -31,8 +33,11 @@ public: // 오버라이드 함수
     std::vector<ArrayStruct> GetArrays() override;
 
 private:
-     std::map<std::string, std::string> shadowMemory;
-     int shadowMaxIdx = 0;
+    std::map<std::string, std::string> shadowMemory;
+    std::vector<DataStruct> dataStructs;
+    int shadowMaxIdx = 0;
+
+    std::string structName;
 };
 
 #endif //RECORD_STRUCT_H

@@ -29,6 +29,12 @@ struct ArrayStruct
     std::vector<std::string> arrayIndex;
 };
 
+struct DataStruct
+{
+    std::string type;
+    std::string value;
+};
+
 class RecordData {
 public: // class constructor, destructor
     RecordData();
@@ -68,6 +74,7 @@ public:
     std::string GetType(std::string&);
     int CountChar(std::string&, char);
     std::string RemoveChar(const std::string&, char);
+    std::vector<std::string> SplitString(const std::string&, char);
 
 public:
     std::string accessType;

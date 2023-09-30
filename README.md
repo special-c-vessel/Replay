@@ -68,21 +68,22 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
   |Replay Command|Description|Example|
   |------|---|---|
-  |w|(기록 파일 정보에 한해서)위로 이동|w|
-  |ww|(기록 파일 정보에 상관 없이)위로 이동|ww|
-  |s|(기록 파일 정보에 한해서)아래로 이동|s|
-  |ss|(기록 파일 정보에 상관 없이)아래로 이동|ss|
-  |findptr [address]|입력한 포인터 주소에 저장되어 있는 값을 출력|findptr 0x25faddb2|
-  |findtype [type]|입력한 타입에 해당되는 변수 목록을 출력|findtype string|
-  |findname [name]|입력한 이름에 해당되는 변수 목록을 출력|findname num1|
-  |mvline [line]|입력한 줄 번호로 이동(특수 명령어 - last(마지막 줄 번호로 이동)|mvline 149, mvline last|
-  |mvarray [index]|array data table 원하는 인덱스로 이동|mvarray 10|
+  |w|(기록 파일 정보에 한해서) 위쪽 기록 정보로 이동|w|
+  |ww|(기록 파일 정보에 상관 없이) 위쪽 줄번호로 이동|ww|
+  |s|(기록 파일 정보에 한해서) 아래쪽 기록 정보로 이동|s|
+  |ss|(기록 파일 정보에 상관 없이) 아래쪽 줄번호로 이동|ss|
+  |findptr [address]|[address] 부분에 입력한 포인터 주소에 저장되어 있는 값을 출력|findptr 0x25faddb2|
+  |findtype [type]|[type] 부분에 입력한 타입에 해당되는 변수 목록을 출력|findtype string|
+  |findname [name]|[name] 부분에 입력한 이름에 해당되는 변수 목록을 출력|findname num1|
+  |mvline [line]|[line] 부분에 입력한 줄 번호로 이동|mvline 149|
+  |mvline last|가장 마지막 기록 파일 정보로 이동|mvline last|
+  |mvarray [index]|[index] 부분에 입력한 인덱스로 array data table 페이지를 이동|mvarray 10|
   |prevright|previous data table 다음 페이지로 이동|prevright|
   |prevleft|previous data table 이전 페이지로 이동|prevleft|
-  |prevmove [index]|previous data table 원하는 인덱스로 이동|prevmove 15|
+  |prevmove [index]|[index] 부분에 입력한 인덱스로 previous data table 페이지를 이동|prevmove 15|
   |followright|following data table 다음 페이지로 이동|followright|
   |followleft|following data table 이전 페이지로 이동|followleft|
-  |followmove [index]|follwing data table 원하는 인덱스로 이동|followmove 15|
+  |followmove [index]|[index] 부분에 입력한 인덱스로 follwing data table 페이지를 이동|followmove 15|
 
 <br><br>
 **향후 발전 계획:** <br>
@@ -128,17 +129,17 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 -Replay <br><br>
 
 - replay 모듈 다운로드 <br>
-``` https://github.com/special-c-vessel/Replay.git ```
+``` git clone https://github.com/special-c-vessel/Replay.git ```
 <br>
 
 - config.sh 수정 <br>
 
         config.sh 에서
         - RECORD_FILE_PATH    (기록 과정을 통해 생성된 기록 파일 경로)
-        - TARGET_FILE_PATH     (타켓 원본 소스 파일 경로)
+        - TARGET_FILE_PATH    (타켓 원본 소스 파일 경로, 기록 모듈 config.sh 파일에서 지정한 cpp 소스 코드와 같은 파일)
         총 2가지의 경로를 설정
  
-- ./config.sh <br>
+- ./config.sh 를 입력하여 쉘 코드 실행<br>
 
 <br><br>
 **제약사항 :** <br>
@@ -160,9 +161,9 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
    - 정확한 측정은 해보지 않았으나 JavaScript 활용하여 culry와 비슷한 연구를 진행한 Jalangi 의 경우 최소 1.5배에서 최대 93배, 평균 26배의 실행시간이 걸린다고 합니다. (Jalangi 논문 링크: https://dl.acm.org/doi/abs/10.1145/2491411.2491447)
    <br> culry에서는 Segfault 등 프로그램이 갑자기 종료되는 상황 또한 기록하기 위해 각 동작(기록의 대상이 되는 operation)마다 filestream을 진행하므로 많은 실행시간이 걸릴 것으로 예상합니다. <br>
    <br>
-3. 기록된 프로그램을 재현할 때 기존 프로그램과 메모리를 할당 크기는 얼마나 차이가 나는가?
-   - 기존 프로그램의 메모리 변화를 추적하기 위해서 변화를 위한 메모리 할당이 추가적으로 필요하기 떄문에 기존 프로그램보다
-  최소 2배 정도의 메모리를 사욜하게 됩니다.
+3. curly 모듈을 실행하기 위한 최소 권장 사양은 어느?
+   - 기존 프로그램의 메모리 변화를 추적하기 위해서 변화를 위한 정보를 저장하기 위해 메모리 할당이 추가적으로 필요하기 떄문에 기존 프로그램보다 최소 
+   2배 정도의 메모리를 사용하게 됩니다.
   <br><br>
 4. 메모리 보안
    - 서버나 시스템 안의 메모리를 참조할 때 보안상 취약점은 없는가?  <br>

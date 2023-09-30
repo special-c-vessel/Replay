@@ -99,7 +99,8 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[0] == "isStruct") {
-
+                RecordData* _data = new RecordStruct(_words);
+                
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
                 int _dimension = _words.size() - 8;
@@ -324,6 +325,7 @@ void App::Init() {
                 std::string _colVal = "";
                 std::string _infoMessage = "";
                 if(_words[TYPE_INDEX] == "string") {
+                    std::cout << "this record data is string type" << std::endl;
                     if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
                         int _i = STRING_START_IDX;
                         while(_words[_i] != "StringEnd") {
@@ -391,7 +393,7 @@ void App::Init() {
                         _colVal = _words2[_words2.size() - 1];
                         _lineVal = _words2[_words2.size() - 2];
                         _ptrVal = _words2[_words2.size() - 3];
-                        _lenVal = _words[JUDGMENT_INDEX + 1];
+                        _lenVal = _words[0];
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
 
@@ -406,14 +408,23 @@ void App::Init() {
                     }
                     std::vector<std::string> _resultWord;
                     _resultWord.push_back(_words[1]);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_words[2]);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_words[3]);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_strVal);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_ptrVal);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_lineVal);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_colVal);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_infoMessage);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
                     _resultWord.push_back(_lenVal);
+                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
 
                     for(int i = 0; i < _resultWord.size(); i++) {
                         std::cout << "result word : " << _resultWord[i] << std::endl;
@@ -1061,6 +1072,9 @@ void App::Render() {
                 _ct.AddColumn("Pointer Address");
                 _ct.AddColumn("Line");
                 _ct.AddColumn("Column");
+
+                std::cout << "records datafunc : " << records[currentIndex]->dataFunc << std::endl;
+                std::cout << "record access type : " << records[currentIndex]->accessType << std::endl;
 
                 ConsoleTableRow* _entry = new ConsoleTableRow(9);
 

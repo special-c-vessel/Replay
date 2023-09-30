@@ -22,6 +22,26 @@ RecordStruct::~RecordStruct() {
 void RecordStruct::InitRecordData(std::vector<std::string> _words) {
     std::cout << "===========Call InitRecordData func(RecordStruct)===========" << std::endl;
 
+    std::vector<std::string> _names = SplitString(_words[1], '-');
+    
+    accessType = "struct";
+    dataFunc = _names[0];
+    name = _names[1];
+    type = GetType(_words[2]);
+
+    int _endIndex = _words.size() - 1;
+    int _index = VALUE_START_IDX;
+
+    while(_index < _endIndex) {
+        std::string _typeStr = GetType(_words[_index]);
+        std::string _valueStr = _words[_index + 1];
+        DataStruct _dataStruct;
+        _dataStruct.type = _typeStr;
+        _dataStruct.value = _valueStr;
+        dataStructs.push_back(_dataStruct);
+        _index += 2;
+    }
+
 
     std::cout << "============================================================" << std::endl;
 }

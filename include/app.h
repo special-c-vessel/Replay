@@ -12,6 +12,7 @@
 #include "record_array.h"
 #include "record_vector.h"
 #include "record_prim.h"
+#include "record_struct.h"
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
