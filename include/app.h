@@ -66,7 +66,7 @@ private: // app class function
 
 public:
     std::vector<std::string> SplitString(const std::string&, char);
-
+    bool FindStringInString(std::string, std::string);
 public:
     void Red();
     void Blue();

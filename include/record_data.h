@@ -7,6 +7,10 @@
 #include <sstream>
 #include <map>
 
+const std::string SPLIT_STR = "sddsdsdsd";
+const std::string STRING_START = "StringStart";
+const std::string STRING_END = "StringEnd";
+
 #define ARRAY_TYPE_IDX 2
 
 enum RecordType {
@@ -75,6 +79,7 @@ public:
     int CountChar(std::string&, char);
     std::string RemoveChar(const std::string&, char);
     std::vector<std::string> SplitString(const std::string&, char);
+    bool FindStringInString(std::string, std::string);
 
 public:
     std::string accessType;

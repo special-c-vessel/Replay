@@ -99,7 +99,19 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[0] == "isStruct") {
-                RecordData* _data = new RecordStruct(_words);
+                RecordData* _data;
+                std::vector<std::string> _lines;
+                _lines.push_back(_line);
+                if(FindStringInString(_line, "string") 
+                 && !FindStringInString(_line, "StringEnd")) { // 구조체 할당 값 중에서 문자열이고 줄 내림이 있을 경우
+                    i++;
+                    while(!FindStringInString(recordLines[i], "StringEnd")) {
+                        _lines.push_back(recordLines[i]);
+                        i++;
+                    }
+                    _lines.push_back(recordLines[i]);
+                }
+                _data = new RecordStruct(_lines);
                 
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
@@ -1355,6 +1367,10 @@ std::string App::RemoveLeadingWhitespace(const std::string& _input) {
     }
 
     return _result;
+}
+
+bool App::FindStringInString(std::string _str, std::string _findStr) {
+    return _str.find(_findStr) != std::string::npos;
 }
 
 void App::Red() {

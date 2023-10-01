@@ -181,3 +181,7 @@ std::vector<std::string> RecordData::SplitString(const std::string &_str, char _
 
     return _result;
 }
+
+bool RecordData::FindStringInString(std::string _str, std::string _findStr) {
+    return _str.find(_findStr) != std::string::npos;
+}
