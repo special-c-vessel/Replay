@@ -1,0 +1,6 @@
+isStruct main-x11111 AAAAA i32 99 i32 -1 string StringStart 5 aaaaa StringEnd isStruct B 0x16d8a5360
+isStruct main-x22222 AAAAA i32 99 i32 -1 string StringStart 4 bbbb StringEnd isStruct B 0x16d8a5338
+isStruct main-xBBBBB B isStruct B i32 -99 i32 -88 0x16d8a5318
+isStruct main-qwe QQQQQ i32 30 i32 40 0x16d8a5310
+store main-xxxxx i32 50 0x16d8a5360 84 16
+store main-yyyyy i32 100 0x16d8a5364 85 16

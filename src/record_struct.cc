@@ -21,6 +21,9 @@ RecordStruct::~RecordStruct() {
 
 void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     std::cout << "===========Call InitRecordData func(RecordStruct)===========" << std::endl;
+
+    originStr = _lines;
+
     int _curLineIdx = 0;
     std::vector<std::string> _words = SplitString(_lines[_curLineIdx], ' ');
     std::vector<std::string> _names = SplitString(_words[1], '-');
@@ -47,6 +50,7 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
                         _valStr = _valStr + " " + _words[_index];
                         _index++;
                     }
+                    _index++;
                 }
             } // 문자열 값에 개행이 있을 경우
             else {
@@ -72,28 +76,62 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
                 }
             }
         }
+        else if(_typeStr == "isStruct") {
+            std::cout << "check strcut" << std::endl;
+            _typeStr = _words[_index + 1];
+            _valStr = "struct object";
+            _index += 2;
+        }
         else {
             _valStr = _words[_index + 1];
+            _index += 2;
         }
 
-        std::cout << "val str : " << _valStr << std::endl;
-        std::cout << "type str : " << _typeStr << std::endl;
-
         GetType(_words[_index]);
-        std::string _valueStr = _words[_index + 1];
         DataStruct _dataStruct;
         _dataStruct.type = _typeStr;
-        _dataStruct.value = _valueStr;
+        _dataStruct.value = _valStr;
         dataStructs.push_back(_dataStruct);
-        _index += 2;
+
+        if(_index == _endIndex) {
+            ptr = _words[_index];
+        }
+    }
+    std::cout << "struct record data ptr : " << ptr << std::endl;
+
+    dataStructs[0].ptr = ptr;
+
+    for(int i = 1 ; i < dataStructs.size(); i++) {
+        dataStructs[i].ptr = AddHexaInt(dataStructs[i - 1].ptr, GetSizeByType(dataStructs[i - 1].type));
+        shadowMemory[dataStructs[i].ptr] = dataStructs[i].value;
     }
 
+    PrintStructData();
 
     std::cout << "============================================================" << std::endl;
 }
 
 void RecordStruct::UpdateRecordData(std::vector<std::string> _words) {
     std::cout << "===========Call UpdateRecordData func(RecordStruct)===========" << std::endl;
+    line = _words[_words.size() - 2];
+    col = _words[_words.size() - 1];
+    std::string _changePtr = _words[_words.size() - 3];
+    std::string _chageValue = _words[_words.size() - 4];
+
+
+    int _dataStructIdx = -1;
+
+    for(int i = 0; i < _words.size(); i++) {
+        std::cout << "data struct ptr : " << dataStructs[i].ptr << std::endl;
+        std::cout << "chage ptr : " << _changePtr << std::endl;
+        if(dataStructs[i].ptr == _changePtr) {
+            std::cout << "data struct value : " << dataStructs[i].value << std::endl;
+            std::cout << "chage value : " << _chageValue << std::endl;
+            dataStructs[i].value = _chageValue;
+        }
+    }
+
+    PrintStructData();
     
     std::cout << "============================================================" << std::endl;
 }
@@ -136,4 +174,19 @@ void RecordStruct::SetArrrays(std::vector<ArrayStruct> _arrays) {
 
 std::vector<ArrayStruct> RecordStruct::GetArrays() {
     
+}
+
+void RecordStruct::PrintStructData() {
+    for(int i = 0; i < dataStructs.size(); i++) {
+        std::cout << "data type : " << dataStructs[i].type << ", data value : " << dataStructs[i].value << ", data ptr : " << dataStructs[i].ptr << std::endl;
+    }
+}
+
+void RecordStruct::SetStruct(RecordStruct& _struct) {
+    std::cout << "name : " << _struct.name;
+    name = _struct.name;
+}
+
+std::vector<DataStruct> RecordStruct::GetDataStruct() {
+    return this->dataStructs;
 }

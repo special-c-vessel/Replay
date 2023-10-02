@@ -150,3 +150,7 @@ void RecordPrim::SetArrrays(std::vector<ArrayStruct> _arrays) {
 std::vector<ArrayStruct> RecordPrim::GetArrays() {
     
 }
+
+void RecordPrim::SetStruct(RecordStruct& _struct) {
+    
+}

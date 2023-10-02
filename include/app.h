@@ -47,6 +47,8 @@ private: // app class function
     bool FindPrevRecordData(std::vector<std::string>, int);
     bool FindAfterRecordData(std::vector<std::string>, int);
     int FindIndexRecordData(std::string, std::string);
+    int FindStructStructData(std::string);
+    int FindStructRecordData(std::string, int);
 
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
@@ -86,6 +88,7 @@ public: // main framework variable
     int prevTableIndex;
 
     std::vector<RecordData*> records;
+    std::vector<RecordStruct*> structs;
     std::vector<RecordData*> currentRecords;
     std::vector<std::string> codes;
     std::vector<std::string> recordLines;

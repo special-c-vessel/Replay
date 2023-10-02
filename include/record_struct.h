@@ -32,7 +32,13 @@ public: // 오버라이드 함수
     void SetArrrays(std::vector<ArrayStruct>) override;
     std::vector<ArrayStruct> GetArrays() override;
 
+    void SetStruct(RecordStruct&) override;
+    std::vector<DataStruct> GetDataStruct() override;
+
 private:
+    void PrintStructData();
+
+public:
     std::map<std::string, std::string> shadowMemory;
     std::vector<DataStruct> dataStructs;
     int shadowMaxIdx = 0;

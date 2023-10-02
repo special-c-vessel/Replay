@@ -7,9 +7,13 @@
 #include <sstream>
 #include <map>
 
+class RecordStruct;
+
 const std::string SPLIT_STR = "sddsdsdsd";
+const char SPLIT_FUNC_NAME_CHAR = '-';
 const std::string STRING_START = "StringStart";
 const std::string STRING_END = "StringEnd";
+const std::string CHECK_STRUCT = "isStruct";
 
 #define ARRAY_TYPE_IDX 2
 
@@ -37,6 +41,7 @@ struct DataStruct
 {
     std::string type;
     std::string value;
+    std::string ptr;
 };
 
 class RecordData {
@@ -72,6 +77,9 @@ public:
     virtual void SetArrrays(std::vector<ArrayStruct>);
     virtual std::vector<ArrayStruct> GetArrays();
 
+    virtual void SetStruct(RecordStruct&);
+    virtual std::vector<DataStruct> GetDataStruct();
+
 public:
     bool IsNumber(std::string const&);
     std::string AddHexaInt(std::string, int);
@@ -80,6 +88,7 @@ public:
     std::string RemoveChar(const std::string&, char);
     std::vector<std::string> SplitString(const std::string&, char);
     bool FindStringInString(std::string, std::string);
+    int GetSizeByType(std::string);
 
 public:
     std::string accessType;
@@ -92,6 +101,7 @@ public:
     std::string length;
     std::string dataFunc;
     std::string originName;
+    std::vector<std::string> originStr;
 
     RecordType recordType;
 

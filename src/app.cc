@@ -99,7 +99,7 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[0] == "isStruct") {
-                RecordData* _data;
+                RecordStruct* _data;
                 std::vector<std::string> _lines;
                 _lines.push_back(_line);
                 if(FindStringInString(_line, "string") 
@@ -112,6 +112,7 @@ void App::Init() {
                     _lines.push_back(recordLines[i]);
                 }
                 _data = new RecordStruct(_lines);
+                structs.push_back(_data);
                 
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
@@ -496,26 +497,42 @@ void App::Init() {
 
                 }
                 else { // 문자열을 제외한 일반 타입
-                    std::vector<std::string> _resultWord;
-                    _resultWord.push_back(_words[0]);
-                    _resultWord.push_back(_words[1]);
-                    _resultWord.push_back(GetType(_words[2]));
-                    _resultWord.push_back(_words[3]);
-                    _resultWord.push_back(_words[4]);
-                    _resultWord.push_back(_words[5]);
-                    _resultWord.push_back(_words[6]);
-                    _resultWord.push_back("");
-
-                    for(int i = 0; i < _resultWord.size(); i++) {
-                        std::cout << "result word : " << _resultWord[i] << std::endl;
+                    int _findStructIdx = FindStructStructData(_words[_words.size() - 3]);
+                    std::cout << "find struct index : " << _findStructIdx << std::endl;
+                    int _findRecordIdx = FindStructRecordData(_words[_words.size() - 3], records.size() - 1);
+                    std::cout << "find record index : " << _findRecordIdx << std::endl;
+                    if(_findRecordIdx != -1) {
+                        RecordData* _data = new RecordStruct(records[_findRecordIdx]->originStr);
+                        _data->UpdateRecordData(_words);
+                        records.push_back(_data);
                     }
+                    else if(_findStructIdx != -1) {
+                        RecordData* _data = new RecordStruct(structs[_findStructIdx]->originStr);
+                        _data->UpdateRecordData(_words);
+                        records.push_back(_data);
+                    }
+                    else {
+                        std::vector<std::string> _resultWord;
+                        _resultWord.push_back(_words[0]);
+                        _resultWord.push_back(_words[1]);
+                        _resultWord.push_back(GetType(_words[2]));
+                        _resultWord.push_back(_words[3]);
+                        _resultWord.push_back(_words[4]);
+                        _resultWord.push_back(_words[5]);
+                        _resultWord.push_back(_words[6]);
+                        _resultWord.push_back("");
 
-                    RecordData* _data = new RecordPrim();
+                        for(int i = 0; i < _resultWord.size(); i++) {
+                            std::cout << "result word : " << _resultWord[i] << std::endl;
+                        }
 
-                    _data->InitRecordData(_resultWord);
-                    _data->recordType = RecordType::Prim;
-                    records.push_back(_data);
-                    std::vector<std::string>().swap(_resultWord);
+                        RecordData* _data = new RecordPrim();
+
+                        _data->InitRecordData(_resultWord);
+                        _data->recordType = RecordType::Prim;
+                        records.push_back(_data);
+                        std::vector<std::string>().swap(_resultWord);
+                    }
                 }
             }
         }
@@ -1371,6 +1388,30 @@ std::string App::RemoveLeadingWhitespace(const std::string& _input) {
 
 bool App::FindStringInString(std::string _str, std::string _findStr) {
     return _str.find(_findStr) != std::string::npos;
+}
+
+int App::FindStructStructData(std::string _ptr) {
+    for(int i = 0; i < structs.size(); i++) {
+        for(int j = 0; j < structs[i]->dataStructs.size(); j++) {
+            if(structs[i]->dataStructs[j].ptr == _ptr) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+int App::FindStructRecordData(std::string _ptr, int _curIdx) {
+    std::cout << "cur index : " << _curIdx << std::endl;
+    for(int i = _curIdx; i >= 0; i--) {
+        if(records[i]->recordType == RecordType::Struct) {
+            std::cout << "data strcut size : " << records[i]->GetDataStruct().size() << std::endl;
+            for(int j = 0; j < records[i]->GetDataStruct().size(); j++) {
+                if(_ptr == records[i]->GetDataStruct()[j].ptr) return i;
+            }
+        }
+    }
+    return -1;
 }
 
 void App::Red() {

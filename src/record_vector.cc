@@ -213,3 +213,7 @@ void RecordVector::SetArrrays(std::vector<ArrayStruct> _arrays) {
 std::vector<ArrayStruct> RecordVector::GetArrays() {
     
 }
+
+void RecordVector::SetStruct(RecordStruct& _struct) {
+    
+}

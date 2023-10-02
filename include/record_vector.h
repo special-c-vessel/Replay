@@ -43,6 +43,8 @@ public: // 오버라이드 함수
     void SetArrrays(std::vector<ArrayStruct>) override;
     std::vector<ArrayStruct> GetArrays() override;
 
+    void SetStruct(RecordStruct&) override;
+
 private: // 출력 함수
     void PrintShadowMemory();
 

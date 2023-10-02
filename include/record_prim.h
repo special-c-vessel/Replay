@@ -27,8 +27,10 @@ public: // 오버라이드 함수
     void SetShadowMemorySize(int) override;
     int GetShadowMemorySize() override;
     
-     void SetArrrays(std::vector<ArrayStruct>) override;
+    void SetArrrays(std::vector<ArrayStruct>) override;
     std::vector<ArrayStruct> GetArrays() override;
+
+    void SetStruct(RecordStruct&) override;
 
 public: // 편의성 함수
     void PrintShadowMemory();

@@ -32,6 +32,8 @@ public: // 오버라이드 함수
     void SetArrrays(std::vector<ArrayStruct>) override;
     std::vector<ArrayStruct> GetArrays() override;
     
+    void SetStruct(RecordStruct&) override;
+
 private: // 편의성 함수
     bool IsNumber(std::string const&);
     std::string AddHexaInt(std::string, int);

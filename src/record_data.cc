@@ -49,6 +49,15 @@ std::vector<ArrayStruct> RecordData::GetArrays() {
     
 }
 
+void RecordData::SetStruct(RecordStruct& _struct) {
+
+}
+
+std::vector<DataStruct> RecordData::GetDataStruct() {
+    std::vector<DataStruct> _dataStructs;
+    return _dataStructs;
+}
+
 // 편의성 함수
 
 // 주어진 문자열에 숫자가 포함되어 있는지 판단하는 함수
@@ -143,6 +152,9 @@ std::string RecordData::GetType(std::string& _word) {
         else if(_word == "string") {
             return "string";
         }
+        else if(_word == CHECK_STRUCT) {
+            return CHECK_STRUCT;
+        }
         else {
             return "undefined type";
         }
@@ -184,4 +196,33 @@ std::vector<std::string> RecordData::SplitString(const std::string &_str, char _
 
 bool RecordData::FindStringInString(std::string _str, std::string _findStr) {
     return _str.find(_findStr) != std::string::npos;
+}
+
+int RecordData::GetSizeByType(std::string _type) {
+    if(_type.find("p") != std::string::npos) { // pointer data type
+        return 4; // 4 or 8 by architecture type
+    }
+    else { // normal data type
+        if(_type == "int") { // int type
+            return 4;
+        }
+        else if(_type == "long long int") { // long type
+            return 4; // 4 or 8 by architecture type
+        }
+        else if(_type == "char") { // char type
+            return 1;
+        }
+        else if(_type == "float") { // float type
+            return 4;
+        }
+        else if(_type == "shotr") { // short type
+            return 2;
+        }
+        else if(_type == "double") { // double type
+            return 8;
+        }
+        else {
+            return _type.size();
+        }
+    }
 }

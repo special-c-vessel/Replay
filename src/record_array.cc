@@ -385,3 +385,7 @@ std::string RecordArray::RemoveChar(const std::string &_str, char _removeWord) {
     
     return _result;
 }
+
+void RecordArray::SetStruct(RecordStruct& _struct) {
+    
+}
