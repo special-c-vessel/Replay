@@ -33,6 +33,7 @@ public: // 오버라이드 함수
     std::vector<ArrayStruct> GetArrays() override;
 
     void SetStruct(RecordStruct&) override;
+    void SetDataStruct(std::vector<DataStruct>) override;
     std::vector<DataStruct> GetDataStruct() override;
 
 private:

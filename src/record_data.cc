@@ -53,6 +53,10 @@ void RecordData::SetStruct(RecordStruct& _struct) {
 
 }
 
+void RecordData::SetDataStruct(std::vector<DataStruct> _dataStructs) {
+    
+}
+
 std::vector<DataStruct> RecordData::GetDataStruct() {
     std::vector<DataStruct> _dataStructs;
     return _dataStructs;

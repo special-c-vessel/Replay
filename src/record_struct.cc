@@ -31,7 +31,7 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     accessType = "struct";
     dataFunc = _names[0];
     name = _names[1];
-    type = GetType(_words[2]);
+    type = _words[2];
 
     int _endIndex = _words.size() - 1;
     int _index = VALUE_START_IDX;
@@ -147,6 +147,44 @@ void RecordStruct::PrintRecordData() {
 std::string RecordStruct::PrintRecordTable(std::string _message) {
    std::string _returnMessage;
 
+   //std::cout << "\033[1m" << "\n\nstruct name : " << this->type << "\033[0m" << std::endl;
+   //std::cout << "\033[1m" << "struct variable name : " << this->name << "\033[0m" << std::endl;
+
+    ConsoleTable _ct2(BASIC);
+    _ct2.SetPadding(1);
+    _ct2.AddColumn("Struct name");
+    _ct2.AddColumn(type);
+
+    ConsoleTableRow* _entry2 = new ConsoleTableRow(2);
+
+    _entry2->AddEntry("Struct variable name", 0);
+    _entry2->AddEntry(name, 1);
+
+    _ct2.AddRow(_entry2);
+
+    _ct2.PrintTable();
+
+    ConsoleTable _ct(BASIC);
+    _ct.SetPadding(1);
+    _ct.AddColumn(" ");
+    _ct.AddColumn("Struct data type");
+    _ct.AddColumn("Struct data value");
+    _ct.AddColumn("Struct data ptr");
+
+    for(int i = 0 ; i < dataStructs.size(); i++) {
+        ConsoleTableRow* _entry = new ConsoleTableRow(4);
+
+        _entry->AddEntry("data " + std::to_string(i + 1), 0);
+        _entry->AddEntry(dataStructs[i].type, 1);
+        _entry->AddEntry(dataStructs[i].value, 2);
+        _entry->AddEntry(dataStructs[i].ptr, 3);
+
+        _ct.AddRow(_entry);
+
+    }
+
+    _ct.PrintTable();
+
 
     return _returnMessage;
 }
@@ -185,6 +223,10 @@ void RecordStruct::PrintStructData() {
 void RecordStruct::SetStruct(RecordStruct& _struct) {
     std::cout << "name : " << _struct.name;
     name = _struct.name;
+}
+
+void RecordStruct::SetDataStruct(std::vector<DataStruct> _dataStructs) {
+    this->dataStructs = _dataStructs;
 }
 
 std::vector<DataStruct> RecordStruct::GetDataStruct() {

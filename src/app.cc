@@ -499,10 +499,15 @@ void App::Init() {
                 else { // 문자열을 제외한 일반 타입
                     int _findStructIdx = FindStructStructData(_words[_words.size() - 3]);
                     std::cout << "find struct index : " << _findStructIdx << std::endl;
-                    int _findRecordIdx = FindStructRecordData(_words[_words.size() - 3], records.size() - 1);
+                    int _findRecordIdx = FindStructRecordData(_words[_words.size() - 4], _words[_words.size() - 3], records.size() - 1);
                     std::cout << "find record index : " << _findRecordIdx << std::endl;
                     if(_findRecordIdx != -1) {
+                        for(int dataIdx = 0 ; dataIdx < records[_findRecordIdx]->GetDataStruct().size(); dataIdx++) {
+                            std::cout << "record data struct type : " << records[_findRecordIdx]->GetDataStruct()[dataIdx].type;
+                            std::cout << " record data struct value : " << records[_findRecordIdx]->GetDataStruct()[dataIdx].value << std::endl;
+                        } 
                         RecordData* _data = new RecordStruct(records[_findRecordIdx]->originStr);
+                        _data->SetDataStruct(records[_findRecordIdx]->GetDataStruct());
                         _data->UpdateRecordData(_words);
                         records.push_back(_data);
                     }
@@ -987,7 +992,8 @@ void App::Render() {
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
                     && _info[4] == records[i]->type
-                    && records[i]->recordType != RecordType::Array) {
+                    && records[i]->recordType != RecordType::Array
+                    && records[i]->recordType != RecordType::Struct) {
                         ConsoleTableRow* _entry = new ConsoleTableRow(9);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
@@ -1047,7 +1053,8 @@ void App::Render() {
                     && _info[1] == records[i]->dataFunc 
                     && _info[2] == records[i]->name 
                     && _info[4] == records[i]->type
-                    && records[i]->recordType != RecordType::Array) {
+                    && records[i]->recordType != RecordType::Array
+                    && records[i]->recordType != RecordType::Struct) {
                         ConsoleTableRow* _entry = new ConsoleTableRow(9);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
@@ -1333,7 +1340,8 @@ bool App::FindPrevRecordData(std::vector<std::string> _str, int _currentIndex) {
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 
         && _str[4] == records[i]->type
-        && records[i]->recordType != RecordType::Array) {
+        && records[i]->recordType != RecordType::Array
+        && records[i]->recordType != RecordType::Struct) {
             return true;
         }
     }
@@ -1346,7 +1354,8 @@ bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) 
         && _str[1] == records[i]->dataFunc 
         && _str[2] == records[i]->name 
         && _str[4] == records[i]->type
-        && records[i]->recordType != RecordType::Array) {
+        && records[i]->recordType != RecordType::Array
+        && records[i]->recordType != RecordType::Struct) {
             std::cout << "return true in find after data index : " << i << std::endl;
             return true;
         }
@@ -1401,13 +1410,13 @@ int App::FindStructStructData(std::string _ptr) {
     return -1;
 }
 
-int App::FindStructRecordData(std::string _ptr, int _curIdx) {
-    std::cout << "cur index : " << _curIdx << std::endl;
+int App::FindStructRecordData(std::string _value, std::string _ptr, int _curIdx) {
     for(int i = _curIdx; i >= 0; i--) {
         if(records[i]->recordType == RecordType::Struct) {
             std::cout << "data strcut size : " << records[i]->GetDataStruct().size() << std::endl;
             for(int j = 0; j < records[i]->GetDataStruct().size(); j++) {
-                if(_ptr == records[i]->GetDataStruct()[j].ptr) return i;
+                if(_ptr == records[i]->GetDataStruct()[j].ptr
+                || _value == records[i]->GetDataStruct()[j].ptr) return i;
             }
         }
     }

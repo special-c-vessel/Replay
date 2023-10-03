@@ -48,7 +48,7 @@ private: // app class function
     bool FindAfterRecordData(std::vector<std::string>, int);
     int FindIndexRecordData(std::string, std::string);
     int FindStructStructData(std::string);
-    int FindStructRecordData(std::string, int);
+    int FindStructRecordData(std::string, std::string, int);
 
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);

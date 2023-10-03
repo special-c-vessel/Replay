@@ -78,6 +78,7 @@ public:
     virtual std::vector<ArrayStruct> GetArrays();
 
     virtual void SetStruct(RecordStruct&);
+    virtual void SetDataStruct(std::vector<DataStruct>);
     virtual std::vector<DataStruct> GetDataStruct();
 
 public:
