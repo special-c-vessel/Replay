@@ -80,4 +80,3 @@ store push_back main-sssss S_12basic_stringIcNS_11char_traitsIcEE 0x16d8a51a0 0x
 
 
  StringEnd 0x16d8a5170 221 30
-store main-retval i32 0 0x16d8a538c 225 3

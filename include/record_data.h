@@ -14,6 +14,8 @@ const char SPLIT_FUNC_NAME_CHAR = '-';
 const std::string STRING_START = "StringStart";
 const std::string STRING_END = "StringEnd";
 const std::string CHECK_STRUCT = "isStruct";
+const std::string ERROR_STRING_RANGE = "Out of range request for the string";
+const std::string ERROR_SEGMENTATION_FAULTS = "Expected location for segmentation faults error";
 
 #define ARRAY_TYPE_IDX 2
 

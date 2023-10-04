@@ -10,7 +10,7 @@ int main()
   string str3333 = "abcdefghijk";
   str3333 = "12345";
   
-  str3333[5] = '7';
+  str3333[13] = 'e';
 
   if(str3333 == "a")
   {

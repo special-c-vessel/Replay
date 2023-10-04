@@ -49,8 +49,8 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
         this->length = _words[8];
     }
 
-    //std::cout << "name : " << this->name << std::endl;
-    //std::cout << "current funtion : " << this->dataFunc << std::endl;
+    std::cout << "name : " << this->name << std::endl;
+    std::cout << "current funtion : " << this->dataFunc << std::endl;
 
     this->shadowMemory[this->ptr] = this->value;
     shadowMaxIdx++;
@@ -98,6 +98,9 @@ std::string RecordPrim::PrintRecordTable(std::string _message) {
 
     if(this->infoMessage != "None") {
         _returnMessage = this->infoMessage;
+    }
+    else {
+        _returnMessage = "";
     }
     std::cout << "return message : " << _returnMessage << std::endl;
     return _returnMessage;

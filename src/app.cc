@@ -338,7 +338,7 @@ void App::Init() {
                 std::string _colVal = "";
                 std::string _infoMessage = "";
                 if(_words[TYPE_INDEX] == "string") {
-                    std::cout << "this record data is string type" << std::endl;
+                    std::cout << "this record data is string type : " << _line << std::endl;
                     if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
                         int _i = STRING_START_IDX;
                         while(_words[_i] != "StringEnd") {
@@ -367,10 +367,10 @@ void App::Init() {
                         _ptrVal = _words[_words.size() - 3];
                         _lenVal = records[_findIndex]->length;
                         if(stoi(records[_findIndex]->length) < _changeIndex) {
-                            _infoMessage = "문자열의 범위 밖 요청입니다";
+                            _infoMessage = ERROR_STRING_RANGE;
                         }
                         else {
-                            _infoMessage = "None";
+                            _infoMessage = "";
                         }
                     }
                     else {
@@ -413,8 +413,8 @@ void App::Init() {
                     std::cout << "str val size : " << _strVal.size() << std::endl;
                     std::cout << "len : " << std::stoi(_lenVal) << std::endl;
 
-                    if(_strVal.size() - 1 > std::stoi(_lenVal)) {
-                        _infoMessage = "문자열의 범위 밖 요청입니다";
+                    if(_strVal.size() < std::stoi(_lenVal)) {
+                        _infoMessage = ERROR_STRING_RANGE;
                     }
                     else {
                         _infoMessage = "None";
@@ -465,24 +465,25 @@ void App::Init() {
                     _colVal = _words[_words.size() - 1];
                     _lineVal = _words[_words.size() - 2];
                     _ptrVal = _words[_words.size() - 3];
-                    _lenVal = _words[3];
+                    _lenVal = std::to_string(records[_findIdx]->value.size());
                     std::cout << "len :  " << _lenVal << std::endl;
                     if(std::stoi(_lenVal) < _changeIndex) {
-                        _infoMessage = "문자열의 범위 밖 요청입니다";
+                        _infoMessage = ERROR_STRING_RANGE;
                     }
                     else {
                         _infoMessage = " ";
                     }
                     std::cout << "set default information" << std::endl;
                     std::vector<std::string> _resultWord;
+                    _resultWord.push_back(_words[0]);
                     _resultWord.push_back(_nameVal);
                     _resultWord.push_back(_typeVal);
                     _resultWord.push_back(_strVal);
                     _resultWord.push_back(_ptrVal);
                     _resultWord.push_back(_lineVal);
                     _resultWord.push_back(_colVal);
-                    _resultWord.push_back(_lenVal);
                     _resultWord.push_back(_infoMessage);
+                    _resultWord.push_back(_lenVal);
 
                     for(int i = 0; i < _resultWord.size(); i++) {
                         std::cout << "result word : " << _resultWord[i] << std::endl;
@@ -548,10 +549,10 @@ void App::Init() {
     }
     else {
         isDone = false;
-        //records[records.size() - 1]->infoMessage = "오류 발생 지점 예상 ";
+        records[records.size() - 1]->infoMessage = ERROR_SEGMENTATION_FAULTS;
     }
     
-    records[records.size() - 1]->infoMessage = records[records.size() - 1]->infoMessage + "마지막 기록 데이터";
+    records[records.size() - 1]->infoMessage = records[records.size() - 1]->infoMessage + "last record data";
 
     // 소스 파일이 제대로 열렸는지 검사
     std::ifstream _srcStream(srcFile);
@@ -972,7 +973,7 @@ void App::Render() {
             _info.push_back(records[currentIndex]->type);
 
             if(FindPrevRecordData(_info, currentIndex)) {
-                std::cout << "\033[1m" << "Previous Data List ,  다음 페이지 - prevright,  이전 페이지 - prevleft, ";
+                std::cout << "\033[1m" << "Previous Data List ,  next page - prevright,  prev page - prevleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
@@ -1022,7 +1023,7 @@ void App::Render() {
                 //std::cout << "StartIndex : " << _startIndex << std::endl;
                 //std::cout << "EndIndex : " << _endIndex << std::endl;
 
-                std::cout << "이전 데이터 개수 : " << _entrys.size() << " current page - " << prevCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
+                std::cout << "prev data count : " << _entrys.size() << " current page - " << prevCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
 
                 if(_maxPage < prevCurPage) prevCurPage = _maxPage;
 
@@ -1033,7 +1034,7 @@ void App::Render() {
                 _ct.PrintTable();
             }
             if(FindAfterRecordData(_info, currentIndex)) {
-                std::cout << std::endl << "\033[1m" << "Following Data List,  다음 페이지 - followright,  이전 페이지 - followleft, ";
+                std::cout << std::endl << "\033[1m" << "Following Data List,  next page - followright,  prev page - followleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
@@ -1078,7 +1079,7 @@ void App::Render() {
                     afterTableIndex = -1;
                 }
 
-                std::cout << "이후 데이터 개수 : " << _entrys.size() << " current page : " << afterCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
+                std::cout << "following data count : " << _entrys.size() << " current page : " << afterCurPage << "/" << _maxPage << "\033[0m"<< std::endl;
                 
                 int _startIndex = (_entrys.size() > (afterCurPage - 1) * 5) ? (afterCurPage - 1) * 5 : 0;
                 int _endIndex = (_entrys.size() > (afterCurPage * 5) - 1) ? (afterCurPage * 5) - 1 : _entrys.size() - 1;
@@ -1095,7 +1096,7 @@ void App::Render() {
                 _ct.PrintTable();
 
             }
-            std::cout << std::endl << "\033[1m" << "Current Data Information, 현재 코드 - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
+            std::cout << std::endl << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
             if(records[currentIndex]->recordType == RecordType::Prim) {
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1109,8 +1110,8 @@ void App::Render() {
                 _ct.AddColumn("Line");
                 _ct.AddColumn("Column");
 
-                std::cout << "records datafunc : " << records[currentIndex]->dataFunc << std::endl;
-                std::cout << "record access type : " << records[currentIndex]->accessType << std::endl;
+                //std::cout << "records datafunc : " << records[currentIndex]->dataFunc << std::endl;
+                //std::cout << "record access type : " << records[currentIndex]->accessType << std::endl;
 
                 ConsoleTableRow* _entry = new ConsoleTableRow(9);
 
@@ -1141,11 +1142,14 @@ void App::Render() {
         std::cout << "                             기록정보 없음                               \n";
     }
 
-    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
-    std::cout << "|                                                       " << "\033[1m" <<"System meseeage" << "\033[0m" << "                                                  |\n";
-    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
-    std::cout << "                                                      " << systemMessage << std::endl;
-    std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    if(systemMessage.size() > 2) {
+
+        std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+        std::cout << "|                                                       " << "\033[1m" <<"System meseeage" << "\033[0m" << "                                                  |\n";
+        std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+        std::cout << "  " <<systemMessage << std::endl;
+        std::cout << "+------------------------------------------------------------------------------------------------------------------------+\n";
+    }
 }
 
 bool App::IsNumber(std::string const &_str) {
@@ -1356,11 +1360,11 @@ bool App::FindAfterRecordData(std::vector<std::string> _str, int _currentIndex) 
         && _str[4] == records[i]->type
         && records[i]->recordType != RecordType::Array
         && records[i]->recordType != RecordType::Struct) {
-            std::cout << "return true in find after data index : " << i << std::endl;
+            //std::cout << "return true in find after data index : " << i << std::endl;
             return true;
         }
     }
-    std::cout << "return false in find after data" << std::endl;
+    //std::cout << "return false in find after data" << std::endl;
     return false;
 }
 
