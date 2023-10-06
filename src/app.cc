@@ -38,6 +38,8 @@ void App::Run() {
 }
 
 void App::Init() {
+    auto _startTime = std::chrono::high_resolution_clock::now();
+
     std::cout << "Initialize app class" << std::endl;
     isDone = false;
     programOver = false;
@@ -570,6 +572,15 @@ void App::Init() {
         }
     }
     _srcStream.close();
+
+        // 종료 시간 기록
+    auto _endTime = std::chrono::high_resolution_clock::now();
+
+    // 경과 시간 계산
+    std::chrono::duration<double> _elapsed = _endTime - _startTime;
+
+    // 경과 시간을 초 단위로 출력
+    std::cout << "Time : " << _elapsed.count() << " s" << std::endl;
 
     Render();
 }
