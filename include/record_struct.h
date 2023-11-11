@@ -10,8 +10,6 @@
 #include "console_table.h"
 #include "console_table_row.h"
 
-#define VALUE_START_IDX 3
-
 class RecordStruct : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordStruct(); // 일반 생성자

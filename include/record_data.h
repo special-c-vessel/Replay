@@ -17,6 +17,18 @@ const std::string CHECK_STRUCT = "isStruct";
 const std::string ERROR_STRING_RANGE = "Out of range request for the string";
 const std::string ERROR_SEGMENTATION_FAULTS = "Expected location for segmentation faults error";
 
+const int THREAD_ID_IDX = 0;
+const int OP_TYPE_IDX = 1;
+const int CURFUNC_NAME_IDX = 2;
+const int TYPE_IDX = 3;
+const int VALUE_IDX = 4;
+const int PTR_IDX = 5;
+const int LINE_IDX = 6;
+const int COL_IDX = 7;
+const int START_STRUCTDATA_VALUE_IDX = 3;
+const int START_STRING_IDX = 7;
+const int STRING_LENGTH_IDX = 5;
+
 #define ARRAY_TYPE_IDX 2
 
 enum RecordType {
@@ -105,6 +117,7 @@ public:
     std::string dataFunc;
     std::string originName;
     std::vector<std::string> originStr;
+    std::string threadId;
 
     RecordType recordType;
 
@@ -112,6 +125,9 @@ public:
     
     // 해당 기록파일의 특이 정보를 가지고 있는 문자열
     std::string infoMessage;
+
+    // Error handlin variable
+    bool isErrorRecData = false;
 };
 
 #endif //RECORD_DATA_H

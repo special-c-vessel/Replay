@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <unistd.h>
-#include <ncurses.h>
+#include <chrono>
 
 
 #include "record_data.h"
@@ -16,9 +16,6 @@
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
-#define TYPE_INDEX 3
-#define STRING_START_IDX 6
-#define STRING_LEN_IDX 5
 
 using namespace std;
 
@@ -69,6 +66,11 @@ private: // app class function
 public:
     std::vector<std::string> SplitString(const std::string&, char);
     bool FindStringInString(std::string, std::string);
+
+    // Time Method
+    void StartTime();
+    void EndTime();
+    
 public:
     void Red();
     void Blue();
@@ -105,4 +107,8 @@ public: // main framework variable
 
     // Error handling variable
     std::string systemMessage; // 시스템 메시지
+
+    // Time check variable
+    std::chrono::high_resolution_clock::time_point startTime;
+    std::chrono::high_resolution_clock::time_point endTime;
 };

@@ -5,6 +5,7 @@ RecordVector::RecordVector() {
     currentPage = 1;
     prevPage = 1;
     shadowMaxIdx = 0;
+    threadId = "0";
     recordType = RecordType::Array;
 }
 
@@ -13,6 +14,7 @@ RecordVector::RecordVector(std::vector<std::string> _words) {
     currentPage = 1;
     prevPage = 1;
     shadowMaxIdx = 0;
+    threadId = "0";
     recordType = RecordType::Array;
 
     InitRecordData(_words);

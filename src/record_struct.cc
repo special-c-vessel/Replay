@@ -3,12 +3,14 @@
 RecordStruct::RecordStruct() {
     std::cout << "Call Normal Constructor(RecordStruct)" << std::endl;
     shadowMaxIdx = 0;
+    threadId = "0";
     recordType = RecordType::Struct;
 }
 
 RecordStruct::RecordStruct(std::vector<std::string> _lines) {
     std::cout << "Call Normal Constructor(RecordStruct)" << std::endl;
     shadowMaxIdx = 0;
+    threadId = "0";
     recordType = RecordType::Struct;
 
     InitRecordData(_lines);
@@ -34,7 +36,7 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     type = _words[2];
 
     int _endIndex = _words.size() - 1;
-    int _index = VALUE_START_IDX;
+    int _index = START_STRUCTDATA_VALUE_IDX;
 
     while(_index < _endIndex) {
         std::string _typeStr = GetType(_words[_index]);
@@ -98,6 +100,7 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
         }
     }
     std::cout << "struct record data ptr : " << ptr << std::endl;
+    std::cout << "data struct size : " << dataStructs.size() << std::endl;
 
     dataStructs[0].ptr = ptr;
 
@@ -105,6 +108,7 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
         dataStructs[i].ptr = AddHexaInt(dataStructs[i - 1].ptr, GetSizeByType(dataStructs[i - 1].type));
         shadowMemory[dataStructs[i].ptr] = dataStructs[i].value;
     }
+
 
     PrintStructData();
 

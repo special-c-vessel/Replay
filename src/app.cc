@@ -38,9 +38,11 @@ void App::Run() {
 }
 
 void App::Init() {
-    auto _startTime = std::chrono::high_resolution_clock::now();
-
     std::cout << "Initialize app class" << std::endl;
+    // 시간 측정 시작
+    StartTime();
+
+    // 설정 초기화
     isDone = false;
     programOver = false;
     currentLine = 1;
@@ -51,12 +53,13 @@ void App::Init() {
     afterTableIndex = -1;
     prevTableIndex = -1;
     inputState = InputState::Stop;
-    systemMessage = "None";
+    systemMessage = "";
+    InitCommand();
     
+
+    // 가바지 밸류 삭제
     recordLines.clear();
     std::vector<std::string>().swap(recordLines);
-
-    InitCommand();
 
     // 기록 파일이 제대로 열렸는지 검사
     std::ifstream _recordStream(recordFile, std::ios::in);
@@ -100,9 +103,9 @@ void App::Init() {
         }
     
         if(_words[1] != "retval") {
-            if(_words[0] == "isStruct") {
-                RecordStruct* _data;
-                std::vector<std::string> _lines;
+            if(_words[0] == "isStruct") { // 구조체
+                RecordStruct* _data; // 기록 구조체 객체 생성
+                std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
                 _lines.push_back(_line);
                 if(FindStringInString(_line, "string") 
                  && !FindStringInString(_line, "StringEnd")) { // 구조체 할당 값 중에서 문자열이고 줄 내림이 있을 경우
@@ -114,8 +117,7 @@ void App::Init() {
                     _lines.push_back(recordLines[i]);
                 }
                 _data = new RecordStruct(_lines);
-                structs.push_back(_data);
-                
+                structs.push_back(_data);                
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
                 int _dimension = _words.size() - 8;
@@ -129,10 +131,8 @@ void App::Init() {
                 }
 
                 if(_findIdx != -1) {
-                    std::cout << "detect array record data" << std::endl;
                     //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                     RecordData* _data = new RecordArray(_words, _dimension);
-                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
                     _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
                     _data->SetArrrays(records[_findIdx]->GetArrays());
                     records.push_back(_data);
@@ -218,9 +218,9 @@ void App::Init() {
                 ///////////////////////////string 일 경우/////////////////////////////
                 std::string _refValue;
                 std::string _refType = _words[3];
-                if(_words[TYPE_INDEX] == "string") {
+                if(_words[TYPE_IDX] == "string") {
                     if(_line.find("StringEnd") != std::string::npos) {
-                        int _i = STRING_START_IDX;
+                        int _i = START_STRING_IDX;
                         while(_words[_i] != "StringEnd") {
                             _refValue += _words[_i];
                             _refValue += " ";
@@ -228,7 +228,7 @@ void App::Init() {
                         }
                     }
                     else {
-                        int _strValIndex = STRING_START_IDX;
+                        int _strValIndex = START_STRING_IDX;
                         for(int _i = _strValIndex; _i < _words.size(); _i++) {
                             if(_i == _words.size() - 1) {
                                 _refValue = _refValue + _words[_i] + "\\n";
@@ -303,34 +303,8 @@ void App::Init() {
                     }
                 }
             }
-            else if(_words[1] == "push_back" ) { // 벡터일 경우
-                std::cout << "vector push back data" << std::endl;
-                int _findIdx = -1;
-                for(int i = records.size() - 1; i >= 0; i--) {
-                    std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
-                    if(_comparisonStr == _words[2]) {
-                        _findIdx = i;
-                        std::cout << "_findIdx : " << _findIdx << std::endl;
-                        break;
-                    }
-                }
-                if(_findIdx != -1) { 
-                    std::cout << "detect vector record data" << std::endl;
-                    //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
-                    RecordData* _data = new RecordVector(_words);
-                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
-                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
-                    _data->UpdateRecordData(_words);
-                    records.push_back(_data);
-
-                } else {
-                    std::cout << "vector recordata create" << std::endl;
-                    RecordData* _data = new RecordVector(_words);
-                    _data->UpdateRecordData(_words);
-                    records.push_back(_data);
-                }
-            }
             else { // 일반 기록파일
+                std::string _threadIdVal = "";
                 std::string _nameVal = "";
                 std::string _typeVal = "";
                 std::string _strVal = "";
@@ -339,11 +313,11 @@ void App::Init() {
                 std::string _lineVal = "";
                 std::string _colVal = "";
                 std::string _infoMessage = "";
-                if(_words[TYPE_INDEX] == "string") {
+                if(_words[TYPE_IDX] == "string") { // String 타입의 데이터일 경우
                     std::cout << "this record data is string type : " << _line << std::endl;
                     if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
-                        int _i = STRING_START_IDX;
-                        while(_words[_i] != "StringEnd") {
+                        int _i = START_STRING_IDX;
+                        while(_words[_i] != STRING_END) {
                             _strVal += _words[_i];
                             _strVal += " ";
                             _i++;
@@ -351,11 +325,10 @@ void App::Init() {
                         _colVal = _words[_words.size() - 1];
                         _lineVal = _words[_words.size() - 2];
                         _ptrVal = _words[_words.size() - 3];
-                        _lenVal = _words[STRING_LEN_IDX];
+                        _lenVal = _words[STRING_LENGTH_IDX];
                         std::cout << "strVal : " << _strVal << std::endl;
                     }
-                    else if(_line.find("StringStart") == std::string::npos 
-                    && FindRecordDataStr(_words[2]) != -1) {
+                    else if(_line.find(STRING_START) == std::string::npos && FindRecordDataStr(_words[2]) != -1) {
                         int _findIndex = FindRecordDataStr(_words[2]);
                         int _changeIndex = std::stoi(_words[4]);
                         std::cout << "find index : " << _findIndex << std::endl;
@@ -376,7 +349,7 @@ void App::Init() {
                         }
                     }
                     else {
-                        int _strValIndex = STRING_START_IDX;
+                        int _strValIndex = START_STRING_IDX;
                         for(int _i = _strValIndex; _i < _words.size(); _i++) {
                             if(_i == _words.size() - 1) {
                                 _strVal = _strVal + _words[_i] + "\\n";
@@ -573,23 +546,16 @@ void App::Init() {
     }
     _srcStream.close();
 
-        // 종료 시간 기록
-    auto _endTime = std::chrono::high_resolution_clock::now();
-
-    // 경과 시간 계산
-    std::chrono::duration<double> _elapsed = _endTime - _startTime;
-
-    // 경과 시간을 초 단위로 출력
-    std::cout << "Time : " << _elapsed.count() << " s" << std::endl;
-
     Render();
 }
 
 // 사용자로부터 입력을 받는 함수
 void App::Input() {
     std::string _input;
+    EndTime();
     std::cout << std::endl << "User input : ";
     getline(std::cin, _input);
+    StartTime();
     if(!IsNumber(_input)) { // 사용자 입력 값이 숫자가 아닐 경우
         if(_input[0] == 's') {
             std::vector<std::string> _cmdWords = SplitString(_input, ' ');
@@ -847,10 +813,12 @@ void App::Render() {
             }
         }
         /*
+        std::cout << "variable shadow memory" << std::endl;
         for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
 
+        std::cout << std::endl <<"variable shadow memory" << std::endl;
         for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
@@ -1416,7 +1384,9 @@ bool App::FindStringInString(std::string _str, std::string _findStr) {
 
 int App::FindStructStructData(std::string _ptr) {
     for(int i = 0; i < structs.size(); i++) {
+        std::cout << "struct datastruct size : " << structs[i]->dataStructs.size() << std::endl;
         for(int j = 0; j < structs[i]->dataStructs.size(); j++) {
+            std::cout << "struct data : " << structs[i]->dataStructs[j].ptr << std::endl;
             if(structs[i]->dataStructs[j].ptr == _ptr) {
                 return i;
             }
@@ -1448,4 +1418,16 @@ void App::Blue() {
 
 void App::Reset() {
     std::cout << "\033[0m";
+}
+
+void App::StartTime() {
+    startTime = std::chrono::high_resolution_clock::now();
+}
+
+void App::EndTime() {
+    endTime = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> _timeSpan = endTime - startTime;
+
+    std::cout << "Time : " << _timeSpan.count() << "s" << std::endl;
 }

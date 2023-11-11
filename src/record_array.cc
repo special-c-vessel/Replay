@@ -5,6 +5,7 @@ RecordArray::RecordArray() {
     currentPage = 1;
     prevPage = 1;
     shadowMaxIdx = 0;
+    threadId = "0";
     recordType = RecordType::Array;
 }
 
@@ -15,9 +16,7 @@ RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
     shadowMaxIdx = 0;
     dimension = _dimension;
     recordType = RecordType::Array;
-
-
-
+    threadId = "0";
     InitRecordData(_words);
 }
 
