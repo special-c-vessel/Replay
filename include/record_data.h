@@ -11,6 +11,7 @@ class RecordStruct;
 
 const std::string SPLIT_STR = "sddsdsdsd";
 const char SPLIT_FUNC_NAME_CHAR = '-';
+const char SPLIT_DATA_CHAR = ' ';
 const std::string STRING_START = "StringStart";
 const std::string STRING_END = "StringEnd";
 const std::string CHECK_STRUCT = "isStruct";

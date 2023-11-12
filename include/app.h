@@ -13,6 +13,7 @@
 #include "record_vector.h"
 #include "record_prim.h"
 #include "record_struct.h"
+#include "manage_memory_unit.h"
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
@@ -111,4 +112,6 @@ public: // main framework variable
     // Time check variable
     std::chrono::high_resolution_clock::time_point startTime;
     std::chrono::high_resolution_clock::time_point endTime;
+
+    MMU* mmu;
 };

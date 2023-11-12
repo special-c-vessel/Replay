@@ -12,18 +12,11 @@ RecordPrim::~RecordPrim() {
 }
 
 void RecordPrim::InitRecordData(std::vector<std::string> _words) {
-    std::cout << "Call InitRecordData func(RecordPrim), words size = " << _words.size() << std::endl;
+    std::cout << "===========Call InitRecordData func(RecordPrim)===========" << std::endl << std::endl;
+    int _currentLineIdx = 0;
+    std::vector<std::string> _dataes = SplitString(_words[_currentLineIdx], SPLIT_DATA_CHAR);
+    std::vector<std::string> _names = SplitString(_dataes[CURFUNC_NAME_IDX], SPLIT_FUNC_NAME_CHAR);
     
-    std::stringstream _ss(_words[CURFUNC_NAME_IDX]);
-    // 공백 분리 결과를 저장할 배열
-    std::vector<std::string> _names;
-    std::string _word;
-    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-    while (getline(_ss, _word, SPLIT_FUNC_NAME_CHAR)){
-        //std::cout << "word : " << _word << std::endl;
-        _names.push_back(_word);
-    }
-
     if(IsNumeric(_names[_names.size() - 1])) {
         this->name = "literal";
     }
@@ -31,36 +24,35 @@ void RecordPrim::InitRecordData(std::vector<std::string> _words) {
         this->name = _names[_names.size() - 1];
     }
 
-    if(_words[3] == "0x0") {
+    if(_dataes[3] == "0x0") {
         this->value = "nullptr";
     }
     else {
-        this->value = _words[VALUE_IDX];
+        this->value = _dataes[VALUE_IDX];
     }
 
-    this->threadId = _words[THREAD_ID_IDX];
-    this->accessType = _words[OP_TYPE_IDX];
-    this->originName = _words[CURFUNC_NAME_IDX];
+    this->threadId = _dataes[THREAD_ID_IDX];
+    this->accessType = _dataes[OP_TYPE_IDX];
+    this->originName = _dataes[CURFUNC_NAME_IDX];
     this->dataFunc = _names[_names.size() - 2];
-    this->type = _words[TYPE_IDX];
-    this->ptr = _words[PTR_IDX];
-    this->line = _words[LINE_IDX];
-    this->col = _words[COL_IDX];
-    this->infoMessage = _words[7];
+    this->type = _dataes[TYPE_IDX];
+    this->ptr = _dataes[PTR_IDX];
+    this->line = _dataes[LINE_IDX];
+    this->col = _dataes[COL_IDX];
+    this->infoMessage = "";
 
     if(this->infoMessage == ERROR_SEGMENTATION_FAULTS || this->infoMessage == ERROR_STRING_RANGE) {
         this->isErrorRecData = true;
     }
-
-    if(this->type == "string") {
-        this->length = _words[8];
+    else {
+        this->isErrorRecData = false;
     }
-
-    std::cout << "name : " << this->name << std::endl;
-    std::cout << "current funtion : " << this->dataFunc << std::endl;
 
     this->shadowMemory[this->ptr] = this->value;
     shadowMaxIdx++;
+    PrintRecordData();
+    std::cout << "============================================================" << std::endl << std::endl;
+
 }
 
 void RecordPrim::UpdateRecordData(std::vector<std::string> _words) {
@@ -68,7 +60,17 @@ void RecordPrim::UpdateRecordData(std::vector<std::string> _words) {
 }
 
 void RecordPrim::PrintRecordData() {
-
+    std::cout << "Primitive record data output" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Thread ID : " << this->threadId << std::endl;
+    std::cout << "Access type : " << this->accessType << std::endl;
+    std::cout << "Current func : " << this->dataFunc << std::endl;
+    std::cout << "Name : " << this->name << std::endl;
+    std::cout << "Type : " << this->type << std::endl;
+    std::cout << "Ptr : " << this->ptr << std::endl;
+    std::cout << "Line : " << this->line << std::endl;
+    std::cout << "Col : " << this->col << std::endl;
+    std::cout << std::endl;
 }
 
 std::string RecordPrim::PrintRecordTable(std::string _message) {

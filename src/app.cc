@@ -39,6 +39,9 @@ void App::Run() {
 
 void App::Init() {
     std::cout << "Initialize app class" << std::endl;
+
+    mmu = new MMU();
+
     // 시간 측정 시작
     StartTime();
 
@@ -104,6 +107,7 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[0] == "isStruct") { // 구조체
+                /*
                 RecordStruct* _data; // 기록 구조체 객체 생성
                 std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
                 _lines.push_back(_line);
@@ -117,9 +121,11 @@ void App::Init() {
                     _lines.push_back(recordLines[i]);
                 }
                 _data = new RecordStruct(_lines);
-                structs.push_back(_data);                
+                structs.push_back(_data);    
+                */            
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
+                /*
                 int _dimension = _words.size() - 8;
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
@@ -185,8 +191,10 @@ void App::Init() {
                         i--;
                     }
                 }
+                */
             }
             else if(_words[1] == "push_back" ) { // 벡터일 경우
+                /*
                 std::cout << "vector push back data" << std::endl;
                 int _findIdx = -1;
                 for(int i = records.size() - 1; i >= 0; i--) {
@@ -212,8 +220,10 @@ void App::Init() {
                     _data->UpdateRecordData(_words);
                     records.push_back(_data);
                 }
+                */
             }
             else if(_line.find("_ref.tmp") != std::string::npos) {
+                /*
                 std::cout << "inside ref tmp" << std::endl;
                 ///////////////////////////string 일 경우/////////////////////////////
                 std::string _refValue;
@@ -302,6 +312,7 @@ void App::Init() {
                         records.push_back(_data);
                     }
                 }
+                */
             }
             else { // 일반 기록파일
                 std::string _threadIdVal = "";
@@ -314,6 +325,7 @@ void App::Init() {
                 std::string _colVal = "";
                 std::string _infoMessage = "";
                 if(_words[TYPE_IDX] == "string") { // String 타입의 데이터일 경우
+                    /*
                     std::cout << "this record data is string type : " << _line << std::endl;
                     if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
                         int _i = START_STRING_IDX;
@@ -424,8 +436,10 @@ void App::Init() {
                     _data->recordType = RecordType::Prim;
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
+                    */
                 }
                 else if(FindRecordDataPtr(_words[_words.size() - 3]) != -1) {
+                    /*
                     int _findIdx = FindRecordDataPtr(_words[_words.size() - 3]);
                     std::cout << "find record data, _findIdx :  " << _findIdx << std::endl;
                     int _changeIndex = std::stoi(_words[3]);
@@ -470,7 +484,7 @@ void App::Init() {
                     _data->recordType = RecordType::Prim;
                     records.push_back(_data);
                     _addIndex = records.size() - 1;
-
+                    */
                 }
                 else { // 문자열을 제외한 일반 타입
                     int _findStructIdx = FindStructStructData(_words[_words.size() - 3]);
@@ -493,26 +507,11 @@ void App::Init() {
                         records.push_back(_data);
                     }
                     else {
-                        std::vector<std::string> _resultWord;
-                        _resultWord.push_back(_words[0]);
-                        _resultWord.push_back(_words[1]);
-                        _resultWord.push_back(GetType(_words[2]));
-                        _resultWord.push_back(_words[3]);
-                        _resultWord.push_back(_words[4]);
-                        _resultWord.push_back(_words[5]);
-                        _resultWord.push_back(_words[6]);
-                        _resultWord.push_back("");
-
-                        for(int i = 0; i < _resultWord.size(); i++) {
-                            std::cout << "result word : " << _resultWord[i] << std::endl;
-                        }
-
                         RecordData* _data = new RecordPrim();
-
-                        _data->InitRecordData(_resultWord);
-                        _data->recordType = RecordType::Prim;
+                        std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
+                        _lines.push_back(_line);
+                        _data->InitRecordData(_lines);
                         records.push_back(_data);
-                        std::vector<std::string>().swap(_resultWord);
                     }
                 }
             }
@@ -545,6 +544,8 @@ void App::Init() {
         }
     }
     _srcStream.close();
+
+    mmu->InitShadowMemories(records);
 
     Render();
 }
@@ -805,14 +806,14 @@ void App::Render() {
         ptrShadowMemroy.clear();
         map<string, string>::iterator p;
 
-        for(int i = 0 ; i <= _findIndex; i++) {
+        for(int i = 0 ; i <= currentIndex; i++) {
             std::map<std::string, std::string> _shadowMem = records[i]->GetShadowMemory();
             for (p = _shadowMem.begin(); p != _shadowMem.end(); ++p) {
                 valShadowMemory[p->first] = records[i]->name;
                 ptrShadowMemroy[p->first] = p->second;
             }
         }
-        /*
+        
         std::cout << "variable shadow memory" << std::endl;
         for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
@@ -822,7 +823,7 @@ void App::Render() {
         for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
-        */
+        
         if(commandMessage.find("findptr") != std::string::npos) {
             std::cout << "findptr inside" << std::endl;
             std::stringstream _cmdss(commandMessage);
@@ -1077,40 +1078,7 @@ void App::Render() {
             }
             std::cout << std::endl << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
             if(records[currentIndex]->recordType == RecordType::Prim) {
-                ConsoleTable _ct(BASIC);
-                _ct.SetPadding(1);
-                _ct.AddColumn(" ");
-                _ct.AddColumn("Current Function");
-                _ct.AddColumn("Operation");
-                _ct.AddColumn("Name");
-                _ct.AddColumn("Type");
-                _ct.AddColumn("Value");
-                _ct.AddColumn("Pointer Address");
-                _ct.AddColumn("Line");
-                _ct.AddColumn("Column");
-
-                //std::cout << "records datafunc : " << records[currentIndex]->dataFunc << std::endl;
-                //std::cout << "record access type : " << records[currentIndex]->accessType << std::endl;
-
-                ConsoleTableRow* _entry = new ConsoleTableRow(9);
-
-                _entry->AddEntry(" ", 0);
-                _entry->AddEntry(records[currentIndex]->dataFunc, 1);
-                _entry->AddEntry(records[currentIndex]->accessType, 2);
-                _entry->AddEntry(records[currentIndex]->name, 3);
-                _entry->AddEntry(records[currentIndex]->type, 4);
-                _entry->AddEntry(records[currentIndex]->value, 5);
-                _entry->AddEntry(records[currentIndex]->ptr, 6);
-                _entry->AddEntry(records[currentIndex]->line, 7);
-                _entry->AddEntry(records[currentIndex]->col, 8);
-
-                _ct.AddRow(_entry);
-
-                if(records[currentIndex]->infoMessage != "None") {
-                    systemMessage = records[currentIndex]->infoMessage;
-                }
-
-                _ct.PrintTable();
+                records[currentIndex]->PrintRecordTable(commandMessage);
             }
             else {
                 systemMessage = records[currentIndex]->PrintRecordTable(commandMessage);
