@@ -40,8 +40,6 @@ void App::Run() {
 void App::Init() {
     std::cout << "Initialize app class" << std::endl;
 
-    mmu = new MMU();
-
     // 시간 측정 시작
     StartTime();
 
@@ -545,6 +543,7 @@ void App::Init() {
     }
     _srcStream.close();
 
+    mmu = new MMU();
     mmu->InitShadowMemories(records);
 
     Render();
@@ -813,7 +812,8 @@ void App::Render() {
                 ptrShadowMemroy[p->first] = p->second;
             }
         }
-        
+
+        /*
         std::cout << "variable shadow memory" << std::endl;
         for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
@@ -823,6 +823,8 @@ void App::Render() {
         for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
             cout << "(" << p->first << "," << p->second << ")\n";
         }
+        */ 
+        mmu->CalcShadowMemory(currentIndex, records);
         
         if(commandMessage.find("findptr") != std::string::npos) {
             std::cout << "findptr inside" << std::endl;
@@ -953,6 +955,7 @@ void App::Render() {
             _info.push_back(records[currentIndex]->type);
 
             if(FindPrevRecordData(_info, currentIndex)) {
+                /*
                 std::cout << "\033[1m" << "Previous Data List ,  next page - prevright,  prev page - prevleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1012,8 +1015,10 @@ void App::Render() {
                     _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
+                */
             }
             if(FindAfterRecordData(_info, currentIndex)) {
+                /*
                 std::cout << std::endl << "\033[1m" << "Following Data List,  next page - followright,  prev page - followleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1074,15 +1079,11 @@ void App::Render() {
                     _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
-
+                */
             }
+            
             std::cout << std::endl << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
-            if(records[currentIndex]->recordType == RecordType::Prim) {
-                records[currentIndex]->PrintRecordTable(commandMessage);
-            }
-            else {
-                systemMessage = records[currentIndex]->PrintRecordTable(commandMessage);
-            }
+            records[currentIndex]->PrintRecordTable(commandMessage);
         }
     }
     else {

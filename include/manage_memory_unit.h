@@ -13,7 +13,13 @@
 #include "record_struct.h"
 #include "record_prim.h"
 
-struct ShadowMemory {
+#include "console_table.h"
+#include "console_table_row.h"
+#include "console_table_utils.h"
+
+const int GROUP_SIZE = 10;
+
+struct ShadowUnit {
     std::string name;
     std::string ptr;
     std::string value;
@@ -25,14 +31,24 @@ public: // class constructor, destructor
     MMU();
     ~MMU();
 
-public:
+private: // class initialization method
+    void Init();
+
+public: // Shadow memory method
     void InitShadowMemories(const std::vector<RecordData*>&);
+    void CalcShadowMemory(int, const std::vector<RecordData*>&);
+
+public: // Print method
+    void PrintShadowMemoryListUnit();
+    void PrintShadowMemoryListUnit(int);
+    void PrintShadowMemoryListSize();
+    void PrintShadowMemoryTable();
 
 private:
-    std::vector<ShadowMemory> shadowMemory; // 현재 메모리 상황을 보여주는 그림자 메모리
-    std::vector<std::vector<ShadowMemory> > shadowMemoryList; // 그림자 메모리를 
+    std::vector<ShadowUnit> shadowMemory; // 현재 메모리 상황을 보여주는 그림자 메모리
+    std::vector<std::vector<ShadowUnit> > shadowMemoryList;
 
-    int N;
+    int groupSize; // 그룹화 크기 변수
 };
 
 #endif //MANAGE_MEMORY_UNIT_H

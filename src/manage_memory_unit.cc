@@ -1,35 +1,130 @@
 #include "manage_memory_unit.h"
 
-MMU::MMU() {
-    this->N = 10;
+MMU::MMU() {    
+    std::cout << "Shadow memory list size is " << shadowMemoryList.size() << std::endl;
+    Init();
 }
 
 MMU::~MMU() {
 
 }
 
+/* Class Init method================================================================================================================= */
+
+void MMU::Init() {
+    groupSize = GROUP_SIZE; // 그룹 사이즈 초기화
+}
+
+/* Shadow memory method============================================================================================================== */
+
 void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
     std::cout << std::endl << "===========Call InitShadowMemories func(MMU)===========" << std::endl << std::endl;
-
+    std::cout << "Shadow memory list size is " << shadowMemoryList.size() << std::endl;
     std::cout << "records data size : " << _records.size() << std::endl;
-    for(int _recordIdx = 0; _recordIdx < _records.size(); _recordIdx++) {
-        ShadowMemory _shadowMemoryObj;
-        _shadowMemoryObj.name = _records[_recordIdx]->name;
-        _shadowMemoryObj.ptr = _records[_recordIdx]->ptr;
-        _shadowMemoryObj.value = _records[_recordIdx]->value;
-        shadowMemory.push_back(_shadowMemoryObj);
-        std::cout << "record index : " << _recordIdx << std::endl;
-        if(_recordIdx == 10 || _recordIdx == 20) {
-            std::cout << "tsdsdsdsd" << std::endl;
-            std::vector<ShadowMemory> _copiedShadowMemory;
-            std::cout << "tsdsdsdsd" << std::endl;
-            _copiedShadowMemory.assign(shadowMemory.begin(), shadowMemory.end());
-            std::cout << "tsdsdsdsd" << std::endl;
-            //shadowMemoryList.push_back(_copiedShadowMemory);
+    std::vector<ShadowUnit> _acc;
+    for(int _recordIdx = 0; _recordIdx < _records.size(); _recordIdx++) { // 기록 데이터 리스트의 크기만큼 반복 수행
+        ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+        _shadowUnit.name = _records[_recordIdx]->name;
+        _shadowUnit.ptr = _records[_recordIdx]->ptr;
+        _shadowUnit.value = _records[_recordIdx]->value;
+        _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+        if(_recordIdx % groupSize == 0) { // 그림자 메모리 복사본 사이의 기록 데이터 개수 N 마다 그림자 메모리 복사본 생성
+            std::vector<ShadowUnit> _copiedAcc(_acc.begin(), _acc.end()); // acc의 내용을 복사 후 저장
+            shadowMemoryList.push_back(_copiedAcc); // 그림자 메모리 복사본을 생성
+            _acc.clear(); // acc 초기화
         }
     }
 
-    std::cout << "Complete shadow memory initialization!!!!!, shadowMemory size is " << shadowMemory.size() << " , shadowMemoryList size is " << shadowMemoryList.size() << std::endl;
+    shadowMemory.clear();
+
+    std::cout << "Complete shadow memory initialization!!!!!, shadowMemory size is " << shadowMemory.size();
+    std::cout << " , shadowMemoryList size is " << shadowMemoryList.size() << std::endl;
+
+    PrintShadowMemoryListUnit();
 
     std::cout << std::endl << "============================================================" << std::endl << std::endl;
+}
+
+void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _records) {
+    shadowMemory.clear(); // 그림자 메모리를 초기화
+    int _shadowMemoryCopyIdx = (_currentIdx / this->groupSize); // 그림자 메모리 복사본의 인덱스를 계산
+    int _calcCnt = _currentIdx % this->groupSize;
+    if(_shadowMemoryCopyIdx > 0) { // 그림자 메모리 복사본을 사용할 수 있을 때
+        // 그림자 메모리 복사본을 메인 그림자 메모리에 복사
+        shadowMemory.assign(shadowMemoryList[_shadowMemoryCopyIdx].begin(), shadowMemoryList[_shadowMemoryCopyIdx].end());
+    }
+    else {
+        ShadowUnit _shadowUnit;
+        _shadowUnit.name = _records[0]->name;
+        _shadowUnit.ptr = _records[0]->ptr;
+        _shadowUnit.value = _records[0]->value;
+        shadowMemory.push_back(_shadowUnit);
+    }
+
+    for(int i = 1; i <= _calcCnt; i++) {
+        ShadowUnit _shadowUnit;
+        _shadowUnit.name = _records[(_shadowMemoryCopyIdx * groupSize) + i]->name;
+        _shadowUnit.ptr = _records[(_shadowMemoryCopyIdx * groupSize) + i]->ptr;
+        _shadowUnit.value = _records[(_shadowMemoryCopyIdx * groupSize) + i]->value;
+        shadowMemory.push_back(_shadowUnit);
+    }
+    std::cout << "shadow memory size : " << std::endl;
+    PrintShadowMemoryTable();
+}
+
+/* Print Method====================================================================================================================== */
+
+void MMU::PrintShadowMemoryListUnit() {
+    std::cout << std::endl << "===========Call PrintShadowMemoryList func(MMU)===========" << std::endl << std::endl;
+    for(int _shadowMemoryListIdx = 0; _shadowMemoryListIdx < shadowMemoryList.size(); _shadowMemoryListIdx++) {
+        for(int _shadowMemoryIdx = 0; _shadowMemoryIdx < shadowMemoryList[_shadowMemoryListIdx].size(); _shadowMemoryIdx++) {
+            std::cout <<_shadowMemoryListIdx << "'s shadowMemory index " << _shadowMemoryIdx << std::endl;
+            std::cout << "name : " << shadowMemoryList[_shadowMemoryListIdx][_shadowMemoryIdx].name << std::endl;
+            std::cout << "ptr : " << shadowMemoryList[_shadowMemoryListIdx][_shadowMemoryIdx].ptr << std::endl;
+            std::cout << "value : " << shadowMemoryList[_shadowMemoryListIdx][_shadowMemoryIdx].value << std::endl;
+            std::cout << std::endl;
+        }
+    }
+    std::cout << std::endl << "============================================================" << std::endl << std::endl;
+}
+
+void MMU::PrintShadowMemoryListUnit(int _index){
+    std::cout << std::endl << "===========Call PrintShadowMemoryList func(MMU)===========" << std::endl << std::endl;
+    for(int _shadowMemoryIdx = 0; _shadowMemoryIdx < shadowMemoryList[_index].size(); _shadowMemoryIdx++) {
+        std::cout << _index << "'s shadowMemory index " << _shadowMemoryIdx << std::endl;
+        std::cout << "name : " << shadowMemoryList[_index][_shadowMemoryIdx].name << std::endl;
+        std::cout << "ptr : " << shadowMemoryList[_index][_shadowMemoryIdx].ptr << std::endl;
+        std::cout << "value : " << shadowMemoryList[_index][_shadowMemoryIdx].value << std::endl;
+        std::cout << std::endl;
+    }
+    std::cout << std::endl << "============================================================" << std::endl << std::endl;
+}
+
+void MMU::PrintShadowMemoryListSize() {
+    std::cout << std::endl << "===========Call PrintShadowMemoryListSize func(MMU)===========" << std::endl << std::endl;
+    for(int _shadowMemoryListIdx = 0; _shadowMemoryListIdx < shadowMemoryList.size(); _shadowMemoryListIdx++) {
+        std::cout << _shadowMemoryListIdx << "'s shadow memory size is " << shadowMemoryList[_shadowMemoryListIdx].size() << std::endl;
+    }
+    std::cout << std::endl << "============================================================" << std::endl << std::endl;
+}
+
+void MMU::PrintShadowMemoryTable() {
+    ConsoleTable _ct(BASIC);
+    _ct.SetPadding(1);
+    _ct.AddColumn(" ");
+    _ct.AddColumn("Variable ptr");
+    _ct.AddColumn("Variable name");
+    _ct.AddColumn("Variable value");
+
+    for(int _shadowUnitIdx = 0; _shadowUnitIdx < shadowMemory.size(); _shadowUnitIdx++) {
+        ConsoleTableRow* _entry = new ConsoleTableRow(4);
+        _entry->AddEntry(" ", 0);
+        _entry->AddEntry(shadowMemory[_shadowUnitIdx].ptr, 1);
+        _entry->AddEntry(shadowMemory[_shadowUnitIdx].name, 2);
+        _entry->AddEntry(shadowMemory[_shadowUnitIdx].value, 3);
+
+        _ct.AddRow(_entry);   
+    }
+
+    _ct.PrintTable();
 }

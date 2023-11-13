@@ -35,19 +35,22 @@ public: // main framework function
     void Input(); // 사용자로부터 입력값을 받는 함수
     void Update(); // 사용자로부터 받은 입력값에 따라 내부 데이터를 업데이트하는 함수
     void Render(); // 업데이트된 내부 데이터를 토대로 콘솔에 그리는 함수
-private: // app class function
+private: // app class method
     void AddRecordTable(int);
-    bool FindRecord(int);
-    
+
+    // Find method
     int FindRecordDataPtr(std::string);
     int FindRecordDataStr(std::string);
     int FindRecordData(int);
-    bool FindPrevRecordData(std::vector<std::string>, int);
-    bool FindAfterRecordData(std::vector<std::string>, int);
     int FindIndexRecordData(std::string, std::string);
     int FindStructStructData(std::string);
     int FindStructRecordData(std::string, std::string, int);
+    bool FindRecord(int);
+    bool FindPrevRecordData(std::vector<std::string>, int);
+    bool FindAfterRecordData(std::vector<std::string>, int);
+    bool FindStringInString(std::string, std::string);
 
+    // Check method
     bool IsNumber(std::string const&);
     bool IsEqualData(std::string, std::string, std::string);
 
@@ -63,16 +66,13 @@ private: // app class function
     std::string RemoveChar(const std::string&, char);
     int CountChar(std::string&, char);
     std::string RemoveLeadingWhitespace(const std::string&);
-
-public:
     std::vector<std::string> SplitString(const std::string&, char);
-    bool FindStringInString(std::string, std::string);
 
-    // Time Method
+    // Time method
     void StartTime();
     void EndTime();
     
-public:
+    // Color method
     void Red();
     void Blue();
     void Reset();
