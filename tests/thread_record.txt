@@ -1,9 +1,9 @@
 1 store _Z5func1v-i i32 0 0x16d492f6c 10 12
 2 store _Z5func2v-i i32 0 0x16d51ef6c 19 12
-1 load _Z5func1v-i i32 0 0x16d492f6c 10 19
-1 load _Z5func1v-i i32 0 0x16d492f6c 10 28
-1 store _Z5func1v-i i32 1 0x16d492f6c 10 28
-2 load _Z5func2v-i i32 1 0x16d51ef6c 19 19
+1 load _Z5func1v-i i32 0 0x16d492f6c 11 19
+1 load _Z5func1v-i i32 0 0x16d492f6c 11 28
+1 store _Z5func1v-i i32 1 0x16d492f6c 12 28
+2 load _Z5func2v-i i32 1 0x16d51ef6c 20 19
 1 load _Z5func1v-i i32 1 0x16d492f6c 10 19
 2 store _Z5func2v-i i32 2 0x16d51ef6c 19 28
 2 load _Z5func2v-i i32 2 0x16d51ef6c 19 19

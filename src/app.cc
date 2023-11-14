@@ -546,6 +546,9 @@ void App::Init() {
     mmu = new MMU();
     mmu->InitShadowMemories(records);
 
+    mtu = new MTU();
+    mtu->InitThreads(records);
+
     Render();
 }
 
@@ -664,6 +667,7 @@ void App::Update() {
         if(currentIndex < records.size() - 1 || currentIndex == -1) {
             currentIndex++;
             currentLine = std::stoi(records[currentIndex]->line);
+            mtu->UpdateThreads(*records[currentIndex]);
             std::cout << "current Index : " << currentIndex<< std::endl;
             std::cout << "current line : " << currentLine << std::endl;
 
@@ -786,8 +790,8 @@ void App::Render() {
     ? _endLine = codes.size() - 1 : _endLine = currentLine + CODE_SHOW_RANGE; // 코드 마지막 줄 번호
 
     for(int i = _startLine; i <= _endLine; i++) {
-        std::cout << i << "      ";
-        if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
+        std::cout << i << "      " << mtu->GetThreadId(i);
+        if(i == currentLine) std::cout << "\033[1m" << " >>>>   " << codes[i] << "\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
 
@@ -798,32 +802,6 @@ void App::Render() {
     //std::cout << std::endl << "current line : " << currentLine << std::endl;
 
     if(FindRecord(currentLine)) { // 해당 줄의 레코드 데이터가 있는지 검사// 일차원 배열
-        //std::cout << "find record data" << std::endl;
-        //std::cout << "current index : " << currentLine + 1 << std::endl;
-        int _findIndex = FindRecordData(currentLine);
-        valShadowMemory.clear();
-        ptrShadowMemroy.clear();
-        map<string, string>::iterator p;
-
-        for(int i = 0 ; i <= currentIndex; i++) {
-            std::map<std::string, std::string> _shadowMem = records[i]->GetShadowMemory();
-            for (p = _shadowMem.begin(); p != _shadowMem.end(); ++p) {
-                valShadowMemory[p->first] = records[i]->name;
-                ptrShadowMemroy[p->first] = p->second;
-            }
-        }
-
-        /*
-        std::cout << "variable shadow memory" << std::endl;
-        for (p = valShadowMemory.begin(); p != valShadowMemory.end(); ++p) {
-            cout << "(" << p->first << "," << p->second << ")\n";
-        }
-
-        std::cout << std::endl <<"variable shadow memory" << std::endl;
-        for (p = ptrShadowMemroy.begin(); p != ptrShadowMemroy.end(); ++p) {
-            cout << "(" << p->first << "," << p->second << ")\n";
-        }
-        */ 
         mmu->CalcShadowMemory(currentIndex, records);
         
         if(commandMessage.find("findptr") != std::string::npos) {

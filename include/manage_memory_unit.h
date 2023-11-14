@@ -37,12 +37,15 @@ private: // class initialization method
 public: // Shadow memory method
     void InitShadowMemories(const std::vector<RecordData*>&);
     void CalcShadowMemory(int, const std::vector<RecordData*>&);
-
+    void UpdateShadowMemory(ShadowUnit);
 public: // Print method
     void PrintShadowMemoryListUnit();
     void PrintShadowMemoryListUnit(int);
     void PrintShadowMemoryListSize();
     void PrintShadowMemoryTable();
+
+public: // General method
+    bool IsShadowUnitInShadowMemory(std::string);
 
 private:
     std::vector<ShadowUnit> shadowMemory; // 현재 메모리 상황을 보여주는 그림자 메모리

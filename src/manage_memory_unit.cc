@@ -48,10 +48,17 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
 void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _records) {
     shadowMemory.clear(); // 그림자 메모리를 초기화
     int _shadowMemoryCopyIdx = (_currentIdx / this->groupSize); // 그림자 메모리 복사본의 인덱스를 계산
+    std::cout << "shadow memory index : " << _shadowMemoryCopyIdx - 1 << std::endl;
     int _calcCnt = _currentIdx % this->groupSize;
-    if(_shadowMemoryCopyIdx > 0) { // 그림자 메모리 복사본을 사용할 수 있을 때
+    std::cout << "calc count : " << _calcCnt << std::endl;
+
+    if(_shadowMemoryCopyIdx >= 0) { // 그림자 메모리 복사본을 사용할 수 있을 때
         // 그림자 메모리 복사본을 메인 그림자 메모리에 복사
-        shadowMemory.assign(shadowMemoryList[_shadowMemoryCopyIdx].begin(), shadowMemoryList[_shadowMemoryCopyIdx].end());
+        for(int i = 0; i <= _shadowMemoryCopyIdx; i++) {
+            for(int j = 0; j < shadowMemoryList[i].size(); j++) {
+                shadowMemory.push_back(shadowMemoryList[i][j]);
+            }
+        }
     }
     else {
         ShadowUnit _shadowUnit;
@@ -60,6 +67,7 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
         _shadowUnit.value = _records[0]->value;
         shadowMemory.push_back(_shadowUnit);
     }
+    std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
 
     for(int i = 1; i <= _calcCnt; i++) {
         ShadowUnit _shadowUnit;
@@ -68,8 +76,18 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
         _shadowUnit.value = _records[(_shadowMemoryCopyIdx * groupSize) + i]->value;
         shadowMemory.push_back(_shadowUnit);
     }
-    std::cout << "shadow memory size : " << std::endl;
+    std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
     PrintShadowMemoryTable();
+}
+
+void MMU::UpdateShadowMemory(ShadowUnit _shadowUnit) {
+    for(int _sdwMemIdx = 0; _sdwMemIdx < shadowMemory.size(); _sdwMemIdx++) {
+        if(shadowMemory[_sdwMemIdx].ptr == _shadowUnit.ptr) {
+            shadowMemory[_sdwMemIdx].name = _shadowUnit.name;
+            shadowMemory[_sdwMemIdx].value = _shadowUnit.value;
+            return;
+        }
+    }
 }
 
 /* Print Method====================================================================================================================== */
@@ -128,3 +146,13 @@ void MMU::PrintShadowMemoryTable() {
 
     _ct.PrintTable();
 }
+
+/* General Method===================================================================================================================== */
+
+bool MMU::IsShadowUnitInShadowMemory(std::string _ptr) {
+    for(int _sdwMemIdx = 0; _sdwMemIdx < shadowMemory.size(); _sdwMemIdx++) {
+        if(shadowMemory[_sdwMemIdx].ptr == _ptr) return true;
+    }
+    return false;
+}
+

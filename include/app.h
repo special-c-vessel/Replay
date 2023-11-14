@@ -8,12 +8,15 @@
 
 
 #include "record_data.h"
-#include "console_table.h"
 #include "record_array.h"
 #include "record_vector.h"
 #include "record_prim.h"
 #include "record_struct.h"
+
+#include "console_table.h"
+
 #include "manage_memory_unit.h"
+#include "manage_thread_unit.h"
 
 #define CODE_SHOW_RANGE 10
 #define JUDGMENT_INDEX 3
@@ -113,5 +116,9 @@ public: // main framework variable
     std::chrono::high_resolution_clock::time_point startTime;
     std::chrono::high_resolution_clock::time_point endTime;
 
+    // Manage memory unit
     MMU* mmu;
+
+    // Manage thread unit
+    MTU* mtu;
 };
