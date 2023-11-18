@@ -12,6 +12,7 @@
 #include "record_vector.h"
 #include "record_prim.h"
 #include "record_struct.h"
+#include "record_string.h"
 
 #include "console_table.h"
 
@@ -19,7 +20,7 @@
 #include "manage_thread_unit.h"
 
 #define CODE_SHOW_RANGE 10
-#define JUDGMENT_INDEX 3
+#define JUDGMENT_INDEX 4
 
 using namespace std;
 

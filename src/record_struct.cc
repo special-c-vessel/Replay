@@ -24,6 +24,8 @@ RecordStruct::~RecordStruct() {
 void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     std::cout << "===========Call InitRecordData func(RecordStruct)===========" << std::endl;
 
+    recordType = RecordType::Struct;
+
     int _curLineIdx = 0;
 
     std::cout << "lines : " << _lines[_curLineIdx] << std::endl;
@@ -39,81 +41,86 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     std::cout << "name : " << name << std::endl;
     type = _dataes[2];
     std::cout << "type : " << type << std::endl;
+    ptr = _dataes[3];
+    std::cout << "ptr : " << ptr << std::endl;
 
     int _endIndex = _dataes.size() - 1;
+    std::cout << "_endIndex : " << _endIndex << std::endl;
     int _index = START_STRUCTDATA_VALUE_IDX;
+    std::cout << "_index : " << _index << std::endl;
 
-    while(_index < _endIndex) {
-        std::string _typeStr = GetType(_dataes[_index]);
-        std::string _valStr = "";
+    if(_index > _endIndex) {
 
-        if(_typeStr == "string") {
-            _index += 3;
-            if(FindStringInString(_lines[0], STRING_END) && _lines.size() == 1) { // 문자열 데이터 값에 개행이 없을 경우
-                if(_dataes[_index] != STRING_END) {
-                    _valStr = _dataes[_index];
-                    _index++;
-                    while(_dataes[_index] != STRING_END) {
-                        _valStr = _valStr + " " + _dataes[_index];
+    }
+    else {
+        while(_index < _endIndex) {
+            std::string _typeStr = GetType(_dataes[_index]);
+            std::string _valStr = "";
+
+            if(_typeStr == "string") {
+                _index += 3;
+                if(FindStringInString(_lines[0], STRING_END) && _lines.size() == 1) { // 문자열 데이터 값에 개행이 없을 경우
+                    if(_dataes[_index] != STRING_END) {
+                        _valStr = _dataes[_index];
+                        _index++;
+                        while(_dataes[_index] != STRING_END) {
+                            _valStr = _valStr + " " + _dataes[_index];
+                            _index++;
+                        }
                         _index++;
                     }
-                    _index++;
-                }
-            } // 문자열 값에 개행이 있을 경우
-            else {
-                for(int _i = _index; _i <= _endIndex; _i++) {
-                    if(_i == _endIndex) {
-                        _valStr = _valStr + _dataes[_i] + "\\n";
+                } // 문자열 값에 개행이 있을 경우
+                else {
+                    for(int _i = _index; _i <= _endIndex; _i++) {
+                        if(_i == _endIndex) {
+                            _valStr = _valStr + _dataes[_i] + "\\n";
+                        }
+                        else {
+                            _valStr = _valStr + _dataes[_i] + " ";
+                        }
                     }
-                    else {
-                        _valStr = _valStr + _dataes[_i] + " ";
+                    _curLineIdx++; // 현재 라인 벡터의 인덱스를 1 증가
+                    while(!FindStringInString(_lines[_curLineIdx], STRING_END)) { // 라인 벡터의 String end 가 나올떄까지 값에 추가
+                        _valStr = _valStr + _lines[_curLineIdx] + "\\n";
+                        _curLineIdx++;
                     }
-                }
-                _curLineIdx++; // 현재 라인 벡터의 인덱스를 1 증가
-                while(!FindStringInString(_lines[_curLineIdx], STRING_END)) { // 라인 벡터의 String end 가 나올떄까지 값에 추가
-                    _valStr = _valStr + _lines[_curLineIdx] + "\\n";
-                    _curLineIdx++;
-                }
-                std::vector<std::string> _strEndVector = SplitString(_lines[_curLineIdx], ' ');
-                int _i = 0;
-                while(_strEndVector[_i] != "StringEnd") {
-                    _valStr += _strEndVector[_i];
-                    _valStr += " ";
-                    _i++;
+                    std::vector<std::string> _strEndVector = SplitString(_lines[_curLineIdx], ' ');
+                    int _i = 0;
+                    while(_strEndVector[_i] != "StringEnd") {
+                        _valStr += _strEndVector[_i];
+                        _valStr += " ";
+                        _i++;
+                    }
                 }
             }
-        }
-        else if(_typeStr == "isStruct") {
-            std::cout << "check strcut" << std::endl;
-            _typeStr = _dataes[_index + 1];
-            _valStr = "struct object";
-            _index += 2;
-        }
-        else {
-            _valStr = _dataes[_index + 1];
-            _index += 2;
-        }
+            else if(_typeStr == "isStruct") {
+                std::cout << "check strcut" << std::endl;
+                _typeStr = _dataes[_index + 1];
+                _valStr = "struct object";
+                _index += 2;
+            }
+            else {
+                _valStr = _dataes[_index + 1];
+                _index += 2;
+            }
 
-        GetType(_dataes[_index]);
-        DataStruct _dataStruct;
-        _dataStruct.type = _typeStr;
-        _dataStruct.value = _valStr;
-        dataStructs.push_back(_dataStruct);
+            GetType(_dataes[_index]);
+            DataStruct _dataStruct;
+            _dataStruct.type = _typeStr;
+            _dataStruct.value = _valStr;
+            dataStructs.push_back(_dataStruct);
 
-        if(_index == _endIndex) {
-            ptr = _dataes[_index];
+            if(_index == _endIndex) {
+                ptr = _dataes[_index];
+            }
+        }
+        dataStructs[0].ptr = ptr;
+        for(int i = 1 ; i < dataStructs.size(); i++) {
+            dataStructs[i].ptr = AddHexaInt(dataStructs[i - 1].ptr, GetSizeByType(dataStructs[i - 1].type));
         }
     }
     std::cout << "struct record data ptr : " << ptr << std::endl;
     std::cout << "data struct size : " << dataStructs.size() << std::endl;
-
-    dataStructs[0].ptr = ptr;
-
-    for(int i = 1 ; i < dataStructs.size(); i++) {
-        dataStructs[i].ptr = AddHexaInt(dataStructs[i - 1].ptr, GetSizeByType(dataStructs[i - 1].type));
-        shadowMemory[dataStructs[i].ptr] = dataStructs[i].value;
-    }
-
 
     PrintStructData();
 

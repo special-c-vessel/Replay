@@ -121,8 +121,7 @@ void App::Init() {
                 structs.push_back(_data);    
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
-                /*
-                int _dimension = _words.size() - 8;
+                int _dimension = _words.size() - 9;
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
                     std::string _nameFunc = records[j]->dataFunc + "-" + records[j]->name;
@@ -142,14 +141,14 @@ void App::Init() {
                     std::string _checkLine = recordLines[i + 1];
                     std::vector<std::string> _splitWords = SplitString(_checkLine, ' ');
                     
-                    if(_splitWords[1] == _words[1]
+                    if(_splitWords[2] == _words[2]
                     && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
                         std::cout << "next array data" << std::endl;
                         _data->UpdateRecordData(_splitWords);
                         i += 2;
                         _checkLine = recordLines[i];
                         _splitWords = SplitString(_checkLine, ' ');
-                        while(_splitWords[1] == _words[1]
+                        while(_splitWords[2] == _words[2]
                             && i < recordLines.size()
                             && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
                             std::cout << "next array data in while" << std::endl;
@@ -165,17 +164,19 @@ void App::Init() {
                     std::cout << "create array data" << std::endl;
                     RecordData* _data = new RecordArray(_words, _dimension);
                     records.push_back(_data);
+                    std::cout << "push array data" << std::endl;
+
                     std::string _checkLine = recordLines[i + 1];
                     std::vector<std::string> _splitWords = SplitString(_checkLine, ' ');
                     
-                    if(_splitWords[1] == _words[1]
+                    if(_splitWords[2] == _words[2]
                     && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
                         std::cout << "next array data" << std::endl;
                         _data->UpdateRecordData(_splitWords);
                         i += 2;
                         _checkLine = recordLines[i];
                         _splitWords = SplitString(_checkLine, ' ');
-                        while(_splitWords[1] == _words[1]
+                        while(_splitWords[2] == _words[2]
                             && i < recordLines.size()
                             && _splitWords[_splitWords.size() - 2] == _words[_words.size() - 2]) {
                             std::cout << "next array data in while" << std::endl;
@@ -186,8 +187,8 @@ void App::Init() {
                         }
                         i--;
                     }
+                    std::cout << "end array data" << std::endl;
                 }
-                */
             }
             else if(_words[1] == "push_back" ) { // 벡터일 경우
                 /*
@@ -312,118 +313,22 @@ void App::Init() {
             }
             else { // 일반 기록파일
                 if(_words[TYPE_IDX] == "string") { // String 타입의 데이터일 경우
-                    /*
-                    std::cout << "this record data is string type : " << _line << std::endl;
-                    if(_line.find("StringEnd") != std::string::npos) { // string 데이터가 한 줄에 있을 경우
-                        int _i = START_STRING_IDX;
-                        while(_words[_i] != STRING_END) {
-                            _strVal += _words[_i];
-                            _strVal += " ";
-                            _i++;
-                        }
-                        _colVal = _words[_words.size() - 1];
-                        _lineVal = _words[_words.size() - 2];
-                        _ptrVal = _words[_words.size() - 3];
-                        _lenVal = _words[STRING_LENGTH_IDX];
-                        std::cout << "strVal : " << _strVal << std::endl;
-                    }
-                    else if(_line.find(STRING_START) == std::string::npos && FindRecordDataStr(_words[2]) != -1) {
-                        int _findIndex = FindRecordDataStr(_words[2]);
-                        int _changeIndex = std::stoi(_words[4]);
-                        std::cout << "find index : " << _findIndex << std::endl;
-                        std::cout << "change index : " << _changeIndex << std::endl;
-                        _nameVal = _words[1];
-                        _typeVal = _words[2];
-                        _strVal = records[_findIndex]->value;
-                        _strVal[_changeIndex] = _words[5].c_str()[0];
-                        _colVal = _words[_words.size() - 1];
-                        _lineVal = _words[_words.size() - 2];
-                        _ptrVal = _words[_words.size() - 3];
-                        _lenVal = records[_findIndex]->length;
-                        if(stoi(records[_findIndex]->length) < _changeIndex) {
-                            _infoMessage = ERROR_STRING_RANGE;
-                        }
-                        else {
-                            _infoMessage = "";
-                        }
-                    }
-                    else {
-                        int _strValIndex = START_STRING_IDX;
-                        for(int _i = _strValIndex; _i < _words.size(); _i++) {
-                            if(_i == _words.size() - 1) {
-                                _strVal = _strVal + _words[_i] + "\\n";
-                            }
-                            else {
-                                _strVal = _strVal + _words[_i] + " ";
-                            }
-                        }
+                    std::cout << "String data" << std::endl;
+                    RecordData* _data = new RecordString();
+                    std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
+                    _lines.push_back(_line);
+                    if(!FindStringInString(_line, STRING_END)) {
                         i++;
-                        while(recordLines[i].find("StringEnd") == std::string::npos) {
-                            _strVal = _strVal + recordLines[i] + "\\n";
+                        _line = recordLines[i];
+                        while(!FindStringInString(_line, STRING_END)) {
+                            _lines.push_back(_line);
                             i++;
+                            _line = recordLines[i];
                         }
-                        std::cout << "reocrdLines1 : " << recordLines[i] << std::endl;
-                        std::stringstream _ss2(recordLines[i]);
-                        // 공백 분리 결과를 저장할 배열
-                        std::vector<std::string> _words2;
-                        std::string _word2;
-                        // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
-                        while (getline(_ss2, _word2, ' ')){
-                            _words2.push_back(_word2);
-                        }
-                        int _i = 0;
-                        while(_words2[_i] != "StringEnd") {
-                            _strVal += _words2[_i];
-                            _strVal += " ";
-                            _i++;
-                        }
-                        _colVal = _words2[_words2.size() - 1];
-                        _lineVal = _words2[_words2.size() - 2];
-                        _ptrVal = _words2[_words2.size() - 3];
-                        _lenVal = _words[0];
-                        std::cout << "strVal : " << _strVal << std::endl;
+                        _lines.push_back(_line);
                     }
-
-                    std::cout << "str val size : " << _strVal.size() << std::endl;
-                    std::cout << "len : " << std::stoi(_lenVal) << std::endl;
-
-                    if(_strVal.size() < std::stoi(_lenVal)) {
-                        _infoMessage = ERROR_STRING_RANGE;
-                    }
-                    else {
-                        _infoMessage = "None";
-                    }
-                    std::vector<std::string> _resultWord;
-                    _resultWord.push_back(_words[1]);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_words[2]);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_words[3]);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_strVal);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_ptrVal);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_lineVal);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_colVal);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_infoMessage);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-                    _resultWord.push_back(_lenVal);
-                    std::cout << "result word : " << _resultWord[_resultWord.size() - 1];
-
-                    for(int i = 0; i < _resultWord.size(); i++) {
-                        std::cout << "result word : " << _resultWord[i] << std::endl;
-                    }
-
-                    RecordData* _data = new RecordPrim();
-
-                    _data->InitRecordData(_resultWord);
-                    _data->recordType = RecordType::Prim;
+                    _data->InitRecordData(_lines);
                     records.push_back(_data);
-                    _addIndex = records.size() - 1;
-                    */
                 }
                 else if(FindRecordDataPtr(_words[_words.size() - 3]) != -1) {
                     /*

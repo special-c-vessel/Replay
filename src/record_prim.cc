@@ -14,6 +14,8 @@ RecordPrim::~RecordPrim() {
 void RecordPrim::InitRecordData(std::vector<std::string> _words) {
     std::cout << "===========Call InitRecordData func(RecordPrim)===========" << std::endl << std::endl;
     int _currentLineIdx = 0;
+    recordType = RecordType::Prim;
+
     std::vector<std::string> _dataes = SplitString(_words[_currentLineIdx], SPLIT_DATA_CHAR);
     std::vector<std::string> _names = SplitString(_dataes[CURFUNC_NAME_IDX], SPLIT_FUNC_NAME_CHAR);
     

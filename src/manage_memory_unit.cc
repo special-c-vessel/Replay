@@ -22,13 +22,41 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
     std::cout << "Shadow memory list size is " << shadowMemoryList.size() << std::endl;
     std::cout << "records data size : " << _records.size() << std::endl;
     std::vector<ShadowUnit> _acc;
+    std::cout << "Current shadow memory size is " << _acc.size() << std::endl;
+
     for(int _recordIdx = 0; _recordIdx < _records.size(); _recordIdx++) { // 기록 데이터 리스트의 크기만큼 반복 수행
-        ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
-        _shadowUnit.name = _records[_recordIdx]->name;
-        _shadowUnit.ptr = _records[_recordIdx]->ptr;
-        _shadowUnit.value = _records[_recordIdx]->value;
-        _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
-        if(_recordIdx % groupSize == 0) { // 그림자 메모리 복사본 사이의 기록 데이터 개수 N 마다 그림자 메모리 복사본 생성
+        std::cout << "(init)Current shadow memory size is " << _acc.size() << std::endl;
+        
+        if(_records[_recordIdx]->recordType == RecordType::Prim
+        || _records[_recordIdx]->recordType == RecordType::String) {
+            std::cout << "Record Data is Primitive data or String data" << std::endl;
+            std::cout << "(start)Current shadow memory size is " << _acc.size() << std::endl;
+
+            ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+            _shadowUnit.name = _records[_recordIdx]->name;
+            _shadowUnit.ptr = _records[_recordIdx]->ptr;
+            _shadowUnit.value = _records[_recordIdx]->value;
+            _shadowUnit.recordIndex = _recordIdx;
+            _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+
+            std::cout << "(end)Current shadow memory size is " << _acc.size() << std::endl;
+
+        }
+        else if(_records[_recordIdx]->recordType == RecordType::Array) {
+            std::cout << "Record Data is Array data" << std::endl;
+            for(int _arrayIdx = 0; _arrayIdx < _records[_recordIdx]->GetArrays().size(); _arrayIdx++) {
+                ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+                _shadowUnit.name = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayName;
+                _shadowUnit.ptr = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayPtr;
+                _shadowUnit.value = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayValue;
+                _shadowUnit.recordIndex = _recordIdx;
+                _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+            }
+        }
+        else {
+
+        }
+        if(_recordIdx != 0 && _recordIdx % groupSize == 0) { // 그림자 메모리 복사본 사이의 기록 데이터 개수 N 마다 그림자 메모리 복사본 생성
             std::vector<ShadowUnit> _copiedAcc(_acc.begin(), _acc.end()); // acc의 내용을 복사 후 저장
             shadowMemoryList.push_back(_copiedAcc); // 그림자 메모리 복사본을 생성
             _acc.clear(); // acc 초기화
@@ -47,13 +75,14 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
 
 void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _records) {
     shadowMemory.clear(); // 그림자 메모리를 초기화
-    int _shadowMemoryCopyIdx = (_currentIdx / this->groupSize); // 그림자 메모리 복사본의 인덱스를 계산
-    std::cout << "shadow memory index : " << _shadowMemoryCopyIdx - 1 << std::endl;
+    int _shadowMemoryCopyIdx = (_currentIdx / this->groupSize) - 1; // 그림자 메모리 복사본의 인덱스를 계산
+    std::cout << "shadow memory index : " << _shadowMemoryCopyIdx << std::endl;
     int _calcCnt = _currentIdx % this->groupSize;
     std::cout << "calc count : " << _calcCnt << std::endl;
 
     if(_shadowMemoryCopyIdx >= 0) { // 그림자 메모리 복사본을 사용할 수 있을 때
         // 그림자 메모리 복사본을 메인 그림자 메모리에 복사
+        std::cout << "shadow memory copy index over the zero" << std::endl;
         for(int i = 0; i <= _shadowMemoryCopyIdx; i++) {
             for(int j = 0; j < shadowMemoryList[i].size(); j++) {
                 shadowMemory.push_back(shadowMemoryList[i][j]);
@@ -61,6 +90,7 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
         }
     }
     else {
+        std::cout << "shadow memory copy index under the zero" << std::endl;
         ShadowUnit _shadowUnit;
         _shadowUnit.name = _records[0]->name;
         _shadowUnit.ptr = _records[0]->ptr;
@@ -69,12 +99,34 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
     }
     std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
 
-    for(int i = 1; i <= _calcCnt; i++) {
-        ShadowUnit _shadowUnit;
-        _shadowUnit.name = _records[(_shadowMemoryCopyIdx * groupSize) + i]->name;
-        _shadowUnit.ptr = _records[(_shadowMemoryCopyIdx * groupSize) + i]->ptr;
-        _shadowUnit.value = _records[(_shadowMemoryCopyIdx * groupSize) + i]->value;
-        shadowMemory.push_back(_shadowUnit);
+    for(int _recordIdx = 1; _recordIdx <= _calcCnt; _recordIdx++) {
+        if(_records[_recordIdx]->recordType == RecordType::Prim
+        || _records[_recordIdx]->recordType == RecordType::String) {
+
+            ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+            _shadowUnit.name = _records[_recordIdx]->name;
+            _shadowUnit.ptr = _records[_recordIdx]->ptr;
+            _shadowUnit.value = _records[_recordIdx]->value;
+            _shadowUnit.recordIndex = _recordIdx;
+            shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+
+            std::cout << "(end)Current shadow memory size is " << shadowMemory.size() << std::endl;
+
+        }
+        else if(_records[_recordIdx]->recordType == RecordType::Array) {
+            std::cout << "Record Data is Array data" << std::endl;
+            for(int _arrayIdx = 0; _arrayIdx < _records[_recordIdx]->GetArrays().size(); _arrayIdx++) {
+                ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+                _shadowUnit.name = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayName;
+                _shadowUnit.ptr = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayPtr;
+                _shadowUnit.value = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayValue;
+                _shadowUnit.recordIndex = _recordIdx;
+                shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+            }
+        }
+        else {
+
+        }
     }
     std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
     PrintShadowMemoryTable();
@@ -88,6 +140,18 @@ void MMU::UpdateShadowMemory(ShadowUnit _shadowUnit) {
             return;
         }
     }
+}
+
+int MMU::GetShadowMemoryIndex(int _currentIdx) {
+    for(int _sdwCopyIdx = 0; _sdwCopyIdx < shadowMemoryList.size(); _sdwCopyIdx++) {
+        for(int _sdwIdx = 0; _sdwIdx < shadowMemoryList[_sdwCopyIdx].size(); _sdwIdx++) {
+            if(shadowMemoryList[_sdwCopyIdx][_sdwIdx].recordIndex == _currentIdx
+            && _sdwCopyIdx - 1 >= 0) {
+                return _sdwCopyIdx - 1;
+            }
+        }
+    }
+    return -1;
 }
 
 /* Print Method====================================================================================================================== */

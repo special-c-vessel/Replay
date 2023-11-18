@@ -20,6 +20,7 @@
 const int GROUP_SIZE = 10;
 
 struct ShadowUnit {
+    int recordIndex;
     std::string name;
     std::string ptr;
     std::string value;
@@ -38,6 +39,8 @@ public: // Shadow memory method
     void InitShadowMemories(const std::vector<RecordData*>&);
     void CalcShadowMemory(int, const std::vector<RecordData*>&);
     void UpdateShadowMemory(ShadowUnit);
+    int GetShadowMemoryIndex(int);
+    
 public: // Print method
     void PrintShadowMemoryListUnit();
     void PrintShadowMemoryListUnit(int);

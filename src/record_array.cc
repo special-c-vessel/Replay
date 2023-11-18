@@ -6,7 +6,6 @@ RecordArray::RecordArray() {
     prevPage = 1;
     shadowMaxIdx = 0;
     threadId = "0";
-    recordType = RecordType::Array;
 }
 
 RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
@@ -15,7 +14,6 @@ RecordArray::RecordArray(std::vector<std::string> _words, int _dimension) {
     prevPage = 1;
     shadowMaxIdx = 0;
     dimension = _dimension;
-    recordType = RecordType::Array;
     threadId = "0";
     InitRecordData(_words);
 }
@@ -25,9 +23,11 @@ RecordArray::~RecordArray() {
 }
 
 void RecordArray::InitRecordData(std::vector<std::string> _words) {
-    std::cout << "Call InitRecordData func(RecordArray), dimension = " <<  dimension << std::endl;
+    std::cout << "===========Call InitRecordData func(RecordArray)===========" << std::endl << std::endl;
+    
+    recordType = RecordType::Array;
 
-    std::stringstream _ss(_words[1]);
+    std::stringstream _ss(_words[CURFUNC_NAME_IDX]);
     // 공백 분리 결과를 저장할 배열
     std::vector<std::string> _names;
     std::string _word;
@@ -40,14 +40,15 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     _arrayStruct.arrayAccesType = _words[0];
     _arrayStruct.arrayFunc = _names[0];
     _arrayStruct.arrayName = _names[1];
-    _arrayStruct.arrayType = GetType(_words[2]);
+    _arrayStruct.arrayType = GetType(_words[TYPE_IDX]);
     _arrayStruct.arrayValue = _words[_words.size() - 4];
     _arrayStruct.arrayPtr = _words[_words.size() - 3];
     _arrayStruct.arrayLine = _words[_words.size() - 2];
     _arrayStruct.arrayCol = _words[_words.size() - 1];
 
     for(int i = 0; i < dimension; i++) {
-        _arrayStruct.arrayIndex.push_back(_words[4 + i]);
+        _arrayStruct.arrayIndex.push_back(_words[5 + i]);
+            std::cout << "_words[4 + i]" << _words[5 + i] << std::endl;
     }
 
     this->accessType = _arrayStruct.arrayAccesType;
@@ -58,9 +59,21 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     this->col = _arrayStruct.arrayCol;
 
     arrays.push_back(_arrayStruct);
-    
-    this->shadowMemory[_arrayStruct.arrayPtr] = _arrayStruct.arrayValue;
 
+    for(int i = 0; i < 10; i++) {
+        ArrayStruct _testArrayStruct;
+        _testArrayStruct.arrayAccesType = _words[0];
+        _testArrayStruct.arrayFunc = _names[0];
+        _testArrayStruct.arrayName = _names[1];
+        _testArrayStruct.arrayType = GetType(_words[TYPE_IDX]);
+        _testArrayStruct.arrayValue = _words[_words.size() - 4];
+        _testArrayStruct.arrayPtr = _words[_words.size() - 3];
+        _testArrayStruct.arrayLine = _words[_words.size() - 2];
+        _testArrayStruct.arrayCol = _words[_words.size() - 1];
+
+        arrays.push_back(_testArrayStruct);
+    }
+    
     maxPageIndex = (arrays.size() / 10) + 1;
 
     std::cout << "Access Type : " << _arrayStruct.arrayAccesType << std::endl;
@@ -69,11 +82,14 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     std::cout << "Type : " << _arrayStruct.arrayType << std::endl;
     std::cout << "Value : " << _arrayStruct.arrayValue << std::endl;
     std::cout << "arrayPtr : " << _arrayStruct.arrayPtr << std::endl;
-    std::cout << "arrayPtr : " << _arrayStruct.arrayLine << std::endl;
+    std::cout << "arrayLine : " << _arrayStruct.arrayLine << std::endl;
     std::cout << "arrayCol : " << _arrayStruct.arrayCol << std::endl;
+
     for(int i = 0; i < _arrayStruct.arrayIndex.size(); i++) {
         std::cout << "Index" << i << " : " << _arrayStruct.arrayIndex[i] << std::endl;
     }
+    
+    std::cout << "===========================================================" << std::endl << std::endl;
 }
 
 void RecordArray::UpdateRecordData(std::vector<std::string> _words) {

@@ -19,6 +19,8 @@ RecordString::~RecordString() {
 
 void RecordString::InitRecordData(std::vector<std::string> _lines) {
     std::cout << "=========Call InitRecordData func(RecordString)===========" << std::endl << std::endl;
+    
+    recordType = RecordType::String;
 
     int _currentLineIdx = 0;
 
@@ -71,6 +73,8 @@ void RecordString::InitRecordData(std::vector<std::string> _lines) {
         this->col = _dataes[_dataes.size() - 1];
     }
 
+    PrintRecordData();
+
     std::cout << "==========================================================" << std::endl << std::endl;
 }
 
@@ -83,12 +87,59 @@ void RecordString::UpdateRecordData(std::vector<std::string> _words) {
 /* print method====================================================================================================================== */
 
 void RecordString::PrintRecordData() {
-    std::cout << "=========Call PrintRecordData func(RecordString)==========" << std::endl << std::endl;
-    
-    std::cout << "==========================================================" << std::endl << std::endl;
+    std::cout << "String record data output" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Thread ID : " << this->threadId << std::endl;
+    std::cout << "Access type : " << this->accessType << std::endl;
+    std::cout << "Current func : " << this->dataFunc << std::endl;
+    std::cout << "Name : " << this->name << std::endl;
+    std::cout << "Type : " << this->type << std::endl;
+    std::cout << "Ptr : " << this->ptr << std::endl;
+    std::cout << "Value : " << this->value << std::endl;
+    std::cout << "Line : " << this->line << std::endl;
+    std::cout << "Col : " << this->col << std::endl;
+    std::cout << std::endl;
 }
 std::string RecordString::PrintRecordTable(std::string) {
-    std::cout << "========Call PrintRecordTable func(RecordString)==========" << std::endl << std::endl;
+    std::string _returnMessage = "";
 
-    std::cout << "==========================================================" << std::endl << std::endl;
+    std::cout << "print record table" << std::endl;
+    
+    ConsoleTable _ct(BASIC);
+    _ct.SetPadding(1);
+    _ct.AddColumn(" ");
+    _ct.AddColumn("Thread ID");
+    _ct.AddColumn("Current Function");
+    _ct.AddColumn("Operation");
+    _ct.AddColumn("Name");
+    _ct.AddColumn("Type");
+    _ct.AddColumn("Value");
+    _ct.AddColumn("Pointer Address");
+    _ct.AddColumn("Line");
+    _ct.AddColumn("Column");
+
+    ConsoleTableRow* _entry = new ConsoleTableRow(10);
+    _entry->AddEntry(" ", 0);
+    _entry->AddEntry(this->threadId, 1);
+    _entry->AddEntry(this->dataFunc, 2);
+    _entry->AddEntry(this->accessType, 3);
+    _entry->AddEntry(this->name, 4);
+    _entry->AddEntry(this->type, 5);
+    _entry->AddEntry(this->value, 6);
+    _entry->AddEntry(this->ptr, 7);
+    _entry->AddEntry(this->line, 8);
+    _entry->AddEntry(this->col, 9);
+
+    _ct.AddRow(_entry);
+
+    _ct.PrintTable();
+
+    if(this->infoMessage != "None") {
+        _returnMessage = this->infoMessage;
+    }
+    else {
+        _returnMessage = "";
+    }
+    std::cout << "return message : " << _returnMessage << std::endl;
+    return _returnMessage;
 }

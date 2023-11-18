@@ -26,7 +26,7 @@ const int VALUE_IDX = 4;
 const int PTR_IDX = 5;
 const int LINE_IDX = 6;
 const int COL_IDX = 7;
-const int START_STRUCTDATA_VALUE_IDX = 3;
+const int START_STRUCTDATA_VALUE_IDX = 4;
 const int START_STRING_IDX = 6;
 const int STRING_LENGTH_IDX = 5;
 
@@ -34,9 +34,11 @@ const int STRING_LENGTH_IDX = 5;
 
 enum RecordType {
     None,
+    Vector,
     Array,
     Prim,
-    Struct
+    Struct,
+    String
 };
 
 struct ArrayStruct
