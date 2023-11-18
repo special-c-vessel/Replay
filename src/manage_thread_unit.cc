@@ -77,6 +77,7 @@ std::string MTU::GetThreadId(int _line) {
     for (int _threadsIdx = 0; _threadsIdx < threads.size(); _threadsIdx++) {
         if(threads[_threadsIdx].line == _line) {
             return threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
+            //return "\033[0;0H" + threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
         }
     }
     return "";

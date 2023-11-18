@@ -105,7 +105,6 @@ void App::Init() {
     
         if(_words[1] != "retval") {
             if(_words[0] == "isStruct") { // 구조체
-                /*
                 RecordStruct* _data; // 기록 구조체 객체 생성
                 std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
                 _lines.push_back(_line);
@@ -120,7 +119,6 @@ void App::Init() {
                 }
                 _data = new RecordStruct(_lines);
                 structs.push_back(_data);    
-                */            
             }
             else if(_words[JUDGMENT_INDEX] == "isArr" || _words[JUDGMENT_INDEX] == "isPointerArr") { // 배열일 경우
                 /*
@@ -313,15 +311,6 @@ void App::Init() {
                 */
             }
             else { // 일반 기록파일
-                std::string _threadIdVal = "";
-                std::string _nameVal = "";
-                std::string _typeVal = "";
-                std::string _strVal = "";
-                std::string _ptrVal = "";
-                std::string _lenVal = "";
-                std::string _lineVal = "";
-                std::string _colVal = "";
-                std::string _infoMessage = "";
                 if(_words[TYPE_IDX] == "string") { // String 타입의 데이터일 경우
                     /*
                     std::cout << "this record data is string type : " << _line << std::endl;
@@ -791,7 +780,7 @@ void App::Render() {
 
     for(int i = _startLine; i <= _endLine; i++) {
         std::cout << i << "      " << mtu->GetThreadId(i);
-        if(i == currentLine) std::cout << "\033[1m" << " >>>>   " << codes[i] << "\033[0m" <<std::endl;
+        if(i == currentLine) std::cout << "\033[1m" << codes[i] << "\033[0;31m" <<"   <<<<<< Current line" <<"\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
 

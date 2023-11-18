@@ -27,7 +27,7 @@ const int PTR_IDX = 5;
 const int LINE_IDX = 6;
 const int COL_IDX = 7;
 const int START_STRUCTDATA_VALUE_IDX = 3;
-const int START_STRING_IDX = 7;
+const int START_STRING_IDX = 6;
 const int STRING_LENGTH_IDX = 5;
 
 #define ARRAY_TYPE_IDX 2

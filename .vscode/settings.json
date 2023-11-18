@@ -73,6 +73,7 @@
         "__tree": "cpp",
         "map": "cpp",
         "queue": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "__memory": "cpp"
     },
 }

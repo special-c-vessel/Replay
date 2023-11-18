@@ -127,6 +127,7 @@ void MMU::PrintShadowMemoryListSize() {
 }
 
 void MMU::PrintShadowMemoryTable() {
+    //std::cout << "\033[100;100H";
     ConsoleTable _ct(BASIC);
     _ct.SetPadding(1);
     _ct.AddColumn(" ");
@@ -145,6 +146,7 @@ void MMU::PrintShadowMemoryTable() {
     }
 
     _ct.PrintTable();
+    //std::cout << "\033[0;0H";
 }
 
 /* General Method===================================================================================================================== */

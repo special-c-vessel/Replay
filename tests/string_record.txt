@@ -1,8 +1,0 @@
-store main-retval i32 0 0x16dcda53c 0 0
-store main-num1 i32 5 0x16dcda538 9 7
-11 store main-str3333 string StringStart 11 abcdefghijk StringEnd 0x16dcda520 10 20
-5 store main-str3333 string StringStart 5 12345 StringEnd 0x16dcda520 11 11
-store main-str3333 i8 12 e 0x16dcda520 13 14
-5 load main-str3333 string StringStart 5 123457ghijk StringEnd 0x16dcda520 15 14
-store main-retval i32 0 0x16dcda53c 20 3
-load main-retval i32 0 0x16dcda53c 21 1

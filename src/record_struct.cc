@@ -24,32 +24,37 @@ RecordStruct::~RecordStruct() {
 void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
     std::cout << "===========Call InitRecordData func(RecordStruct)===========" << std::endl;
 
-    originStr = _lines;
-
     int _curLineIdx = 0;
-    std::vector<std::string> _words = SplitString(_lines[_curLineIdx], ' ');
-    std::vector<std::string> _names = SplitString(_words[1], '-');
+
+    std::cout << "lines : " << _lines[_curLineIdx] << std::endl;
+
+    std::vector<std::string> _dataes = SplitString(_lines[_curLineIdx], ' ');
+    std::vector<std::string> _names = SplitString(_dataes[1], '-');
     
+    originStr = _lines;
     accessType = "struct";
     dataFunc = _names[0];
+    std::cout << "current func : " << dataFunc << std::endl;
     name = _names[1];
-    type = _words[2];
+    std::cout << "name : " << name << std::endl;
+    type = _dataes[2];
+    std::cout << "type : " << type << std::endl;
 
-    int _endIndex = _words.size() - 1;
+    int _endIndex = _dataes.size() - 1;
     int _index = START_STRUCTDATA_VALUE_IDX;
 
     while(_index < _endIndex) {
-        std::string _typeStr = GetType(_words[_index]);
+        std::string _typeStr = GetType(_dataes[_index]);
         std::string _valStr = "";
 
         if(_typeStr == "string") {
             _index += 3;
             if(FindStringInString(_lines[0], STRING_END) && _lines.size() == 1) { // 문자열 데이터 값에 개행이 없을 경우
-                if(_words[_index] != STRING_END) {
-                    _valStr = _words[_index];
+                if(_dataes[_index] != STRING_END) {
+                    _valStr = _dataes[_index];
                     _index++;
-                    while(_words[_index] != STRING_END) {
-                        _valStr = _valStr + " " + _words[_index];
+                    while(_dataes[_index] != STRING_END) {
+                        _valStr = _valStr + " " + _dataes[_index];
                         _index++;
                     }
                     _index++;
@@ -58,10 +63,10 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
             else {
                 for(int _i = _index; _i <= _endIndex; _i++) {
                     if(_i == _endIndex) {
-                        _valStr = _valStr + _words[_i] + "\\n";
+                        _valStr = _valStr + _dataes[_i] + "\\n";
                     }
                     else {
-                        _valStr = _valStr + _words[_i] + " ";
+                        _valStr = _valStr + _dataes[_i] + " ";
                     }
                 }
                 _curLineIdx++; // 현재 라인 벡터의 인덱스를 1 증가
@@ -80,23 +85,23 @@ void RecordStruct::InitRecordData(std::vector<std::string> _lines) {
         }
         else if(_typeStr == "isStruct") {
             std::cout << "check strcut" << std::endl;
-            _typeStr = _words[_index + 1];
+            _typeStr = _dataes[_index + 1];
             _valStr = "struct object";
             _index += 2;
         }
         else {
-            _valStr = _words[_index + 1];
+            _valStr = _dataes[_index + 1];
             _index += 2;
         }
 
-        GetType(_words[_index]);
+        GetType(_dataes[_index]);
         DataStruct _dataStruct;
         _dataStruct.type = _typeStr;
         _dataStruct.value = _valStr;
         dataStructs.push_back(_dataStruct);
 
         if(_index == _endIndex) {
-            ptr = _words[_index];
+            ptr = _dataes[_index];
         }
     }
     std::cout << "struct record data ptr : " << ptr << std::endl;
