@@ -29,6 +29,7 @@ const int COL_IDX = 7;
 const int START_STRUCTDATA_VALUE_IDX = 4;
 const int START_STRING_IDX = 6;
 const int STRING_LENGTH_IDX = 5;
+const int VECTOR_CHECK_IDX = 2;
 
 #define ARRAY_TYPE_IDX 2
 
@@ -41,18 +42,8 @@ enum RecordType {
     String
 };
 
-struct ArrayStruct
-{
-    std::string arrayFunc;
-    std::string arrayName;
-    std::string arrayType;
-    std::string arrayValue;
-    std::string arrayPtr;
-    std::string arrayLine;
-    std::string arrayCol;
-    std::string arrayAccesType;
-    std::vector<std::string> arrayIndex;
-};
+struct VectorStruct;
+struct ArrayStruct;
 
 struct DataStruct
 {
@@ -97,6 +88,10 @@ public:
     virtual void SetStruct(RecordStruct&);
     virtual void SetDataStruct(std::vector<DataStruct>);
     virtual std::vector<DataStruct> GetDataStruct();
+
+    virtual void SetVectors(std::vector<VectorStruct>);
+    virtual std::vector<VectorStruct> GetVectors();
+
 
 public:
     bool IsNumber(std::string const&);

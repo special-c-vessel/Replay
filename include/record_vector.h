@@ -14,6 +14,7 @@ using namespace std;
 
 struct VectorStruct
 {
+    std::string vectorThreadId;
     std::string vectorFunc;
     std::string vectorName;
     std::string vectorType;
@@ -40,8 +41,8 @@ public: // 오버라이드 함수
     void SetShadowMemorySize(int) override;
     int GetShadowMemorySize() override;
 
-    void SetArrrays(std::vector<ArrayStruct>) override;
-    std::vector<ArrayStruct> GetArrays() override;
+    void SetVectors(std::vector<VectorStruct>) override;
+    std::vector<VectorStruct> GetVectors() override;
 
     void SetStruct(RecordStruct&) override;
 
@@ -53,8 +54,11 @@ private:
     int prevPage = 0;
     int arrayTypeSize = 0;
 
-     std::map<std::string, std::string> shadowMemory;
-     int shadowMaxIdx = 0;
+    std::map<std::string, std::string> shadowMemory;
+    int shadowMaxIdx = 0;
+
+    std::vector<VectorStruct> vectors;
+
 };
 
 #endif //RECORD_VECTOR_H

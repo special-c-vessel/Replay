@@ -1,11 +1,14 @@
-isStruct _Z5func1v-x11111 class.AAAAA 0x16b7eaf10 
-isStruct _Z5func1v-x22222 class.AAAAA 0x16b7eaee8 
-1803464704 store _Z5func1v-str3333 string StringStart 11 abcdefghijk StringEnd 0x16b7eaf48 56 20
-1803464704 store _Z5func1v-str3333 string StringStart 5 12345 StringEnd 0x16b7eaf48 57 11
-1803464704 load _Z5func1v-str3333 string StringStart 5 12345 StringEnd 0x16b7eaf48 61 14
-1804038144 store _Z5func2v-arrTest2 i64 isPointerArr 25 25 55555 0x16b872078 146 20
-1804038144 store _Z5func2v-arrTest2 i64 isPointerArr 0 1 1 0x16b872078 148 18
-1804038144 store _Z5func2v-arrTest2 i64 isPointerArr 1 2 2 0x16b872078 149 18
-1804038144 store _Z5func2v-arrTest2 i64 isPointerArr 3 4 3 0x16b872078 150 18
-1804038144 store _Z5func2v-arrTest2 i64 isPointerArr 1 2 222 0x16b872078 152 18
-1804038144 store _Z5func2v-num1 i32 10 0x16b871e1c 156 7
+1804038144 store _Z5func2v-ref.tmp36 i64 12345 0x16b871d18 193 21
+1804038144 store push_back _Z5func2v-vvvvv22 i64 0x16b871d18 0x16b871d60 193 11
+1804038144 store _Z5func2v-ref.tmp38 i64 3456 0x16b871d10 194 21
+1804038144 store push_back _Z5func2v-vvvvv22 i64 0x16b871d10 0x16b871d60 194 11
+1804038144 store _Z5func2v-ref.tmp40 i64 56789 0x16b871d08 195 21
+1804038144 store push_back _Z5func2v-vvvvv22 i64 0x16b871d08 0x16b871d08 195 11
+1804038144 store _Z5func2v-ref.tmp42 float 0.000000 0x16b871d04 197 19
+1804038144 store push_back _Z5func2v-fffff float 0x16b871d04 0x16b871d48 197 9
+1804038144 store _Z5func2v-ref.tmp44 string StringStart 18 vector string test StringEnd 0x16b871ce8 199 19
+1804038144 store push_back _Z5func2v-sssss S_12basic_stringIcNS_11char_traitsIcEE 0x16b871ce8 0x16b871d30 199 9
+1803464704 store _Z5func1v-num22 i32 88 0x16b7eaed0 127 9
+1803464704 store push_back _Z5func1v-VA AAAAA 0x16b7eaf10 0x16b7eaea0 131 6
+1803464704 store push_back _Z5func1v-VA AAAAA 0x16b7eaf10 0x16b7eaea0 132 6
+1803464704 store push_back _Z5func1v-VA AAAAA 0x16b7eaee8 0x16b7eaea0 133 6

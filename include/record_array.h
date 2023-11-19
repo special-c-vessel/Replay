@@ -12,6 +12,19 @@
 
 using namespace std;
 
+struct ArrayStruct
+{
+    std::string arrayFunc;
+    std::string arrayName;
+    std::string arrayType;
+    std::string arrayValue;
+    std::string arrayPtr;
+    std::string arrayLine;
+    std::string arrayCol;
+    std::string arrayAccesType;
+    std::vector<std::string> arrayIndex;
+};
+
 class RecordArray : public RecordData {
 public: // 클래스 생성자, 소멸자
     RecordArray(); // 일반 생성자

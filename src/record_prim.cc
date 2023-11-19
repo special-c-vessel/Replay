@@ -72,6 +72,7 @@ void RecordPrim::PrintRecordData() {
     std::cout << "Ptr : " << this->ptr << std::endl;
     std::cout << "Line : " << this->line << std::endl;
     std::cout << "Col : " << this->col << std::endl;
+    std::cout << "Value : " << this->value << std::endl;
     std::cout << std::endl;
 }
 

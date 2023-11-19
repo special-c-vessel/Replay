@@ -59,20 +59,6 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     this->col = _arrayStruct.arrayCol;
 
     arrays.push_back(_arrayStruct);
-
-    for(int i = 0; i < 10; i++) {
-        ArrayStruct _testArrayStruct;
-        _testArrayStruct.arrayAccesType = _words[0];
-        _testArrayStruct.arrayFunc = _names[0];
-        _testArrayStruct.arrayName = _names[1];
-        _testArrayStruct.arrayType = GetType(_words[TYPE_IDX]);
-        _testArrayStruct.arrayValue = _words[_words.size() - 4];
-        _testArrayStruct.arrayPtr = _words[_words.size() - 3];
-        _testArrayStruct.arrayLine = _words[_words.size() - 2];
-        _testArrayStruct.arrayCol = _words[_words.size() - 1];
-
-        arrays.push_back(_testArrayStruct);
-    }
     
     maxPageIndex = (arrays.size() / 10) + 1;
 

@@ -35,7 +35,12 @@ void RecordString::InitRecordData(std::vector<std::string> _lines) {
     this->dataFunc = _names[_names.size() - 2];
     this->type = "string";
 
+    for(int i = 0; i < _lines.size(); i++) {
+        std::cout << "line : " << _lines[i] << std::endl;
+    }
+
     if(FindStringInString(_lines[_currentLineIdx], STRING_END)) { // string 의 값에 "\n"이 없을 경우
+        std::cout << "check 3" << std::endl;
         int _strValIdx = START_STRING_IDX;
         value = "";
         while(_dataes[_strValIdx] != STRING_END) {
@@ -43,23 +48,28 @@ void RecordString::InitRecordData(std::vector<std::string> _lines) {
             value += " ";
             _strValIdx++;
         }
+        std::cout << "check 4" << std::endl;
+
         this->stringLenth = std::stoi(_dataes[STRING_LENGTH_IDX]);
         this->ptr = _dataes[_dataes.size() - 3];
         this->line = _dataes[_dataes.size() - 2];
         this->col = _dataes[_dataes.size() - 1];
 
     } else { // string의 값에 "\n"이 있을 경우
+        std::cout << "check 3 value : " << value << std::endl;
         this->stringLenth = std::stoi(_dataes[STRING_LENGTH_IDX]);
         int _strValIdx = START_STRING_IDX;
         for(int _i = _strValIdx; _i < _dataes.size(); _i++) {
             if(_i == _dataes.size() - 1) value = value + _dataes[_i] + "\\n";
             else value = value + _dataes[_i] + " s";
         }
+        std::cout << "check 4 value : " << value << std::endl;
         _currentLineIdx++;
-        while(FindStringInString(_lines[_currentLineIdx], STRING_END)) {
+        while(!FindStringInString(_lines[_currentLineIdx], STRING_END)) {
             value = value + _lines[_currentLineIdx] + "\\n";
             _currentLineIdx++;
         }
+        std::cout << "check 5 value : " << value << std::endl;
         
         _dataes = SplitString(_lines[_currentLineIdx], SPLIT_DATA_CHAR);
         int _stringEndLineIdx = 0;
@@ -68,6 +78,7 @@ void RecordString::InitRecordData(std::vector<std::string> _lines) {
             value += " ";
             _stringEndLineIdx++;
         }
+        std::cout << "check 6" << std::endl;
         this->ptr = _dataes[_dataes.size() - 3];
         this->line = _dataes[_dataes.size() - 2];
         this->col = _dataes[_dataes.size() - 1];

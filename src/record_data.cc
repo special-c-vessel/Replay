@@ -62,6 +62,14 @@ std::vector<DataStruct> RecordData::GetDataStruct() {
     return _dataStructs;
 }
 
+void RecordData::SetVectors(std::vector<VectorStruct> _vectors) {
+    
+}
+
+std::vector<VectorStruct> RecordData::GetVectors() {
+    
+}
+
 // 편의성 함수
 
 // 주어진 문자열에 숫자가 포함되어 있는지 판단하는 함수

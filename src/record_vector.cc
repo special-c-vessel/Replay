@@ -6,7 +6,6 @@ RecordVector::RecordVector() {
     prevPage = 1;
     shadowMaxIdx = 0;
     threadId = "0";
-    recordType = RecordType::Vector;
 }
 
 RecordVector::RecordVector(std::vector<std::string> _words) {
@@ -15,7 +14,6 @@ RecordVector::RecordVector(std::vector<std::string> _words) {
     prevPage = 1;
     shadowMaxIdx = 0;
     threadId = "0";
-    recordType = RecordType::Vector;
 
     InitRecordData(_words);
 }
@@ -28,7 +26,9 @@ RecordVector::~RecordVector() {
 void RecordVector::InitRecordData(std::vector<std::string> _words) {
     std::cout << "===========Call InitRecordData func(RecordVector)===========" << std::endl;
 
-    std::stringstream _ss(_words[2]);
+    recordType = RecordType::Vector;
+
+    std::stringstream _ss(_words[CURFUNC_NAME_IDX + 1]);
     // 공백 분리 결과를 저장할 배열
     std::vector<std::string> _names;
     std::string _word;
@@ -36,24 +36,30 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
     while (getline(_ss, _word, '-')){
         _names.push_back(_word);
     }
-    std::cout << "RecordVector Initialization Info" << std::endl;
-    std::cout << "dataFunc : " << _names[0] << std::endl;
-    std::cout << "name : " << _names[1] << std::endl;
-    std::cout << "type : " << _words[3] << std::endl;
-    std::cout << "ptr : " << _words[_words.size() - 3] << std::endl;
-    std::cout << "value : " << _words[_words.size() - 4] << std::endl;
-    std::cout << "line : " << _words[_words.size() - 2] << std::endl;
-    std::cout << "access type : " << _words[0] << std::endl;
 
-    accessType = _words[0];
+    threadId = _words[THREAD_ID_IDX];
+    accessType = _words[OP_TYPE_IDX];
     dataFunc = _names[0];
     name = _names[1];
-    type = GetType(_words[3]);
+    type = GetType(_words[TYPE_IDX + 1]);
     col = _words[_words.size() - 1];
     line = _words[_words.size() - 2];
     ptr = _words[_words.size() - 3];
     value = _words[_words.size() - 4];
     arrayTypeSize = 4;
+
+    VectorStruct _vectorStruct;
+    _vectorStruct.vectorThreadId = _words[THREAD_ID_IDX];
+    _vectorStruct.vectorAccessType = _words[OP_TYPE_IDX];
+    _vectorStruct.vectorFunc = _names[0];
+    _vectorStruct.vectorName = _names[1];
+    _vectorStruct.vectorType = GetType(_words[TYPE_IDX + 1]);
+    _vectorStruct.vectorValue = _words[_words.size() - 4];
+    _vectorStruct.vectorPtr = _words[_words.size() - 3];
+
+    vectors.push_back(_vectorStruct);
+
+    maxPageIndex = (vectors.size() / 10) + 1;
 
     std::cout << "============================================================" << std::endl;
 }
@@ -61,17 +67,28 @@ void RecordVector::InitRecordData(std::vector<std::string> _words) {
 void RecordVector::UpdateRecordData(std::vector<std::string> _words) {
     std::cout << "===========Call UpdateRecordData func(RecordVector)===========" << std::endl;
     
-    std::string _shadowMemoryStr = (AddHexaInt(ptr, arrayTypeSize * shadowMaxIdx));
-    shadowMaxIdx++;
-    
-    PrintShadowMemory();
+    std::stringstream _ss(_words[CURFUNC_NAME_IDX + 1]);
+    // 공백 분리 결과를 저장할 배열
+    std::vector<std::string> _names;
+    std::string _word;
+    // 스트림을 한 줄씩 읽어, 공백 단위로 분리한 뒤, 결과 배열에 저장
+    while (getline(_ss, _word, '-')){
+        _names.push_back(_word);
+    }
 
-    std::cout << "Shadow memory str : " << _shadowMemoryStr << std::endl;
-    std::cout << "Value : " << _words[_words.size() - 4] << std::endl;
+    VectorStruct _vectorStruct;
+    _vectorStruct.vectorThreadId = _words[THREAD_ID_IDX];
+    _vectorStruct.vectorAccessType = _words[OP_TYPE_IDX];
+    _vectorStruct.vectorFunc = _names[0];
+    _vectorStruct.vectorName = _names[1];
+    _vectorStruct.vectorType = GetType(_words[TYPE_IDX + 1]);
+    _vectorStruct.vectorValue = _words[_words.size() - 4];
+    _vectorStruct.vectorPtr = _words[_words.size() - 3];
 
-    shadowMemory[_shadowMemoryStr] = _words[_words.size() - 4];
+    vectors.push_back(_vectorStruct);
 
-    PrintShadowMemory();
+    maxPageIndex = (vectors.size() / 10) + 1;
+
     std::cout << "============================================================" << std::endl;
 }
 
@@ -138,38 +155,26 @@ std::string RecordVector::PrintRecordTable(std::string _message) {
     ct.AddColumn("Index");
     ct.AddColumn("Container Type");
 
-    std::vector<VectorStruct> _vectors;
-    for (auto iter = shadowMemory.begin(); iter != shadowMemory.end(); ++iter){
-        VectorStruct _vectorStruct;
-        _vectorStruct.vectorPtr = iter->first;
-        _vectorStruct.vectorValue = iter->second;
-        _vectors.push_back(_vectorStruct);
-    }
-
-    for(int i = 0 ; i < _vectors.size(); i++) {
-        _vectors[i].vectorFunc = this->dataFunc;
-        _vectors[i].vectorName = this->name;
-        _vectors[i].vectorType = this->type;
-        _vectors[i].vectorAccessType = this->accessType;
-        _vectors[i].vectorIndex = std::to_string(i);
+    for(int i = 0 ; i < vectors.size(); i++) {
+        vectors[i].vectorIndex = std::to_string(i);
     }
 
     int _startIndex = (currentPage * 10) - 10;
     int _endIndex = (currentPage * 10);
-    if(_startIndex > _vectors.size() - 1) _startIndex = _vectors.size() - 1;
-    if(_endIndex > _vectors.size()) _endIndex = _vectors.size();
+    if(_startIndex > vectors.size() - 1) _startIndex = vectors.size() - 1;
+    if(_endIndex > vectors.size()) _endIndex = vectors.size();
     int _tableIndex = 0;
     for(int i = _startIndex ; i < _endIndex; i++) {
         ConsoleTableRow* entry = new ConsoleTableRow(9);
         _tableIndex++;
         entry->AddEntry(std::to_string(_tableIndex), 0);
-        entry->AddEntry(_vectors[i].vectorFunc, 1);
-        entry->AddEntry(_vectors[i].vectorAccessType, 2);
-        entry->AddEntry(_vectors[i].vectorName, 3);
-        entry->AddEntry(_vectors[i].vectorType, 4);
-        entry->AddEntry(_vectors[i].vectorValue, 5);
-        entry->AddEntry(_vectors[i].vectorPtr, 6);
-        entry->AddEntry(_vectors[i].vectorIndex, 7);
+        entry->AddEntry(vectors[i].vectorFunc, 1);
+        entry->AddEntry(vectors[i].vectorAccessType, 2);
+        entry->AddEntry(vectors[i].vectorName, 3);
+        entry->AddEntry(vectors[i].vectorType, 4);
+        entry->AddEntry(vectors[i].vectorValue, 5);
+        entry->AddEntry(vectors[i].vectorPtr, 6);
+        entry->AddEntry(vectors[i].vectorIndex, 7);
         entry->AddEntry("Vector", 8);
             
         ct.AddRow(entry);
@@ -208,14 +213,17 @@ int RecordVector::GetShadowMemorySize() {
     return this->shadowMaxIdx;
 }
 
-void RecordVector::SetArrrays(std::vector<ArrayStruct> _arrays) {
-    
+void RecordVector::SetVectors(std::vector<VectorStruct> _vectors) {
+    for(int i = 0; i < _vectors.size(); i++) {
+        this->vectors.push_back(_vectors[i]);
+    }
 }
 
-std::vector<ArrayStruct> RecordVector::GetArrays() {
-    
+std::vector<VectorStruct> RecordVector::GetVectors() {
+    return this->vectors;
+
 }
 
 void RecordVector::SetStruct(RecordStruct& _struct) {
-    
+
 }

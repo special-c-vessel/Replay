@@ -38,9 +38,9 @@ private: // class initialization method
 public: // Shadow memory method
     void InitShadowMemories(const std::vector<RecordData*>&);
     void CalcShadowMemory(int, const std::vector<RecordData*>&);
-    void UpdateShadowMemory(ShadowUnit);
+    void UpdateShadowMemory(int, const std::vector<RecordData*>&);
     int GetShadowMemoryIndex(int);
-    
+
 public: // Print method
     void PrintShadowMemoryListUnit();
     void PrintShadowMemoryListUnit(int);

@@ -124,8 +124,8 @@ void App::Init() {
                 int _dimension = _words.size() - 9;
                 int _findIdx = -1;
                 for(int j = records.size() - 1; j >= 0; j--) {
-                    std::string _nameFunc = records[j]->dataFunc + "-" + records[j]->name;
-                    if(_nameFunc == _words[1]) {
+                    std::string _nameFunc = records[j]->dataFunc + SPLIT_FUNC_NAME_CHAR + records[j]->name;
+                    if(_nameFunc == _words[CURFUNC_NAME_IDX]) {
                         _findIdx = j;
                         break;
                     }
@@ -134,7 +134,6 @@ void App::Init() {
                 if(_findIdx != -1) {
                     //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                     RecordData* _data = new RecordArray(_words, _dimension);
-                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
                     _data->SetArrrays(records[_findIdx]->GetArrays());
                     records.push_back(_data);
                     
@@ -190,13 +189,12 @@ void App::Init() {
                     std::cout << "end array data" << std::endl;
                 }
             }
-            else if(_words[1] == "push_back" ) { // 벡터일 경우
-                /*
+            else if(_words[VECTOR_CHECK_IDX] == "push_back" ) { // 벡터일 경우
                 std::cout << "vector push back data" << std::endl;
-                int _findIdx = -1;
-                for(int i = records.size() - 1; i >= 0; i--) {
+                int _findIdx = -1; // 이전 기록 데이터 파일이 있는지 검사
+                for(int i = records.size() - 1; i >= 0; i--) { // 기록 데이터 리스트를 돌면서 검사
                     std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
-                    if(_comparisonStr == _words[2]) {
+                    if(_comparisonStr == _words[CURFUNC_NAME_IDX + 1]) { // 함수와 이름이 같다면 찾았다고 판단
                         _findIdx = i;
                         std::cout << "_findIdx : " << _findIdx << std::endl;
                         break;
@@ -206,29 +204,24 @@ void App::Init() {
                     std::cout << "detect vector record data" << std::endl;
                     //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                     RecordData* _data = new RecordVector(_words);
-                    std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
-                    _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
-                    _data->UpdateRecordData(_words);
+                    _data->SetVectors(records[_findIdx]->GetVectors());
                     records.push_back(_data);
 
                 } else {
                     std::cout << "vector recordata create" << std::endl;
                     RecordData* _data = new RecordVector(_words);
-                    _data->UpdateRecordData(_words);
                     records.push_back(_data);
                 }
-                */
             }
-            else if(_line.find("_ref.tmp") != std::string::npos) {
-                /*
+            else if(_line.find("-ref.tmp") != std::string::npos) {
                 std::cout << "inside ref tmp" << std::endl;
                 ///////////////////////////string 일 경우/////////////////////////////
                 std::string _refValue;
                 std::string _refType = _words[3];
-                if(_words[TYPE_IDX] == "string") {
-                    if(_line.find("StringEnd") != std::string::npos) {
+                if(_words[TYPE_IDX] == "string") { // 참조 값의 타입이 문자열일 경우
+                    if(FindStringInString(_line, STRING_END)) {
                         int _i = START_STRING_IDX;
-                        while(_words[_i] != "StringEnd") {
+                        while(_words[_i] != STRING_END) {
                             _refValue += _words[_i];
                             _refValue += " ";
                             _i++;
@@ -265,8 +258,8 @@ void App::Init() {
                         }
                     }
                 }
-                else {
-                    _refValue = _words[3];
+                else { // 참조 값의 타입이 문자열이 아닐 경우
+                    _refValue = _words[4];
                 }
                 ////////////////////////////////////////////////////////////////////
                 std::cout << "_refValue : " << _refValue << std::endl;
@@ -280,14 +273,14 @@ void App::Init() {
                 while (getline(_ss2, _word2, ' ')){
                     _words2.push_back(_word2);
                 }
-                if(_words2[1] == "push_back" ) { // 벡터일 경우
-                    _words2[4] = _refValue;
-                    _words2[3] = _refType;
+                if(_words2[VECTOR_CHECK_IDX] == "push_back" ) { // 벡터일 경우
+                    _words2[5] = _refValue;
+                    _words2[4] = _refType;
                     std::cout << "vector push back data" << std::endl;
                     int _findIdx = -1;
                     for(int i = records.size() - 1; i >= 0; i--) {
                         std::string _comparisonStr = records[i]->dataFunc + "-" + records[i]->name;
-                        if(_comparisonStr == _words2[2]) {
+                        if(_comparisonStr == _words2[3]) {
                             _findIdx = i;
                             std::cout << "_findIdx : " << _findIdx << std::endl;
                             break;
@@ -297,19 +290,15 @@ void App::Init() {
                         std::cout << "detect vector record data" << std::endl;
                         //기존 기록 파일에 벡터 기록 데이터가 있을 경우 해당 기록 데이터의 shadow memory의 값들을 복사
                         RecordData* _data = new RecordVector(_words2);
-                        std::cout << "Shadow memory size : " << records[_findIdx]->GetShadowMemory().size() << std::endl; 
-                        _data->SetShadowMemory(records[_findIdx]->GetShadowMemory());
-                        _data->UpdateRecordData(_words2);
+                        _data->SetVectors(records[_findIdx]->GetVectors());
                         records.push_back(_data);
 
                     } else {
                         std::cout << "vector recordata create" << std::endl;
                         RecordData* _data = new RecordVector(_words2);
-                        _data->UpdateRecordData(_words2);
                         records.push_back(_data);
                     }
                 }
-                */
             }
             else { // 일반 기록파일
                 if(_words[TYPE_IDX] == "string") { // String 타입의 데이터일 경우
@@ -317,14 +306,17 @@ void App::Init() {
                     RecordData* _data = new RecordString();
                     std::vector<std::string> _lines; // 기록 구조체 객체에게 전달할 라인 목록
                     _lines.push_back(_line);
+                    std::cout << _line;
                     if(!FindStringInString(_line, STRING_END)) {
                         i++;
                         _line = recordLines[i];
                         while(!FindStringInString(_line, STRING_END)) {
+                            std::cout << _line;
                             _lines.push_back(_line);
                             i++;
                             _line = recordLines[i];
                         }
+                        std::cout << _line;
                         _lines.push_back(_line);
                     }
                     _data->InitRecordData(_lines);
