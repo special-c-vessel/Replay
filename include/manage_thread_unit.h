@@ -53,6 +53,7 @@ private: // general method
 private: // class variable
     // current thread information
     std::vector<ThreadUnit> threads;
+    std::vector<std::string> threadIds;
     int threadCnt;
     std::string curThreadId;
 };

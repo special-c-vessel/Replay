@@ -51,13 +51,13 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
                 _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
-        else if(_records[_recordIdx]->recordType == RecordType::Struct) {
-            std::cout << "Record Data is Array data" << std::endl;
-            for(int _arrayIdx = 0; _arrayIdx < _records[_recordIdx]->GetArrays().size(); _arrayIdx++) {
+        else if(_records[_recordIdx]->recordType == RecordType::Vector) {
+            std::cout << "Record Data is Vector data" << std::endl;
+            for(int _vectorIdx = 0; _vectorIdx < _records[_recordIdx]->GetVectors().size(); _vectorIdx++) {
                 ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
-                _shadowUnit.name = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayName;
-                _shadowUnit.ptr = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayPtr;
-                _shadowUnit.value = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayValue;
+                _shadowUnit.name = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorName;
+                _shadowUnit.ptr = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorPtr;
+                _shadowUnit.value = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorValue;
                 _shadowUnit.recordIndex = _recordIdx;
                 _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
@@ -131,8 +131,16 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
                 shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
-        else {
-
+        else if(_records[_recordIdx]->recordType == RecordType::Vector) {
+            std::cout << "Record Data is Vector data" << std::endl;
+            for(int _vectorIdx = 0; _vectorIdx < _records[_recordIdx]->GetVectors().size(); _vectorIdx++) {
+                ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
+                _shadowUnit.name = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorName;
+                _shadowUnit.ptr = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorPtr;
+                _shadowUnit.value = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorValue;
+                _shadowUnit.recordIndex = _recordIdx;
+                shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+            }
         }
     }
     std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
