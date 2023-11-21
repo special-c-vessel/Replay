@@ -45,10 +45,12 @@ public: // get; set;
 public: // print method
     void PrintThreads(); // thread 목록을 출력하는 함수
 
-private: // general method
+public: // general method
     // color method
     void SetColor(std::string, std::string); // threadID의 색을 설정하는 함수
     std::string GetColor(std::string); // 입력받은 threadID의 색을 반환하는 함수
+
+    std::string GetThreadId(std::string);
 
 private: // class variable
     // current thread information

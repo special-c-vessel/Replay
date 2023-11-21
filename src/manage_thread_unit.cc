@@ -23,6 +23,8 @@ void MTU::InitThreads(const std::vector<RecordData*>& _records) {
     curThreadId = _records[0]->threadId;
 
     for(int _recordIdx = 0; _recordIdx < _records.size(); _recordIdx++) {
+        //std::cout << "record thread ID : " << _records[_recordIdx]->threadId << std::endl;
+        //std::cout << "record line : " << _records[_recordIdx]->line << std::endl;
         if(!IsThreadIdInThreads(_records[_recordIdx]->threadId)) {
             std::cout << "thread ID : " << _records[_recordIdx]->threadId << std::endl;
             ThreadUnit _threadUnit;
@@ -35,8 +37,6 @@ void MTU::InitThreads(const std::vector<RecordData*>& _records) {
         }
     }
 
-    threadCnt = threads.size();
-
     std::cout << "Complete threadnma initialization!!!!!, thread is count is " << threads.size() << std::endl;
     
     std::cout << std::endl << "============================================================" << std::endl << std::endl;
@@ -45,7 +45,10 @@ void MTU::InitThreads(const std::vector<RecordData*>& _records) {
 void MTU::UpdateThreads(const RecordData& _recordData) {
     std::cout << std::endl << "=================Call UpdateThreads func(MTU)===============" << std::endl << std::endl;
 
-    if(IsThreadIdInThreads(_recordData.threadId)) {
+    std::cout << "record data thread id : " << _recordData.threadId << ", index : " << FindIdxFromThreads(_recordData.threadId) << std::endl;
+
+    if(FindIdxFromThreads(_recordData.threadId) != -1) {
+        //std::cout << "record data thread id : " << _recordData.threadId << ", index : " << FindIdxFromThreads(_recordData.threadId) << std::endl;
         threads[FindIdxFromThreads(_recordData.threadId)].line = std::stoi(_recordData.line);
     }
 
@@ -65,7 +68,7 @@ bool MTU::IsThreadIdInThreads(std::string _threadId) {
 
 int MTU::FindIdxFromThreads(std::string _threadId) {
     for(int _threadsIdx = 0; _threadsIdx < threadIds.size(); _threadsIdx++) {
-        if(threadIds[_threadsIdx] == _threadId) return _threadsIdx;
+        if(threads[_threadsIdx].id == _threadId) return _threadsIdx;
     }
     return -1;
 }
@@ -78,6 +81,7 @@ void MTU::SetCurThreadId(std::string _threadId) {
 
 std::string MTU::GetThreadId(int _line) {
     for (int _threadsIdx = 0; _threadsIdx < threads.size(); _threadsIdx++) {
+        //std::cout << "thread line : " << threads[_threadsIdx].line << ", line : " << std::to_string(_line) << std::endl;
         if(threads[_threadsIdx].line == _line) {
             return threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
             //return "\033[0;0H" + threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
@@ -106,4 +110,10 @@ void MTU::SetColor(std::string _threadId, std::string _color) {
 
 std::string MTU::GetColor(std::string _threadId) {
     return "";
+}
+
+std::string MTU::GetThreadId(std::string _normalThreadId) {
+    for(int i = 0; i < threadIds.size(); i++) {
+        if(threadIds[i]  == _normalThreadId) return std::to_string(i);
+    }
 }

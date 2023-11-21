@@ -51,6 +51,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
             std::cout << "_words[4 + i]" << _words[5 + i] << std::endl;
     }
 
+    this->threadId = _words[THREAD_ID_IDX];
     this->accessType = _arrayStruct.arrayAccesType;
     this->dataFunc = _arrayStruct.arrayFunc;
     this->name = _arrayStruct.arrayName;

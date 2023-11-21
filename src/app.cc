@@ -434,6 +434,10 @@ void App::Init() {
 
     mtu = new MTU();
     mtu->InitThreads(records);
+    
+    for(int _recordIdx = 0; _recordIdx < records.size(); _recordIdx++) {
+        records[_recordIdx]->threadId = mtu->GetThreadId(records[_recordIdx]->threadId);
+    }
 
     Render();
 }
@@ -507,6 +511,7 @@ void App::Update() {
                 currentIndex--;
             }
             currentLine = std::stoi(records[currentIndex]->line);
+            mtu->UpdateThreads(*records[currentIndex]);
             std::cout << "prev line : " << prevLine << std::endl;
             std::cout << "current line : " << currentLine << std::endl;
 
