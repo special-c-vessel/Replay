@@ -450,7 +450,7 @@ void App::Input() {
     getline(std::cin, _input);
     StartTime();
     if(!IsNumber(_input)) { // 사용자 입력 값이 숫자가 아닐 경우
-        if(_input[0] == 's') {
+        if(_input == "s") {
             std::vector<std::string> _cmdWords = SplitString(_input, ' ');
             if(_cmdWords.size() == 2) {
                 
@@ -553,19 +553,40 @@ void App::Update() {
     }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
-        std::cout << "current index : " << currentIndex << std::endl;
-        std::cout << "records.size : " << records.size() - 1 << std::endl;
-        if(currentIndex < records.size() - 1 || currentIndex == -1) {
-            currentIndex++;
-            currentLine = std::stoi(records[currentIndex]->line);
-            mtu->UpdateThreads(*records[currentIndex]);
-            std::cout << "current Index : " << currentIndex<< std::endl;
-            std::cout << "current line : " << currentLine << std::endl;
+        if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
+            std::cout << "current index : " << currentIndex << std::endl;
+            std::cout << "records.size : " << records.size() - 1 << std::endl;
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                currentIndex++;
+                while(records[currentIndex]->threadId != mtu->GetCurThreadId()) {
+                    std::cout << "cur thread id : " << mtu->GetCurThreadId() << std::endl;
+                    std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+                    currentIndex++;
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
 
-            afterCurPage = 1;   
-            prevCurPage = 1; 
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+        } else { // 현재 지정된 쓰레드 ID 가 존재하지 않을 경우
+            std::cout << "current index : " << currentIndex << std::endl;
+            std::cout << "records.size : " << records.size() - 1 << std::endl;
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                currentIndex++;
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
         }
-        inputState = InputState::Stop;
     } 
     else if(inputState == InputState::DoubleDown) {
         this->commandMessage = "double down";
@@ -623,7 +644,6 @@ void App::Update() {
             while (getline(_cmdss, _cmdWord, ' ')){
                 _cmdWords.push_back(_cmdWord);
             }
-
             if(IsNumber(_cmdWords[1])) {
                 currentLine = std::stoi(_cmdWords[1]);
                 for(int i = currentLine; i >= 0; i--) {
@@ -661,6 +681,36 @@ void App::Update() {
             std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
             if(_cmdWords.size() > 1) {
                 afterTableIndex = std::stoi(_cmdWords[1]) - 1;
+            }
+        }
+        else if(FindStringInString(commandMessage, "threadset")) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+            if(IsNumber(_cmdWords[1])) {
+                mtu->SetCurThreadId(_cmdWords[1]);
+                std::cout << "current thread id : " << mtu->GetCurThreadId() << std::endl;
+                //std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+
+                if(currentIndex >= 0 && records[currentIndex]->threadId != mtu->GetCurThreadId()) {
+                    std::cout << "1----current Index : " << currentIndex << std::endl;
+                    for(int _recordIdx = currentIndex; _recordIdx < records.size(); _recordIdx++) {
+                        if(records[_recordIdx]->threadId == mtu->GetCurThreadId()) {
+                            currentIndex = _recordIdx;
+                            currentLine = std::stoi(records[currentIndex]->line);
+                            mtu->UpdateThreads(*records[currentIndex]);
+                            std::cout << "2-----current Index : " << currentIndex<< std::endl;
+                            std::cout << "current line : " << currentLine << std::endl;
+
+                            afterCurPage = 1;   
+                            prevCurPage = 1; 
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                if(_cmdWords[1] == "none") {
+                    mtu->SetCurThreadId("None");
+                }
             }
         }
     }
@@ -950,8 +1000,8 @@ void App::Render() {
                 _ct.PrintTable();
                 */
             }
-            
-            std::cout << std::endl << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
+            std::cout << "Current thread : " << mtu->GetCurThreadId() << ", ";
+            std::cout << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;
             records[currentIndex]->PrintRecordTable(commandMessage);
         }
     }
@@ -1039,6 +1089,7 @@ void App::InitCommand() {
     commands.push_back("prevleft");
     commands.push_back("prevmove");
     commands.push_back("followmove");
+    commands.push_back("threadset");
 }
 
 bool App::FindCommand(std::string _command) {

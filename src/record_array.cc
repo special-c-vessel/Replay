@@ -189,6 +189,7 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
     ConsoleTable ct(BASIC);
     ct.SetPadding(1);
     ct.AddColumn(" ");
+    ct.AddColumn("Thread ID");
     ct.AddColumn("Current Function");
     ct.AddColumn("Operation");
     ct.AddColumn("Name");
@@ -207,21 +208,22 @@ std::string RecordArray::PrintRecordTable(std::string _message) {
     if(_endIndex > arrays.size()) _endIndex = arrays.size();
     int _tableIndex = 0;
     for(int i = _startIndex ; i < _endIndex; i++) {
-        ConsoleTableRow* entry = new ConsoleTableRow(8 + dimension);
+        ConsoleTableRow* entry = new ConsoleTableRow(9 + dimension);
         _tableIndex++;
         entry->AddEntry(std::to_string(_tableIndex), 0);
-        entry->AddEntry(arrays[i].arrayFunc, 1);
-        entry->AddEntry(arrays[i].arrayAccesType, 2);
-        entry->AddEntry(arrays[i].arrayName, 3);
-        entry->AddEntry(arrays[i].arrayType, 4);
-        entry->AddEntry(arrays[i].arrayValue, 5);
-        entry->AddEntry(arrays[i].arrayPtr, 6);
+        entry->AddEntry(threadId, 1);
+        entry->AddEntry(arrays[i].arrayFunc, 2);
+        entry->AddEntry(arrays[i].arrayAccesType, 3);
+        entry->AddEntry(arrays[i].arrayName, 4);
+        entry->AddEntry(arrays[i].arrayType, 5);
+        entry->AddEntry(arrays[i].arrayValue, 6);
+        entry->AddEntry(arrays[i].arrayPtr, 7);
         int _addIndex = 0;
         for(int j = 0; j < arrays[i].arrayIndex.size(); j++) {
-            entry->AddEntry(arrays[i].arrayIndex[j], 7 + j);
+            entry->AddEntry(arrays[i].arrayIndex[j], 8 + j);
             _addIndex = j;
         }
-        entry->AddEntry("Array", 8 + _addIndex);   
+        entry->AddEntry("Array", 9 + _addIndex);   
         
         ct.AddRow(entry);
     }
