@@ -144,7 +144,7 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
         }
     }
     //std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
-    PrintShadowMemoryTable();
+    //PrintShadowMemoryTable();
 }
 
 void MMU::UpdateShadowMemory(int _recordIdx, const std::vector<RecordData*>& _records) {
