@@ -85,14 +85,20 @@ std::string MTU::GetCurThreadId() {
 }
 
 std::string MTU::GetThreadId(int _line) {
+    std::string _returnStr = "";
+    bool _findFile = false;
     for (int _threadsIdx = 0; _threadsIdx < threads.size(); _threadsIdx++) {
         //std::cout << "thread line : " << threads[_threadsIdx].line << ", line : " << std::to_string(_line) << std::endl;
         if(threads[_threadsIdx].line == _line) {
-            return threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
+            _returnStr += " " + threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id; + " ";
+            _findFile = true;
             //return "\033[0;0H" + threads[_threadsIdx].color + "Thread " + threads[_threadsIdx].id + "---->\033[0m";
         }
+        if(_findFile && _threadsIdx == threads.size() - 1) {
+            _returnStr += "---->\033[0m";
+        }
     }
-    return "";
+    return _returnStr;
 }
 
 /* print method====================================================================================================================== */

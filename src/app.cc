@@ -55,6 +55,8 @@ void App::Init() {
     prevTableIndex = -1;
     inputState = InputState::Stop;
     systemMessage = "";
+    watchName = "none";
+    watchOp = "none";
     InitCommand();
     
 
@@ -461,20 +463,10 @@ void App::Input() {
                 this->commandMessage = "down";
             }
         }
-        else if(_input == "ss") {
-            std::cout << "Double Down" << std::endl;
-            this->inputState = InputState::DoubleDown;
-            this->commandMessage = "doubledown";
-        }
         else if(_input == "w") {
             std::cout << "Up" << std::endl;
             this->inputState = InputState::Up;
             this->commandMessage = "up";
-        }
-        else if(_input == "ww") {
-            std::cout << "Double Up" << std::endl;
-            this->inputState = InputState::DoubleUp;
-            this->commandMessage = "doubleup";
         }
         else if(_input == "a") {
             this->inputState = InputState::Left;
@@ -528,6 +520,27 @@ void App::Update() {
                 prevCurPage = 1; 
             }
             inputState = InputState::Stop;
+        } else if(watchOp != "none") {
+            if(currentIndex > 0) { 
+                int _prevCurIndex = currentIndex;
+                currentIndex--;
+                while(currentIndex >= 0 
+                && records[currentIndex]->accessType != watchOp) {
+                    currentIndex--;
+                    if(currentIndex == 0 && records[currentIndex]->accessType != watchOp) {
+                        currentIndex = _prevCurIndex;
+                        break;
+                    }
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
         } else { // 현재 지정된 쓰레드 ID 가 존재하지 않을 경우
             if(currentIndex > 0) {
                 if(std::stoi(records[currentIndex - 1]->line) < std::stoi(records[currentIndex]->line)
@@ -548,37 +561,6 @@ void App::Update() {
             inputState = InputState::Stop;
         }
     }
-    else if(inputState == InputState::DoubleUp) {
-        this->commandMessage = "doubleup";
-        if(currentLine > 1) {
-            // 이전 줄의 코드의 길이를 측정
-            std::string _eraseStr = codes[currentLine - 1];
-            _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
-
-            // 이전 줄의 코드가 짧을 경우
-            if(_eraseStr.size() < 2) {
-                while(_eraseStr.size() < 2 && (currentLine) <= (codes.size() - 1)) {
-                    currentLine--;
-                    _eraseStr = codes[currentLine];
-                    _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
-                }
-            }
-            else {
-                currentLine--;
-            }
-            
-            for(int i = currentLine; i >= 0; i--) {
-                int _findIndex = FindRecordData(i);
-                if(_findIndex != -1) {
-                    currentIndex = _findIndex - 1 ;
-                    break;
-                }
-            }
-            afterCurPage = 1;
-            prevCurPage = 1;
-        }
-        inputState = InputState::Stop;
-    }
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
         if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
@@ -590,6 +572,36 @@ void App::Update() {
                 while(records[currentIndex]->threadId != mtu->GetCurThreadId()) {
                     std::cout << "cur thread id : " << mtu->GetCurThreadId() << std::endl;
                     std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+                    currentIndex++;
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+        } else if(watchOp != "none") {
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                currentIndex++;
+                while(records[currentIndex]->accessType != watchOp) {
+                    currentIndex++;
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+        } else if(watchName != "none") {
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                currentIndex++;
+                while(records[currentIndex]->name != watchName) {
                     currentIndex++;
                 }
                 currentLine = std::stoi(records[currentIndex]->line);
@@ -618,41 +630,6 @@ void App::Update() {
             inputState = InputState::Stop;
         }
     } 
-    else if(inputState == InputState::DoubleDown) {
-        this->commandMessage = "double down";
-        if(currentLine < codes.size() - 1) {
-            // 다음 줄의 코드의 길이를 측정
-            std::string _eraseStr = codes[currentLine + 1];
-            _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
-
-            // 다음 줄의 코드가 짧을 경우
-            if(_eraseStr.size() < 2) {
-                // 다음 줄의 길 떄까지 코드를 이동
-                while(_eraseStr.size() < 2 && (currentLine) < (codes.size() - 1)) {
-                    currentLine++;
-                    _eraseStr = codes[currentLine];
-                    _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
-                }
-            }
-            // 다음 줄의 코드가 길 경우
-            else {
-                currentLine++;
-            }
-
-            for(int i = currentLine; i >= 0; i--) {
-                int _findIndex = FindRecordData(i);
-                if(_findIndex != -1) {
-                    std::cout << "find index : " << _findIndex << std::endl;
-                    currentIndex = _findIndex;
-                    break;
-                }
-            }
-
-            prevCurPage = 1;
-            afterCurPage = 1;
-        }
-        inputState = InputState::Stop;
-    }
     else if(inputState == InputState::Right) {
         this->commandMessage = "right";
         afterCurPage++;
@@ -711,6 +688,67 @@ void App::Update() {
             std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
             if(_cmdWords.size() > 1) {
                 afterTableIndex = std::stoi(_cmdWords[1]) - 1;
+            }
+        }
+        else if(FindStringInString(commandMessage, "nameset")) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+
+            if(_cmdWords.size() > 1) {
+                watchName = _cmdWords[1];
+                std::cout << "current watch name : " << watchName << std::endl;
+                //std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+
+                if(currentIndex >= 0 && records[currentIndex]->name != watchName) {
+                    for(int _recordIdx = currentIndex; _recordIdx < records.size(); _recordIdx++) {
+                        if(records[_recordIdx]->name == watchName) {
+                            currentIndex = _recordIdx;
+                            currentLine = std::stoi(records[currentIndex]->line);
+                            mtu->UpdateThreads(*records[currentIndex]);
+                            std::cout << "2-----current Index : " << currentIndex<< std::endl;
+                            std::cout << "current line : " << currentLine << std::endl;
+
+                            afterCurPage = 1;   
+                            prevCurPage = 1; 
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                if(_cmdWords[1] == "none") {
+                    watchName = "none";
+                }
+            }
+        }
+        else if(FindStringInString(commandMessage, "opset")) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+
+            if(_cmdWords.size() > 1) {
+                watchOp = _cmdWords[1];
+                std::cout << "current operation type : " << watchOp << std::endl;
+                //std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+
+                if(currentIndex >= 0 && records[currentIndex]->accessType != watchOp) {
+                    std::cout << "1----current Index : " << currentIndex << std::endl;
+                    for(int _recordIdx = currentIndex; _recordIdx < records.size(); _recordIdx++) {
+                        if(records[_recordIdx]->accessType == watchOp) {
+                            currentIndex = _recordIdx;
+                            currentLine = std::stoi(records[currentIndex]->line);
+                            mtu->UpdateThreads(*records[currentIndex]);
+                            std::cout << "2-----current Index : " << currentIndex<< std::endl;
+                            std::cout << "current line : " << currentLine << std::endl;
+
+                            afterCurPage = 1;   
+                            prevCurPage = 1; 
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                if(_cmdWords[1] == "none") {
+                    watchOp = "none";
+                }
             }
         }
         else if(FindStringInString(commandMessage, "threadset")) {
@@ -1120,6 +1158,8 @@ void App::InitCommand() {
     commands.push_back("prevmove");
     commands.push_back("followmove");
     commands.push_back("threadset");
+    commands.push_back("nameset");
+    commands.push_back("opset");
 }
 
 bool App::FindCommand(std::string _command) {

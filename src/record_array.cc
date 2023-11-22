@@ -37,7 +37,7 @@ void RecordArray::InitRecordData(std::vector<std::string> _words) {
     }
 
     ArrayStruct _arrayStruct;
-    _arrayStruct.arrayAccesType = _words[0];
+    _arrayStruct.arrayAccesType = _words[1];
     _arrayStruct.arrayFunc = _names[0];
     _arrayStruct.arrayName = _names[1];
     _arrayStruct.arrayType = GetType(_words[TYPE_IDX]);

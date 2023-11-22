@@ -122,4 +122,8 @@ public: // main framework variable
 
     // Manage thread unit
     MTU* mtu;
+
+    // setting variable
+    std::string watchName;
+    std::string watchOp;
 };

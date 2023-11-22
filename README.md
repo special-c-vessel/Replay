@@ -19,10 +19,8 @@
 
 ### 조작 방식
 
-w - (기록된 코드에 한해)상단 기록 파일로 이동
-ww( - 기록 파일에 상관 없이)상단 코드로 이동
-s - 하단 기록 파일로 이동
-sws - 하단 코드로 이동
+1. w : 상단 기록 데이터로 이동
+2. s : 하단 기록 데이터로 이동
 
 #### 일반 명령어 목록
 
@@ -30,9 +28,14 @@ sws - 하단 코드로 이동
 2. findtype [type] : 찾고자 하는 타입의 기록 정보들을 출력 ex) findtype string
 3. findname [name] : 찾고자 하는 이름의 기록 정보들을 출력 ex) findname num1
 4. mvline [index] : 원하는 줄 번호로 이동 ex) mvline 150
+5. threadset [threadId] : 원하는 쓰레드 아이디의 기록 정보들만을 출력 ex) threadset 1
+6. opset [operation type] : 원하는 오퍼레이션 타입의 기록 정보들만을 출력 ex) opset load
+7. nameset [name] : 원하는 이름의 기록 정보들만을 출력 ex) nameset num1
 
 ### 배열 명령어 목록
 1. mvarray [index] : 배열의 지정한 인덱스의 값을 출력 ex) mvarray 10
+2. d : 배열 인덱스 목록을 다음 페이지로 이동
+3. a : 배열 인덱스 목록을 이전 페이ㅣㅈ로 이동
 
 ### 이전 데이터 테이블 명령어 목록
 1. prevright : previous data table 다음 페이지
