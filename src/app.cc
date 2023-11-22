@@ -571,6 +571,10 @@ void App::Update() {
                 int _prevIdx = currentIndex;
                 currentIndex++;
                 for(int _recordIdx = currentIndex; _recordIdx < records.size(); _recordIdx++) {
+                    std::cout << "Record Index : " << _recordIdx << ", max size : " << records.size() << std::endl;
+                    std::cout << "record thread id : " << records[_recordIdx]->threadId << ", current thread id : " << mtu->GetCurThreadId() << std::endl;
+                    std::cout << "record name : " << records[_recordIdx]->name << ", current name : " << watchName << std::endl;
+                    std::cout << "record op type : " << records[_recordIdx]->accessType << ", current op type : " << watchOp << std::endl;
                     if(records[_recordIdx]->threadId == mtu->GetCurThreadId() 
                     && records[_recordIdx]->name == watchName 
                     && records[_recordIdx]->accessType == watchOp) {
@@ -586,9 +590,9 @@ void App::Update() {
                         
                     }
                     if(_recordIdx == records.size() - 1
-                    && records[currentIndex]->threadId != mtu->GetCurThreadId() 
-                    && records[currentIndex]->name != watchName 
-                    && records[currentIndex]->accessType != watchOp) {
+                    && records[_recordIdx]->threadId != mtu->GetCurThreadId() 
+                    || records[_recordIdx]->name != watchName 
+                    || records[_recordIdx]->accessType != watchOp) {
                         currentIndex = _prevIdx;
                     }
                 }
@@ -604,7 +608,7 @@ void App::Update() {
         && watchOp != "none"
         && watchName != "none") {
             if(currentIndex < records.size() - 1 || currentIndex == -1) {
-                std::cout << "세가지 종류의 세팅이 존재" << std::endl;
+                std::cout << "두가지 종류의 세팅이 존재" << std::endl;
                 int _prevIdx = currentIndex;
                 currentIndex++;
                 for(int _recordIdx = currentIndex; _recordIdx < records.size(); _recordIdx++) {
@@ -615,8 +619,8 @@ void App::Update() {
                         
                     }
                     if(_recordIdx == records.size() - 1
-                    && records[currentIndex]->name == watchName 
-                    && records[currentIndex]->accessType == watchOp) {
+                    && records[_recordIdx]->name != watchName 
+                    || records[_recordIdx]->accessType != watchOp) {
                         currentIndex = _prevIdx;
                     }
                 }
@@ -839,6 +843,32 @@ void App::Update() {
                 }
             }
         }
+        else if(FindStringInString(commandMessage, "prevtable")) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');
+            if(_cmdWords.size() > 1) {
+                if(_cmdWords[1] == "on") {
+                    std::cout << "Previous table is on" << std::endl;
+                    viewPrevTable = true;
+                }
+                else if(_cmdWords[1] == "off") {
+                    std::cout << "Previous table is off" << std::endl;
+                    viewPrevTable = false;
+                }
+            }
+        }
+        else if(FindStringInString(commandMessage, "followtable")) {
+            std::vector<std::string> _cmdWords = SplitString(commandMessage, ' ');            
+            if(_cmdWords.size() > 1) {
+                if(_cmdWords[1] == "on") {
+                    std::cout << "Following table is on" << std::endl;
+                    viewFollowTable = true;
+                }
+                else if(_cmdWords[1] == "off") {
+                    std::cout << "Following table is off" << std::endl;
+                    viewFollowTable = false;
+                }
+            }
+        }
     }
 }
 
@@ -999,7 +1029,7 @@ void App::Render() {
             _info.push_back(records[currentIndex]->value);
             _info.push_back(records[currentIndex]->type);
 
-            if(FindPrevRecordData(_info, currentIndex)) {
+            if(viewPrevTable && FindPrevRecordData(_info, currentIndex)) {
                 std::cout << "\033[1m" << "Previous Data List ,  next page - prevright,  prev page - prevleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1062,7 +1092,7 @@ void App::Render() {
                 }
                 _ct.PrintTable();
             }
-            if(FindAfterRecordData(_info, currentIndex)) {
+            if(viewFollowTable && FindAfterRecordData(_info, currentIndex)) {
                 std::cout << std::endl << "\033[1m" << "Following Data List,  next page - followright,  prev page - followleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
@@ -1222,6 +1252,8 @@ void App::InitCommand() {
     commands.push_back("threadset");
     commands.push_back("nameset");
     commands.push_back("opset");
+    commands.push_back("prevtable");
+    commands.push_back("followtable");
 }
 
 bool App::FindCommand(std::string _command) {

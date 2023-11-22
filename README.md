@@ -38,13 +38,17 @@
 3. a : 배열 인덱스 목록을 이전 페이ㅣㅈ로 이동
 
 ### 이전 데이터 테이블 명령어 목록
-1. prevright : previous data table 다음 페이지
-2. prevleft : previous data table 이전 페이지
-3. prevmove [index] : 원하는 번호의 이전 데이터 페이지로 이동 ex) prevmove 26
+1. prevtable on : previous data table 을 나타낸다.
+2. prevtable off : previous data table 을 감춘다.
+3. prevright : previous data table 다음 페이지
+4. prevleft : previous data table 이전 페이지
+5. prevmove [index] : 원하는 번호의 이전 데이터 페이지로 이동 ex) prevmove 26
 
 ### 이후 데이터 테이블 명령어 목록
+1. followtable on : following data table 을 나타낸다.
+2. followtable off : following data table 을 감춘다.
 1. followright : following data table 다음 페이지
-2. followleft : previous data table 이전 페이지
+2. followleft : following data table 이전 페이지
 3. followmove [index] : 원하는 번호의 이후 데이터 페이지로 이동 ex) followmove 26
 
 

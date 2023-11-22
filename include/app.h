@@ -126,4 +126,8 @@ public: // main framework variable
     // setting variable
     std::string watchName;
     std::string watchOp;
+
+    // visible setting
+    bool viewPrevTable = false;
+    bool viewFollowTable = false;
 };
