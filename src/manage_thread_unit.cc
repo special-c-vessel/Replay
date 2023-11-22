@@ -20,7 +20,7 @@ void MTU::Init() {
 void MTU::InitThreads(const std::vector<RecordData*>& _records) {
     std::cout << std::endl << "==================Call InitThreads func(MTU)================" << std::endl << std::endl;
     threadCnt = 0;
-    curThreadId = "None";
+    curThreadId = "none";
 
     for(int _recordIdx = 0; _recordIdx < _records.size(); _recordIdx++) {
         //std::cout << "record thread ID : " << _records[_recordIdx]->threadId << std::endl;
@@ -50,7 +50,7 @@ void MTU::UpdateThreads(const RecordData& _recordData) {
     if(FindIdxFromThreads(_recordData.threadId) != -1) {
         //std::cout << "record data thread id : " << _recordData.threadId << ", index : " << FindIdxFromThreads(_recordData.threadId) << std::endl;
         threads[FindIdxFromThreads(_recordData.threadId)].line = std::stoi(_recordData.line);
-        curThreadId = threads[FindIdxFromThreads(_recordData.threadId)].id;
+        //curThreadId = threads[FindIdxFromThreads(_recordData.threadId)].id;
     }
 
     PrintThreads();

@@ -502,23 +502,51 @@ void App::Update() {
     if(inputState == InputState::Up) {
         this->commandMessage = "up";
         std::cout << "current Index : " << currentIndex << std::endl;
-        if(currentIndex > 0) {
-            if(std::stoi(records[currentIndex - 1]->line) < std::stoi(records[currentIndex]->line)
-            && std::stoi(records[currentIndex]->line) < currentLine) {
-                
-            }
-            else {
+        if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
+            std::cout << "Thread id is number" << std::endl;
+            std::cout << "current index : " << currentIndex << std::endl;
+            std::cout << "records.size : " << records.size() - 1 << std::endl;
+            if(currentIndex > 0) {
+                int _prevCurIndex = currentIndex;
                 currentIndex--;
-            }
-            currentLine = std::stoi(records[currentIndex]->line);
-            mtu->UpdateThreads(*records[currentIndex]);
-            std::cout << "prev line : " << prevLine << std::endl;
-            std::cout << "current line : " << currentLine << std::endl;
+                while(currentIndex >= 0 
+                && records[currentIndex]->threadId != mtu->GetCurThreadId()) {
+                    std::cout << "cur thread id : " << mtu->GetCurThreadId() << std::endl;
+                    std::cout << "record thread id : " << records[currentIndex]->threadId << std::endl;
+                    currentIndex--;
+                    if(currentIndex == 0 && records[currentIndex]->threadId != mtu->GetCurThreadId()) {
+                        currentIndex = _prevCurIndex;
+                        break;
+                    }
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "current Index : " << currentIndex<< std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
 
-            afterCurPage = 1;
-            prevCurPage = 1;
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+        } else { // 현재 지정된 쓰레드 ID 가 존재하지 않을 경우
+            if(currentIndex > 0) {
+                if(std::stoi(records[currentIndex - 1]->line) < std::stoi(records[currentIndex]->line)
+                && std::stoi(records[currentIndex]->line) < currentLine) {
+                    
+                }
+                else {
+                    currentIndex--;
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+                std::cout << "prev line : " << prevLine << std::endl;
+                std::cout << "current line : " << currentLine << std::endl;
+
+                afterCurPage = 1;
+                prevCurPage = 1;
+            }
+            inputState = InputState::Stop;
         }
-        inputState = InputState::Stop;
     }
     else if(inputState == InputState::DoubleUp) {
         this->commandMessage = "doubleup";
@@ -554,6 +582,7 @@ void App::Update() {
     else if(inputState == InputState::Down) {
         this->commandMessage = "down";
         if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
+            std::cout << "Thread id is number" << std::endl;
             std::cout << "current index : " << currentIndex << std::endl;
             std::cout << "records.size : " << records.size() - 1 << std::endl;
             if(currentIndex < records.size() - 1 || currentIndex == -1) {
@@ -573,6 +602,7 @@ void App::Update() {
             }
             inputState = InputState::Stop;
         } else { // 현재 지정된 쓰레드 ID 가 존재하지 않을 경우
+            std::cout << "Thread id is none number" << std::endl;
             std::cout << "current index : " << currentIndex << std::endl;
             std::cout << "records.size : " << records.size() - 1 << std::endl;
             if(currentIndex < records.size() - 1 || currentIndex == -1) {
@@ -709,7 +739,7 @@ void App::Update() {
             }
             else {
                 if(_cmdWords[1] == "none") {
-                    mtu->SetCurThreadId("None");
+                    mtu->SetCurThreadId("none");
                 }
             }
         }
@@ -874,11 +904,11 @@ void App::Render() {
             _info.push_back(records[currentIndex]->type);
 
             if(FindPrevRecordData(_info, currentIndex)) {
-                /*
                 std::cout << "\033[1m" << "Previous Data List ,  next page - prevright,  prev page - prevleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
+                _ct.AddColumn("Thread ID");
                 _ct.AddColumn("Current Function");
                 _ct.AddColumn("Operation");
                 _ct.AddColumn("Name");
@@ -897,17 +927,18 @@ void App::Render() {
                     && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array
                     && records[i]->recordType != RecordType::Struct) {
-                        ConsoleTableRow* _entry = new ConsoleTableRow(9);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(10);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
-                        _entry->AddEntry(records[i]->dataFunc, 1);
-                        _entry->AddEntry(records[i]->accessType, 2);
-                        _entry->AddEntry(records[i]->name, 3);
-                        _entry->AddEntry(records[i]->type, 4);
-                        _entry->AddEntry(records[i]->value, 5);
-                        _entry->AddEntry(records[i]->ptr, 6);
-                        _entry->AddEntry(records[i]->line, 7);
-                        _entry->AddEntry(records[i]->col, 8);
+                        _entry->AddEntry(records[i]->threadId, 1);
+                        _entry->AddEntry(records[i]->dataFunc, 2);
+                        _entry->AddEntry(records[i]->accessType, 3);
+                        _entry->AddEntry(records[i]->name, 4);
+                        _entry->AddEntry(records[i]->type, 5);
+                        _entry->AddEntry(records[i]->value, 6);
+                        _entry->AddEntry(records[i]->ptr, 7);
+                        _entry->AddEntry(records[i]->line, 8);
+                        _entry->AddEntry(records[i]->col, 9);
 
                         _entrys.push_back(_entry);
                     }
@@ -934,14 +965,13 @@ void App::Render() {
                     _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
-                */
             }
             if(FindAfterRecordData(_info, currentIndex)) {
-                /*
                 std::cout << std::endl << "\033[1m" << "Following Data List,  next page - followright,  prev page - followleft, ";
                 ConsoleTable _ct(BASIC);
                 _ct.SetPadding(1);
                 _ct.AddColumn(" ");
+                _ct.AddColumn("Thread ID");
                 _ct.AddColumn("Current Function");
                 _ct.AddColumn("Operation");
                 _ct.AddColumn("Name");
@@ -960,17 +990,18 @@ void App::Render() {
                     && _info[4] == records[i]->type
                     && records[i]->recordType != RecordType::Array
                     && records[i]->recordType != RecordType::Struct) {
-                        ConsoleTableRow* _entry = new ConsoleTableRow(9);
+                        ConsoleTableRow* _entry = new ConsoleTableRow(10);
                         _tableIndex++;
                         _entry->AddEntry(std::to_string(_tableIndex), 0);
-                        _entry->AddEntry(records[i]->dataFunc, 1);
-                        _entry->AddEntry(records[i]->accessType, 2);
-                        _entry->AddEntry(records[i]->name, 3);
-                        _entry->AddEntry(records[i]->type, 4);
-                        _entry->AddEntry(records[i]->value, 5);
-                        _entry->AddEntry(records[i]->ptr, 6);
-                        _entry->AddEntry(records[i]->line, 7);
-                        _entry->AddEntry(records[i]->col, 8);
+                        _entry->AddEntry(records[i]->threadId, 1);
+                        _entry->AddEntry(records[i]->dataFunc, 2);
+                        _entry->AddEntry(records[i]->accessType, 3);
+                        _entry->AddEntry(records[i]->name, 4);
+                        _entry->AddEntry(records[i]->type, 5);
+                        _entry->AddEntry(records[i]->value, 6);
+                        _entry->AddEntry(records[i]->ptr, 7);
+                        _entry->AddEntry(records[i]->line, 8);
+                        _entry->AddEntry(records[i]->col, 9);
 
                         _entrys.push_back(_entry);
                     }
@@ -998,7 +1029,6 @@ void App::Render() {
                     _ct.AddRow(_entrys[i]);
                 }
                 _ct.PrintTable();
-                */
             }
             std::cout << "Current thread : " << mtu->GetCurThreadId() << ", ";
             std::cout << "\033[1m" << "Current Data Information, code - " << RemoveLeadingWhitespace(codes[currentLine]) << "\033[0m" << std::endl;

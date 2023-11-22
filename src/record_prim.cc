@@ -78,8 +78,6 @@ void RecordPrim::PrintRecordData() {
 
 std::string RecordPrim::PrintRecordTable(std::string _message) {
     std::string _returnMessage = "";
-
-    std::cout << "print record table" << std::endl;
     
     ConsoleTable _ct(BASIC);
     _ct.SetPadding(1);

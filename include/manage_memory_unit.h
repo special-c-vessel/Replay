@@ -49,6 +49,8 @@ public: // Print method
 
 public: // General method
     bool IsShadowUnitInShadowMemory(std::string);
+    bool IsValidValue(const ShadowUnit&); // 검사 함수 정의
+    void PushValue(std::vector<ShadowUnit>&, const ShadowUnit&); // 값 푸시 함수 정의
 
 private:
     std::vector<ShadowUnit> shadowMemory; // 현재 메모리 상황을 보여주는 그림자 메모리

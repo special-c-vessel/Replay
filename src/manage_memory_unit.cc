@@ -35,7 +35,7 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
             _shadowUnit.ptr = _records[_recordIdx]->ptr;
             _shadowUnit.value = _records[_recordIdx]->value;
             _shadowUnit.recordIndex = _recordIdx;
-            _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+            PushValue(_acc, _shadowUnit);// 그림자 메모리의 적용될 그림자 유닛 리스트
 
             std::cout << "(end)Current shadow memory size is " << _acc.size() << std::endl;
 
@@ -48,7 +48,7 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
                 _shadowUnit.ptr = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayPtr;
                 _shadowUnit.value = _records[_recordIdx]->GetArrays()[_arrayIdx].arrayValue;
                 _shadowUnit.recordIndex = _recordIdx;
-                _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+                PushValue(_acc, _shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
         else if(_records[_recordIdx]->recordType == RecordType::Vector) {
@@ -59,7 +59,7 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
                 _shadowUnit.ptr = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorPtr;
                 _shadowUnit.value = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorValue;
                 _shadowUnit.recordIndex = _recordIdx;
-                _acc.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+                PushValue(_acc, _shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
 
@@ -83,29 +83,29 @@ void MMU::InitShadowMemories(const std::vector<RecordData*>& _records) {
 void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _records) {
     shadowMemory.clear(); // 그림자 메모리를 초기화
     int _shadowMemoryCopyIdx = (_currentIdx / this->groupSize) - 1; // 그림자 메모리 복사본의 인덱스를 계산
-    std::cout << "shadow memory index : " << _shadowMemoryCopyIdx << std::endl;
+    //std::cout << "shadow memory index : " << _shadowMemoryCopyIdx << std::endl;
     int _calcCnt = _currentIdx % this->groupSize;
-    std::cout << "calc count : " << _calcCnt << std::endl;
+    //std::cout << "calc count : " << _calcCnt << std::endl;
 
     if(_shadowMemoryCopyIdx >= 0) { // 그림자 메모리 복사본을 사용할 수 있을 때
         // 그림자 메모리 복사본을 메인 그림자 메모리에 복사
-        std::cout << "shadow memory copy index over the zero" << std::endl;
+        //std::cout << "shadow memory copy index over the zero" << std::endl;
         for(int i = 0; i <= _shadowMemoryCopyIdx; i++) {
             for(int j = 0; j < shadowMemoryList[i].size(); j++) {
                 //std::cout << "shadow memory variable name : " << shadowMemoryList[i][j].name << std::endl;
-                shadowMemory.push_back(shadowMemoryList[i][j]);
+                PushValue(shadowMemory, shadowMemoryList[i][j]);
             }
         }
     }
     else {
-        std::cout << "shadow memory copy index under the zero" << std::endl;
+        //std::cout << "shadow memory copy index under the zero" << std::endl;
         ShadowUnit _shadowUnit;
         _shadowUnit.name = _records[0]->name;
         _shadowUnit.ptr = _records[0]->ptr;
         _shadowUnit.value = _records[0]->value;
         shadowMemory.push_back(_shadowUnit);
     }
-    std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
+    //std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
 
     for(int _recordIdx = 1; _recordIdx <= _calcCnt; _recordIdx++) {
         int _changeIdx =  ((_currentIdx / this->groupSize) * this->groupSize) + _recordIdx;
@@ -118,7 +118,7 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
             _shadowUnit.ptr = _records[_changeIdx]->ptr;
             _shadowUnit.value = _records[_changeIdx]->value;
             _shadowUnit.recordIndex = _changeIdx;
-            shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+            PushValue(shadowMemory, _shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
         }
         else if(_records[_changeIdx]->recordType == RecordType::Array) {
             //std::cout << "Record Data is Array data" << std::endl;
@@ -128,23 +128,23 @@ void MMU::CalcShadowMemory(int _currentIdx, const std::vector<RecordData*>& _rec
                 _shadowUnit.ptr = _records[_changeIdx]->GetArrays()[_arrayIdx].arrayPtr;
                 _shadowUnit.value = _records[_changeIdx]->GetArrays()[_arrayIdx].arrayValue;
                 _shadowUnit.recordIndex = _changeIdx;
-                shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+                PushValue(shadowMemory, _shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
         else if(_records[_recordIdx]->recordType == RecordType::Vector) {
-            std::cout << "Record Data is Vector data" << std::endl;
+            //std::cout << "Record Data is Vector data" << std::endl;
             for(int _vectorIdx = 0; _vectorIdx < _records[_recordIdx]->GetVectors().size(); _vectorIdx++) {
                 ShadowUnit _shadowUnit; // 기록 데이터의 정보를 담을 그림자 유닛
                 _shadowUnit.name = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorName;
                 _shadowUnit.ptr = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorPtr;
                 _shadowUnit.value = _records[_recordIdx]->GetVectors()[_vectorIdx].vectorValue;
                 _shadowUnit.recordIndex = _recordIdx;
-                shadowMemory.push_back(_shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
+                PushValue(shadowMemory, _shadowUnit); // 그림자 메모리의 적용될 그림자 유닛 리스트
             }
         }
     }
-    std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
-    //PrintShadowMemoryTable();
+    //std::cout << "shadow memory size : " << shadowMemory.size() << std::endl;
+    PrintShadowMemoryTable();
 }
 
 void MMU::UpdateShadowMemory(int _recordIdx, const std::vector<RecordData*>& _records) {
@@ -231,3 +231,21 @@ bool MMU::IsShadowUnitInShadowMemory(std::string _ptr) {
     return false;
 }
 
+// 검사 함수 정의
+bool MMU::IsValidValue(const ShadowUnit& _shadowUnit) {
+    // 여기에 원하는 검사 조건을 추가
+    // 예시로 id가 양수인 경우를 유효한 값으로 가정
+    return _shadowUnit.ptr != "";
+}
+
+// 값 푸시 함수 정의
+void MMU::PushValue(std::vector<ShadowUnit>& _shadowMemory, const ShadowUnit& _shadowUnit) {
+    for(int _shadowMemoryIdx = 0; _shadowMemoryIdx < _shadowMemory.size(); _shadowMemoryIdx++) {
+        if(_shadowMemory[_shadowMemoryIdx].ptr == _shadowUnit.ptr) {
+            _shadowMemory[_shadowMemoryIdx].name = _shadowUnit.name;
+            _shadowMemory[_shadowMemoryIdx].value = _shadowUnit.value;
+            return;
+        }
+    }
+     _shadowMemory.push_back(_shadowUnit);
+}

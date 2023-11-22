@@ -83,7 +83,7 @@ void RecordVector::UpdateRecordData(std::vector<std::string> _words) {
     _vectorStruct.vectorName = _names[1];
     _vectorStruct.vectorType = GetType(_words[TYPE_IDX + 1]);
     _vectorStruct.vectorValue = _words[_words.size() - 4];
-    _vectorStruct.vectorPtr = _words[_words.size() - 3];
+    _vectorStruct.vectorPtr = AddHexaInt(vectors[vectors.size() - 1].vectorPtr, GetSizeByType(type));
 
     vectors.push_back(_vectorStruct);
 
