@@ -493,8 +493,76 @@ void App::Input() {
 void App::Update() {
     if(inputState == InputState::Up) {
         this->commandMessage = "up";
-        std::cout << "current Index : " << currentIndex << std::endl;
-        if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
+        if(IsNumber(mtu->GetCurThreadId())
+        && watchOp != "none"
+        && watchName != "none") {
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                std::cout << "세가지 종류의 세팅이 존재" << std::endl;
+                int _prevIdx = currentIndex;
+                currentIndex--;
+                for(int _recordIdx = currentIndex; _recordIdx >= 0; _recordIdx--) {
+                    std::cout << "Record Index : " << _recordIdx << ", max size : " << records.size() << std::endl;
+                    std::cout << "record thread id : " << records[_recordIdx]->threadId << ", current thread id : " << mtu->GetCurThreadId() << std::endl;
+                    std::cout << "record name : " << records[_recordIdx]->name << ", current name : " << watchName << std::endl;
+                    std::cout << "record op type : " << records[_recordIdx]->accessType << ", current op type : " << watchOp << std::endl;
+                    if(records[_recordIdx]->threadId == mtu->GetCurThreadId() 
+                    && records[_recordIdx]->name == watchName 
+                    && records[_recordIdx]->accessType == watchOp) {
+                        std::cout << "0" << std::endl << "0" << std::endl << "0" << std::endl;
+                        std::cout << "=====================setting information========================" << std::endl;
+                        std::cout << records[_recordIdx]->threadId << endl;
+                        std::cout << records[_recordIdx]->name << endl;
+                        std::cout << records[_recordIdx]->accessType << endl;
+                        std::cout << "=====================setting information========================" << std::endl;
+
+                        currentIndex = _recordIdx;
+                        break;
+                        
+                    }
+                    if(_recordIdx == 0
+                    && records[_recordIdx]->threadId != mtu->GetCurThreadId() 
+                    || records[_recordIdx]->name != watchName 
+                    || records[_recordIdx]->accessType != watchOp) {
+                        currentIndex = _prevIdx;
+                    }
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+
+        } else if( mtu->GetCurThreadId() == "none"
+        && watchOp != "none"
+        && watchName != "none") {
+            if(currentIndex < records.size() - 1 || currentIndex == -1) {
+                std::cout << "두가지 종류의 세팅이 존재" << std::endl;
+                int _prevIdx = currentIndex;
+                currentIndex--;
+                for(int _recordIdx = currentIndex; _recordIdx >= 0; _recordIdx--) {
+                    if(records[_recordIdx]->name == watchName 
+                    && records[_recordIdx]->accessType == watchOp) {
+                        currentIndex = _recordIdx;
+                        break;
+                        
+                    }
+                    if(_recordIdx == 0
+                    && records[_recordIdx]->name != watchName 
+                    || records[_recordIdx]->accessType != watchOp) {
+                        currentIndex = _prevIdx;
+                    }
+                }
+                currentLine = std::stoi(records[currentIndex]->line);
+                mtu->UpdateThreads(*records[currentIndex]);
+
+                afterCurPage = 1;   
+                prevCurPage = 1; 
+            }
+            inputState = InputState::Stop;
+
+        } else if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
             std::cout << "Thread id is number" << std::endl;
             std::cout << "current index : " << currentIndex << std::endl;
             std::cout << "records.size : " << records.size() - 1 << std::endl;
@@ -632,7 +700,7 @@ void App::Update() {
             }
             inputState = InputState::Stop;
 
-        }else if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
+        } else if(IsNumber(mtu->GetCurThreadId())) { // 현재 지정된 쓰레드 ID 가 존재할 경우
             if(currentIndex < records.size() - 1 || currentIndex == -1) {
                 currentIndex++;
                 while(records[currentIndex]->threadId != mtu->GetCurThreadId()) {
